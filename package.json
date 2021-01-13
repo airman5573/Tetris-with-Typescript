@@ -1,0 +1,41 @@
+{
+  "name": "tetris-with-typescript",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack",
+    "clean": "npm cache clean --force && rd /s /q node_modules && del /f package-lock.json",
+    "start": "webpack serve --open \"C:/Program Files (x86)/Google/Chrome/Application/chrome.exe\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/airman5573/Tetris-with-Typescript.git"
+  },
+  "keywords": [
+    "tetris",
+    "typescript"
+  ],
+  "author": "airman5573",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/airman5573/Tetris-with-Typescript/issues"
+  },
+  "homepage": "https://github.com/airman5573/Tetris-with-Typescript#readme",
+  "devDependencies": {
+    "clean-webpack-plugin": "^3.0.0",
+    "css-loader": "^5.0.1",
+    "file-loader": "^6.2.0",
+    "html-webpack-plugin": "^4.5.1",
+    "mini-css-extract-plugin": "^1.3.3",
+    "node-sass": "^5.0.0",
+    "sass-loader": "^10.1.1",
+    "style-loader": "^2.0.0",
+    "ts-loader": "^8.0.14",
+    "typescript": "^4.1.3",
+    "webpack": "^5.13.0",
+    "webpack-cli": "^4.3.1",
+    "webpack-dev-server": "^3.11.1"
+  }
+}

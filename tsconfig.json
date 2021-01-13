@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "module": "CommonJS",
+    "noImplicitAny": true,
+    "sourceMap": true,
+  },
+  "include": ["./src/*"]
+}
