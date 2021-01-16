@@ -1,6 +1,12 @@
 import Block from './Components/Block';
 import Matrix from './Components/Matrix';
+import Next from './Components/Next';
+import Point from './Components/Point';
+import Logo from './Components/Logo';
+import StartLines from './Components/StartLines';
+import Speed from './Components/Speed';
 import StateManager from './stateManager';
+import KeyEventProcessor from './Events/KeyEventProcessor';
 
 export namespace Tetris {
   export type Shape = Array<Array<number>>
@@ -30,13 +36,28 @@ export namespace Tetris {
       point: number
     },
     components: {
-      matrix: Matrix,
+      $matrix: Matrix,
+      $next: Next,
+      $point: Point,
+      $logo: Logo,
+      $startLines: StartLines,
+      $speed: Speed
     },
     stateManager: StateManager,
+    keyEventProcessor: KeyEventProcessor
   }
-  export interface KeyControl {}
-  export type KeyCallback = {}
-  export interface KeyTimer {}
+  export interface KeyControl {
+    keyDown: (type: KeyType) => void,
+    keyUp: (type: KeyType) => void
+  }
+  export type KeyCallback = {
+    keyType: KeyType,
+    callback?: () => void,
+    once?: boolean
+  }
+  export interface KeyTimer {
+    [keyType: string]: NodeJS.Timeout,
+  }
   export type KeyType = 'arrowUp' | 'arrowRight' | 'arrowDown' | 'arrowLeft' | 'space' | 'p' | 'r';
 }
 

@@ -6,12 +6,13 @@ import { deepCopy, tryMove } from '../utils';
 class Matrix {
   matrixNode: HTMLDivElement;
   count: number = 0;
-  timer: NodeJS.Timeout;
+  timer: number;
+  width: 10;
   constructor() {
     this.matrixNode = document.querySelector(".game-screen > .matrix > .inner");
   }
-  removeChildren = (parentNode: HTMLDivElement) => {
-    parentNode.childNodes.forEach((line) => {
+  init = () => {
+    this.matrixNode.childNodes.forEach((line) => {
       line.childNodes.forEach((block: HTMLDivElement) => {
         block.className = 'b';
       });
@@ -30,14 +31,87 @@ class Matrix {
         this.timer = setTimeout(fall, gs.speed);
       } else {
         // 다음 블럭이 못가면, 현재 블럭을 matrixState에 고정(?) 시킨다
-        gs.matrixState = this.addBlock(gs.matrixState, currentBlock);
+        gs.matrix = this.addBlock(gs.matrix, currentBlock);
         stateManager.nextAround();
       }
     }
   }
-  render = (matrix?: Tetris.MatrixState) => {
-    if (matrix == undefined) { matrix = window.tetris.states.matrix; }
-    this.removeChildren(this.matrixNode); // 비우고 시작하자
+  addBlock = (matrix: Tetris.MatrixState, $block: Block): Tetris.MatrixState => {
+    const {yx, shape} = $block;
+    const newMatrixState = deepCopy(matrix);
+    shape.forEach((line, i) => {
+      line.forEach((blockState, j) => {
+        const y = yx[0]+i;
+        const x = yx[1]+j;
+        if (y < 0 || y >= 20 || x < 0 || x >= 10) { return }
+        if (blockState == 1) {
+          if (newMatrixState[y][x] == 0) { newMatrixState[y][x] = 1; }
+        }
+      });
+    });
+    return newMatrixState;
+  }
+  clearLines = (lines: number[], callback: (point: number)): void => {
+    const stateManager = window.tetris.stateManager;
+    stateManager.lock(); // 잠그고
+    this.animateLines(lines, () => {
+      let newMatrix = deepCopy(window.tetris.states.matrix);
+      lines.forEach(n => {
+        newMatrix.splice(n, 1);
+        newMatrix.unshift(blankLine);
+      });
+      window.tetris.states.matrix = newMatrix;
+      this.render();
+      callback(lines.length * 50);
+      stateManager.unlock(); // 풀어준다
+      stateManager.nextAround();
+    });
+  }
+  animateLines = (lines: number[], callback: () => void) => {
+    this.render(this.setLine(lines, 2));
+    setTimeout(() => {
+      this.render(this.setLine(lines, 0));
+      setTimeout(() => {
+        this.render(this.setLine(lines, 2));
+        setTimeout(() => {
+          this.render(this.setLine(lines, 0));
+          callback();
+        }, 150);
+      }, 150);
+    }, 150);
+  }
+  setLine = (lines: number[], blockState: number) => {
+    const gs = window.tetris.states;
+    const matrix = deepCopy(gs.matrix);
+    lines.forEach(i => {
+      matrix[i] = Array(this.width).fill(blockState);
+    });
+    return matrix;
+  }
+  reset = (callback?: () => void) => {
+    const tetris = window.tetris;
+    const gs = tetris.states;
+    const animateLine = (index: number) => {
+      if (index < 20) {
+        const i = 20 - (index + 1)
+        gs.matrix[i] = Array(this.width).fill(1);
+        this.render();
+      } else if (index < 40) {
+        const i = index - 20;
+        gs.matrix[i] = Array(this.width).fill(0);
+        this.render();
+      }
+      // 마지막에 index가 40이라면, 즉 다 끝났다면!
+      else {
+        if (callback) { callback(); }
+      }
+    }
+    for (let i = 0; i <= 40; i++) {
+      setTimeout(animateLine.bind(null, i), 40 * (i+1));
+    }
+  }
+  render = (matrix = window.tetris.states.matrix) => {
+    this.init(); // 초기상태로 만들고 시작하자
     matrix.forEach((line: Tetris.Line) => {
       const lineNode = document.createElement("div");
       lineNode.className = 'line';
@@ -50,7 +124,7 @@ class Matrix {
       });
       this.matrixNode.appendChild(lineNode);
     });
-  }
+  } 
 }
 
 export default Matrix;

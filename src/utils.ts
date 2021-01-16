@@ -61,19 +61,19 @@ const getStartMatrix = (startLines: number) => {
 const getClearLines = (): number[] => {
   const gs = window.tetris.states;
   const clearLines: number[] = [];
-  gs.matrixState.forEach((line, i) => {
+  gs.matrix.forEach((line, i) => {
     if (line.every(n => !!n)) { clearLines.push(i); }
   });
   return clearLines;
 }
 const isOver = (): boolean => {
   const gs = window.tetris.states;
-  return gs.matrixState[0].some((blockState)=> { return !!blockState })
+  return gs.matrix[0].some((blockState)=> { return !!blockState })
 }
-const deepCopy = (matrixState: Tetris.MatrixState): Tetris.MatrixState => {
-  const newMatrixState: Tetris.MatrixState = [];
-  matrixState.forEach((line: Tetris.Line) => { newMatrixState.push([...line]); });
-  return newMatrixState;
+const deepCopy = (matrix: Tetris.MatrixState): Tetris.MatrixState => {
+  const newMatrix: Tetris.MatrixState = [];
+  matrix.forEach((line: Tetris.Line) => { newMatrix.push([...line]); });
+  return newMatrix;
 }
 const getNextBlock = (): Block => {
   const typeArr = Object.keys(blockTypes);
@@ -87,7 +87,7 @@ const getNextBlock = (): Block => {
     yx: yxStartPosition[randomType]
   });
 }
-const tryMove = (matrixState: Tetris.MatrixState, nextBlock: Block): boolean => {
+const tryMove = (matrix: Tetris.MatrixState, nextBlock: Block): boolean => {
   const yx = nextBlock.yx;
   const shape = nextBlock.shape;
   const width = shape[0].length;
@@ -100,7 +100,7 @@ const tryMove = (matrixState: Tetris.MatrixState, nextBlock: Block): boolean => 
       if (blockState === 1) {
         const y = yx[0] + i;
         const x = yx[1] + j;
-        if (matrixState[y][x] == 1) { return false; }
+        if (matrix[y][x] == 1) { return false; }
       }
       return true;
     })

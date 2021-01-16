@@ -66,3 +66,5 @@ class Logo {
     }, 800);
   }
 }
+
+export default Logo;

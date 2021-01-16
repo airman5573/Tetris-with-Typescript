@@ -73,9 +73,9 @@ const delays: number[] = [50, 60, 70, 80, 90, 100];
 const fullLine: Tetris.FillLine = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
 const blankLine: Tetris.Line = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 const blankMatrix: Tetris.MatrixState = (() => {
-  const matrixState: Tetris.MatrixState = [];
-  for (let i = 0; i < 20; i++) { matrixState.push([...blankLine]); }
-  return matrixState;
+  const matrix: Tetris.MatrixState = [];
+  for (let i = 0; i < 20; i++) { matrix.push([...blankLine]); }
+  return matrix;
 })();
 const clearPoints: number[] = [100, 300, 700, 1500];
 const LocalStorageKey: string = 'TETRIS_WITH_TYPESCRIPT';
