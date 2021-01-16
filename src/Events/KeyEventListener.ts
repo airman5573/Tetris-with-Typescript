@@ -4,7 +4,7 @@ import ArrowRight from './keys/arrowRight';
 import ArrowDown from './keys/arrowDown';
 import ArrowLeft from './keys/arrowLeft';
 import Space from './keys/space';
-import { Tetris } from './types';
+import { Tetris } from '../types';
 
 class Keyboard {
   arrowUp: ArrowUp;
