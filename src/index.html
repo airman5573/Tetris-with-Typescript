@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- 모바일 최적화를 위해서 viewport의 width를 640으로 정한다 -->
   <meta name="viewport" content="width=640,user-scalable=no,target-densitydpi=device-dpi">
   <title>Tetris</title>
 </head>
@@ -8,71 +9,83 @@
   <div id="page">
     <div class="container">
       <div class="top">
-        <div class="inner">
-          <div class="decoration"></div>
-          <div class="game-screen-container">
-            <div class="game-screen">
-              <div class="matrix">
-                <div class="inner"></div>
+        <div class="decoration">
+          <div class="top">
+            <span class="deco-block long fl"></span>
+            <span class="deco-block fl"></span>
+            <span class="deco-block fl"></span>
+            <span class="deco-block fl"></span>
+            <span class="deco-block fl"></span>
+            <span class="deco-block fr"></span>
+            <span class="deco-block fr"></span>
+            <span class="deco-block fr"></span>
+            <span class="deco-block fr"></span>
+            <span class="deco-block long fr"></span>
+          </div>
+          <h1 class="title">T E T R I S</h1>
+          <div class="right"></div>
+          <div class="left"></div>
+        </div>
+        <div class="game-screen-container">
+          <div class="game-screen">
+            <div class="matrix"></div>
+            <div class="logo">
+              <div class="dragon bg"></div>
+              <p>TETRIS</p>
+            </div>
+            <div class="status">
+              <div class="point">
+                <label>Last Round</label>
+                <div class="container numbers">
+                  <span class="bg s_n"></span>
+                  <span class="bg s_n"></span>
+                  <span class="bg s_n"></span>
+                  <span class="bg s_n"></span>
+                  <span class="bg s_n"></span>
+                  <span class="bg s_n"></span>
+                </div>
               </div>
-              <div class="logo">
-                <div class="dragon bg"></div>
-                <p>TETRIS</p>
+              <div class="start-lines">
+                <label>Start Lines</label>
+                <div class="container numbers">
+                  <span class="bg s_n"></span>
+                  <span class="bg s_n"></span>
+                  <span class="bg s_n"></span>
+                  <span class="bg s_n"></span>
+                  <span class="bg s_n"></span>
+                  <span class="bg s_n"></span>
+                </div>
               </div>
-              <div class="status">
-                <div class="point">
-                  <label>Last Round</label>
-                  <div class="container numbers">
-                    <span class="bg s_n"></span>
-                    <span class="bg s_n"></span>
-                    <span class="bg s_n"></span>
-                    <span class="bg s_n"></span>
-                    <span class="bg s_n"></span>
-                    <span class="bg s_n"></span>
+              <div class="speed">
+                <label>Speed</label>
+                <div class="container numbers">
+                  <span class="bg s_n"></span>
+                  <span class="bg s_n"></span>
+                  <span class="bg s_n"></span>
+                  <span class="bg s_n"></span>
+                  <span class="bg s_n"></span>
+                  <span class="bg s_n"></span>
+                </div>
+              </div>
+              <div class="next-block">
+                <label>Next</label>
+                <div class="container">
+                  <div class="line">
+                    <div class="b"></div>
+                    <div class="b"></div>
+                    <div class="b"></div>
+                    <div class="b"></div>
+                  </div>
+                  <div class="line">
+                    <div class="b"></div>
+                    <div class="b"></div>
+                    <div class="b"></div>
+                    <div class="b"></div>
                   </div>
                 </div>
-                <div class="start-lines">
-                  <label>Start Lines</label>
-                  <div class="container numbers">
-                    <span class="bg s_n"></span>
-                    <span class="bg s_n"></span>
-                    <span class="bg s_n"></span>
-                    <span class="bg s_n"></span>
-                    <span class="bg s_n"></span>
-                    <span class="bg s_n"></span>
-                  </div>
-                </div>
-                <div class="speed">
-                  <label>Speed</label>
-                  <div class="container numbers">
-                    <span class="bg s_n"></span>
-                    <span class="bg s_n"></span>
-                    <span class="bg s_n"></span>
-                    <span class="bg s_n"></span>
-                    <span class="bg s_n"></span>
-                    <span class="bg s_n"></span>
-                  </div>
-                </div>
-                <div class="next-block">
-                  <label>Next</label>
-                  <div class="container">
-                    <div class="line">
-                      <div class="b"></div>
-                      <div class="b"></div>
-                      <div class="b"></div>
-                      <div class="b"></div>
-                    </div>
-                    <div class="line">
-                      <div class="b"></div>
-                      <div class="b"></div>
-                      <div class="b"></div>
-                      <div class="b"></div>
-                    </div>
-                  </div>
-                </div>
-                <div class="time">
-                  <div class="container"></div>
-                </div>
+              </div>
+              <div class="time">
+                <div class="container"></div>
               </div>
             </div>
           </div>

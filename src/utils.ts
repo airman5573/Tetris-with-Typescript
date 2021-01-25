@@ -106,5 +106,36 @@ const tryMove = (matrix: Tetris.MatrixState, nextBlock: Block): boolean => {
     })
   ));
 }
+const getDecoBlock = () => {
+  const doc = document.createElement;
+  let [$b, $clear, $empty, $gap] = [doc("b"), doc("div.clear"), doc("empty"), doc("gap")];
+  const rotate = (shape: Array<number[]>) => {
+    let verticalRotatedShape: Array<number[]> = [];
+    shape.forEach((line, row) => {
+      line.forEach((blockState, col) => {
+        const rowIndex = line.length - col - 1;
+        if (verticalRotatedShape[rowIndex] == undefined) {
+          verticalRotatedShape[rowIndex] = [];
+        }
+        verticalRotatedShape[rowIndex].push(blockState);
+      });
+    });
+    return verticalRotatedShape;
+  }
 
-export {getStartMatrix, getClearLines, isOver, deepCopy, getNextBlock, tryMove, resize}
+  const $blocks = [];
+  for (let shape of Object.values(blockShapes)) {
+    shape = rotate(shape); // 기본이 가로로 누워있기 때문에 세로로 한번 돌려준다
+    const $block = [$gap];
+    shape.forEach((line: number[]) => {
+      line.forEach((blockState: number) => {
+        $block.push(blockState == 1 ? $b : $empty);
+      });
+      $block.push($clear);
+    });
+    $blocks.push($block);
+  }
+  return $blocks;
+}
+
+export {getStartMatrix, getClearLines, isOver, deepCopy, getNextBlock, tryMove, resize, getDecoBlock}

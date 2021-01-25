@@ -9,7 +9,14 @@ class Matrix {
   timer: number;
   width: 10;
   constructor() {
-    this.matrixNode = document.querySelector(".game-screen > .matrix > .inner");
+    this.matrixNode = document.querySelector(".game-screen > .matrix");
+    for (let i = 0; i < 20; i++) {
+      const $p = document.createElement("p");
+      for (let j = 0; j < 10; j++) {
+        $p.appendChild(document.createElement("b"));
+      }
+      this.matrixNode.appendChild($p);
+    }
   }
   init = () => {
     this.matrixNode.childNodes.forEach((line) => {
@@ -26,12 +33,12 @@ class Matrix {
       let currentBlock = states.currentBlock;
       const nextBlock = currentBlock.fall();
       if (tryMove(states.matrix, nextBlock)) {
-        this.render(this.addBlock(gs.matrix, nextBlock)); // 핵심은 여기서 update 된 matrix를 gameState.matrixState 에 넣지 않는다는거~
-        gs.currentBlock = nextBlock;
-        this.timer = setTimeout(fall, gs.speed);
+        this.render(this.addBlock(states.matrix, nextBlock)); // 핵심은 여기서 update 된 matrix를 gameState.matrixState 에 넣지 않는다는거~
+        states.currentBlock = nextBlock;
+        this.timer = setTimeout(fall, states.speed);
       } else {
         // 다음 블럭이 못가면, 현재 블럭을 matrixState에 고정(?) 시킨다
-        gs.matrix = this.addBlock(gs.matrix, currentBlock);
+        states.matrix = this.addBlock(states.matrix, currentBlock);
         stateManager.nextAround();
       }
     }
@@ -81,8 +88,8 @@ class Matrix {
     }, 150);
   }
   setLine = (lines: number[], blockState: number) => {
-    const gs = window.tetris.states;
-    const matrix = deepCopy(gs.matrix);
+    const states = window.tetris.states;
+    const matrix = deepCopy(states.matrix);
     lines.forEach(i => {
       matrix[i] = Array(this.width).fill(blockState);
     });
@@ -90,15 +97,15 @@ class Matrix {
   }
   reset = (callback?: () => void) => {
     const tetris = window.tetris;
-    const gs = tetris.states;
+    const states = tetris.states;
     const animateLine = (index: number) => {
       if (index < 20) {
         const i = 20 - (index + 1)
-        gs.matrix[i] = Array(this.width).fill(1);
+        states.matrix[i] = Array(this.width).fill(1);
         this.render();
       } else if (index < 40) {
         const i = index - 20;
-        gs.matrix[i] = Array(this.width).fill(0);
+        states.matrix[i] = Array(this.width).fill(0);
         this.render();
       }
       // 마지막에 index가 40이라면, 즉 다 끝났다면!
