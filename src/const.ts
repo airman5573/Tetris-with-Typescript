@@ -1,7 +1,7 @@
 import { Tetris } from "./types";
 
-const width: number = 744;
-const height: number = 932; 
+const width: number = 640;
+const height: number = 960; 
 const blockShapes: Tetris.BlockShapes = {
   I: [
     [1, 1, 1, 1],
