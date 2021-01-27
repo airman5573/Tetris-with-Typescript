@@ -4,28 +4,64 @@ import { Tetris } from './types';
 
 /* 화면 크기가 바뀔때마다 게임판의 크기도 조정한다 */
 const resize = () => {
+  const containerEl: HTMLDivElement = document.querySelector("#page > .container");
+  const css = getResizedCss();
+  Object.keys(css).forEach((property: string) => {
+    containerEl.style.setProperty(property, css[property])  
+  });
+}
+
+// 이게 난해한 부분이여
+// desktop과 mobile둘다 따로 고려해줘야함.
+const getResizedCss = () => {
   const w = document.documentElement.clientWidth;
   const h = document.documentElement.clientHeight;
   const ratio = h/w;
   let css: any = {}
   let filling = 0
-  /** 세로가 가로보다 더 짧으면 세로길이를 기준으로 scale을 정하고*/
+
+  // 세로 : 가로 = 3 : 2가 기준인데, 세로 : 가로 = 3 : 4 이런식으로 가로길이가 기준보다 더 커질때
   if (ratio < 1.5) {
-    // 세로가 height랑 같은 상황에서 w가 1.5비율보다 더 길어진거면 상관이 없는데,
-    // 이런 상황에서 세로길이가 height보다 더 크다면, 세로길이를 h/height만큼 스케일을 늘려줘야하고
-    // 2:3 비율을 유지해 줘야하니까 width도 h/height만큼 늘려줘야한다.
+    // 높이가 960px보다 더 늘거나 줄어든 만큼, 가로길이도 변화시켜야 하기 때문에
+    // scale = h / height로 해준다.
     let scale = h/height;
     css = { transform: `scale(${scale})` }
   }
-  /** 가로가 세로보다 짧으면 가로를 기준으로 scale을 정한다 */
+  // 세로 : 가로 = 3 : 2가 기준인데, 세로 : 가로 = 4 : 2 이런식으로 세로길이가 더 길때
   else {
+    // 가로가 늘거나 준만큼, 세로도 변화시켜야 하기 때문에
+    // scale = w / width
     let scale = w/width;
+    // 하지만! 정말 이대로 scale을 줄여버린다면? 세로가 꽉 안찰꺼야.
+    // 난쟁이 똥짜루가 되어있겠지.
+    // 그래서 filling이 필요한거야.
+    // 우리가 체워야할 빈공간의 높이는 h - (height * scale)이야 맞지? 이만큼의 빈공간을 체워야해.
+    // 그런데, 왜 scale로 한번더 나눠줬을까? 왜냐하면!!! 우리가 지금 구하는 filling은 결국 나중에 scale만큼 곱해질 것이기 때문이야.
+    // 예를들어서 지금 filling이 10이고 scale이 2라면, 실제 적용되는 filling은 10/2가 되는거야. scale은 가로 세로길이만 줄이는게 아니라,
+    // 모든걸 줄이거든. 그래서 filling에 나중에 scale이 곱해질것을 아니까, 미리 scale로 나눠주는거야.
+    // 마지막으로, filling은 padding-top, padding-bottom, margin-top 이 세부분에 적용될꺼니까 3등분 해줘야해.
+    // 이러한 이유로 아래와 같은 식이 나온거야
     filling = (h - (height*scale)) / scale / 3;
     css = {
       transform: `scale(${scale})`,
       paddingTop: Math.floor(filling),
       paddingBottom: Math.floor(filling),
-      marginTop: Math.floor(-480 - (filling*(3/2)))
+      // 이놈은 뭘까?
+      // margin-top에 음수가 들어가는걸 보니 block이 위로 -480 - (filling*(3/2))만큼 올라가겠네.
+      // 왜 위로 저만큼 올리는걸까? 왜 -480은 고정으로 올려주는걸까?
+      // 자 설명해볼께
+      // 1. 가로 640px, 세로 960px은 정해져 있는거야. 맞지?
+      // 2. 화면의 정중앙에 놓을려면, position: absolute, left: 50%, top: 50%, margin-top: -480px, margin-right: -320px 이렇게 줘야해
+      // 3. scale은 margin, padding, width, height를 다 적용시키고 나서 맨 마지막에 적용되는 property야
+      // 4. 우선은 스케일을 신경쓰지 말고, 세로길이가 960px이니까 margin-top에 -480을 주는게 맞아. 이미 들어가있는데 왜 또 주냐고?
+      //    filling을 줘야하니까 marginTop을 업데이트 해야하는데 -480도 당연히 적용시켜줘야지. -480이 막 문신처럼 박혀있는게 아니야.
+      // 5. OK 왜 -480을 고정시켰는지 알겠어
+      // 6. filling에 3을 곱하고 왜 반으로 나눴을까?
+      //    자, 4번과 비슷한 이야기인데, 높이가 960px인 box를 중앙으로 움직이는 과정속에 margin-top: -480을 주는건 이해 했지?
+      //    우리가 (h - (height*scale)) / scale 만큼의 빈공간을 체워야 하고, 이거는 filling * 3이잖아 맞지?
+      //    그니까, filling을 3곳에 주기 위해서 저거를 3으로 나눈거잖아. 그러니까 어쨋건 filling*3만큼 높이가 늘어나는거잖아.
+      //    그래서 그 늘어난 만큼을 위로 올려줘야 중앙에 위치하겠지. 아니아니, 그 늘어난 만큼의 반을 위로 올려줘야 중앙에 위치하겠지.
+      marginTop: Math.floor(-(height/2) - ((filling*3)/2))
     }
   }
   return [filling, css]

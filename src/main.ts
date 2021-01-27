@@ -13,11 +13,6 @@ import KeyEventProcessor from './Events/KeyEventProcessor';
 // resize
 resize();
 window.addEventListener('resize', () => {
-  const containerEl: HTMLDivElement = document.querySelector("#page > .container");
-  const css = resize();
-  Object.keys(css).forEach((property: string) => {
-    containerEl.style.setProperty(property, css[property])  
-  });
 });
 
 // decorations
