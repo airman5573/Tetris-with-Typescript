@@ -4,8 +4,8 @@ class Next {
   blocks: Array<NodeListOf<Element>>
   constructor() {
     this.blocks = [
-      document.querySelectorAll(".status .next-block .line:nth-child(1) .b"),
-      document.querySelectorAll(".status .next-block .line:nth-child(2) .b"),
+      document.querySelectorAll(".sidebar .next-block .line:nth-child(1) .b"),
+      document.querySelectorAll(".sidebar .next-block .line:nth-child(2) .b"),
     ]
   }
   render = (nextBlock: Block) => {

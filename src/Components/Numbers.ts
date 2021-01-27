@@ -1,7 +1,7 @@
 class Numbers {
   node: HTMLDivElement;
   constructor(className: string) {
-    this.node = document.querySelector(`.game-screen > .status > .${className} > .numbers`);
+    this.node = document.querySelector(`.game-screen > .sidebar > .${className} > .numbers`);
   }
   render = (num: number) => {
     let arr: number[] = (Array.from(String(num), Number)).reverse();

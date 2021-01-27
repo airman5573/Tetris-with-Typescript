@@ -5,7 +5,7 @@ import { Tetris } from './types';
 /* 화면 크기가 바뀔때마다 게임판의 크기도 조정한다 */
 const resize = () => {
   const containerEl: HTMLDivElement = document.querySelector("#page > .container");
-  const css = getResizedCss();
+  const [filling, css] = getResizedCss();
   Object.keys(css).forEach((property: string) => {
     containerEl.style.setProperty(property, css[property])  
   });

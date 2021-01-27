@@ -1,4 +1,4 @@
-import './style.scss';
+import './style/main.scss';
 import { blankMatrix } from './const';
 import Matrix from './Components/matrix';
 import { getNextBlock, resize, getDecoBlock } from './utils';

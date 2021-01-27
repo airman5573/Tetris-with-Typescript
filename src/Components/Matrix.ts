@@ -6,7 +6,7 @@ import { deepCopy, tryMove } from '../utils';
 class Matrix {
   matrixNode: HTMLDivElement;
   count: number = 0;
-  timer: number;
+  timer: NodeJS.Timeout;
   width: 10;
   constructor() {
     this.matrixNode = document.querySelector(".game-screen > .matrix");
@@ -58,7 +58,7 @@ class Matrix {
     });
     return newMatrixState;
   }
-  clearLines = (lines: number[], callback: (point: number)): void => {
+  clearLines = (lines: number[], callback: (point: number)=>void): void => {
     const stateManager = window.tetris.stateManager;
     stateManager.lock(); // 잠그고
     this.animateLines(lines, () => {
