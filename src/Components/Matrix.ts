@@ -119,18 +119,7 @@ class Matrix {
   }
   render = (matrix = window.tetris.states.matrix) => {
     this.init(); // 초기상태로 만들고 시작하자
-    matrix.forEach((line: Tetris.Line) => {
-      const lineNode = document.createElement("div");
-      lineNode.className = 'line';
-      line.forEach(blockState => {
-        const blockNode = document.createElement("div");
-        blockNode.className = 'b';
-        if (blockState === 1) { blockNode.classList.add("active"); }
-        else if (blockState === 2) { blockNode.classList.add("blink"); }
-        lineNode.appendChild(blockNode);
-      });
-      this.matrixNode.appendChild(lineNode);
-    });
+    
   } 
 }
 

@@ -10,13 +10,6 @@ $oldScreen: #9ead86;
 $gameScreenWidth: 380px;
 $gameScreenHeight: 468px;
 $gameScreenContainerBorderWidth: 5px;
-$matrixWidth: 228px;
-$matrixBorderWidth: 2px;
-$paddingLeftWidth: 1px;
-$matrixLineWidth: $matrixWidth - ($matrixBorderWidth*2 + $paddingLeftWidt*2);
-$matrixBlockMarginRight: 2px;
-$matrixBlockMarginBottom: $matrixBlockMarginRight;
-$matrixBlockWidth: ($matrixLineWidth/10 - $matrixBlockMarginRight);
 .fr {
   float: right;
 }
@@ -34,14 +27,13 @@ $matrixBlockWidth: ($matrixLineWidth/10 - $matrixBlockMarginRight);
   margin-top: -480px;
   margin-left: -320px;
   background: $yellow;
-
-  .matrix b {
+  b {
     display: block;
-    width: $matrixBlockWidth;
-    height: $matrixBlockWidth;
+    width: 20px;
+    height: 20px;
     padding: 2px;
     border: 2px solid #879372;
-    margin: 0 $matrixBlockMarginRight $matrixBlockMarginBottom 0;
+    margin: 0 2px 2px 0;
     float: left;
     &::after {
       content: "";
@@ -51,8 +43,13 @@ $matrixBlockWidth: ($matrixLineWidth/10 - $matrixBlockMarginRight);
       background: #879372;
       overflow: hidden;
     }
+    &.active {
+      border-color: black;
+      &::after {
+        background-color: black;
+      }
+    }
   }
-
   & > .top {
     width: 480px;
     padding-top: 45px;
@@ -61,17 +58,18 @@ $matrixBlockWidth: ($matrixLineWidth/10 - $matrixBlockMarginRight);
     border: solid $black;
     border-left-width: 10px;
     border-right-width: 10px;
+    border-top-width: 0px;
     border-bottom-width: 10px;
+    position: relative;
   }
   & > .bottom {
     width: 580px;
     height: 330px;
-    margin: 0 auto;
     border-width: 0 10px 10px;
     margin: 0 auto;
     position: relative;
   }
-  & > .top > .inner {
+  & > .top {
     .decoration {
       & > .top {
         height: 10px;
@@ -97,13 +95,35 @@ $matrixBlockWidth: ($matrixLineWidth/10 - $matrixBlockMarginRight);
         left: 0;
         text-align: center;
         font-weight: 400;
-        top: -12px;
+        top: -18px;
         margin: 0;
         padding: 0;
         font-size: 30px;
       }
-      & > .right {}
-      & > .left {}
+      & > .left, & > .right {
+        position: absolute;
+        width: 44px;
+        top: 0;
+      }
+      & > .left {
+        left: -70px;
+      }
+      & > .right {
+        right: -70px;
+      }
+      b {
+        margin: 0;
+        &.empty {
+          visibility: hidden;
+        }
+      }
+      .gap {
+        height: 22px;
+        clear: both;
+      }
+      .clear {
+        clear: both;
+      }
     }
     .game-screen-container {
       width: $gameScreenWidth + $gameScreenContainerBorderWidth*2;
@@ -119,11 +139,11 @@ $matrixBlockWidth: ($matrixLineWidth/10 - $matrixBlockMarginRight);
         border: 2px solid #494536;
         background-color: $oldScreen;
         .matrix {
-          border: $matrixBorderWidth solid #000;
-          padding: 3px $paddingLeftWidth $paddingLeftWidth 3px;
-          width: $matrixWidth;
+          border: 2px solid #000;
+          padding: 2px;
+          width: 228px;
           p {
-            width: $matrixLineWidth
+            width: ((20+2)*10)px;
           }
         }
         .sidebar {

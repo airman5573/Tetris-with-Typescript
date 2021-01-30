@@ -4,7 +4,7 @@ class Logo {
   timer: NodeJS.Timeout;
   basicClassName = "dragon bg";
   constructor() {
-    this.logo = document.querySelector(".game-screen > .matrix > .logo");
+    this.logo = document.querySelector(".game-screen > .logo");
     this.dragon = this.logo.children[0] as HTMLDivElement;
   }
   show = () => {

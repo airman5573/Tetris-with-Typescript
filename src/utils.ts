@@ -9,6 +9,11 @@ const resize = () => {
   Object.keys(css).forEach((property: string) => {
     containerEl.style.setProperty(property, css[property])  
   });
+
+  // bottom은 기본 margin-top 에다가 변화하는 filling을 더해서 적용해줘야한다.
+  const bottom: HTMLDivElement = document.querySelector("#page > .container > .bottom");
+  bottom.style.setProperty("margin-top", `${20+filling}px`);
+  
 }
 
 // 이게 난해한 부분이여
@@ -44,8 +49,8 @@ const getResizedCss = () => {
     filling = (h - (height*scale)) / scale / 3;
     css = {
       transform: `scale(${scale})`,
-      paddingTop: Math.floor(filling),
-      paddingBottom: Math.floor(filling),
+      'padding-top': `${42 + Math.floor(filling)}px`,
+      'padding-bottom': `${Math.floor(filling)}px`,
       // 이놈은 뭘까?
       // margin-top에 음수가 들어가는걸 보니 block이 위로 -480 - (filling*(3/2))만큼 올라가겠네.
       // 왜 위로 저만큼 올리는걸까? 왜 -480은 고정으로 올려주는걸까?
@@ -61,7 +66,7 @@ const getResizedCss = () => {
       //    우리가 (h - (height*scale)) / scale 만큼의 빈공간을 체워야 하고, 이거는 filling * 3이잖아 맞지?
       //    그니까, filling을 3곳에 주기 위해서 저거를 3으로 나눈거잖아. 그러니까 어쨋건 filling*3만큼 높이가 늘어나는거잖아.
       //    그래서 그 늘어난 만큼을 위로 올려줘야 중앙에 위치하겠지. 아니아니, 그 늘어난 만큼의 반을 위로 올려줘야 중앙에 위치하겠지.
-      marginTop: Math.floor(-(height/2) - ((filling*3)/2))
+      'margin-top': `${Math.floor(-(height/2) - ((filling*3)/2))}px`
     }
   }
   return [filling, css]
@@ -143,9 +148,16 @@ const tryMove = (matrix: Tetris.MatrixState, nextBlock: Block): boolean => {
     })
   ));
 }
-const getDecoBlock = () => {
+const getDecoBlocks = () => {
   const doc = document.createElement;
-  let [$b, $clear, $empty, $gap] = [doc("b"), doc("div.clear"), doc("empty"), doc("gap")];
+  let $b: HTMLElement = document.createElement("b");
+  $b.classList.add('active');
+  let $clear: HTMLElement = document.createElement("div");
+  $clear.classList.add('clear');
+  let $empty: HTMLElement = document.createElement("b");
+  $empty.classList.add('empty');
+  let $gap: HTMLElement = document.createElement("div");
+  $gap.classList.add('gap');
   const rotate = (shape: Array<number[]>) => {
     let verticalRotatedShape: Array<number[]> = [];
     shape.forEach((line, row) => {
@@ -163,16 +175,17 @@ const getDecoBlock = () => {
   const $blocks = [];
   for (let shape of Object.values(blockShapes)) {
     shape = rotate(shape); // 기본이 가로로 누워있기 때문에 세로로 한번 돌려준다
-    const $block = [$gap];
+    const $block: [Node] = [$gap.cloneNode()];
     shape.forEach((line: number[]) => {
       line.forEach((blockState: number) => {
-        $block.push(blockState == 1 ? $b : $empty);
+        $block.push(blockState == 1 ? $b.cloneNode() : $empty.cloneNode());
       });
-      $block.push($clear);
+      $block.push($clear.cloneNode());
     });
     $blocks.push($block);
   }
+  $blocks.splice(4, 1);
   return $blocks;
 }
 
-export {getStartMatrix, getClearLines, isOver, deepCopy, getNextBlock, tryMove, resize, getDecoBlock}
+export {getStartMatrix, getClearLines, isOver, deepCopy, getNextBlock, tryMove, resize, getDecoBlocks}

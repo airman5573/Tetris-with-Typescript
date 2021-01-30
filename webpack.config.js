@@ -7,6 +7,7 @@ const resolve = path.resolve;
 
 module.exports = {
   entry: join(__dirname, '/src/main.ts'),
+  mode: 'development',
   devtool: 'source-map',
   output: {
     filename: "main.js",

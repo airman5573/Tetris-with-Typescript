@@ -1,7 +1,7 @@
 import './style/main.scss';
 import { blankMatrix } from './const';
 import Matrix from './Components/matrix';
-import { getNextBlock, resize, getDecoBlock } from './utils';
+import { getNextBlock, resize, getDecoBlocks } from './utils';
 import StateManager from './stateManager';
 import Logo from './Components/logo'; 
 import Point from './Components/point';
@@ -12,17 +12,26 @@ import KeyEventProcessor from './Events/KeyEventProcessor';
 
 // resize
 resize();
-window.addEventListener('resize', () => {
-});
+window.addEventListener('resize', resize);
 
 // decorations
-const $decoBlocks = getDecoBlock();
-const $decoLeft = document.querySelector(".decoration > .left");
-$decoBlocks.forEach(($b: HTMLElement[]) => {
-  $b.forEach((el) => {
-    $decoLeft.appendChild(el);
+const $decoration = document.querySelector(".decoration");
+const $decoBlocks = getDecoBlocks();
+const $decoLeft = document.createElement("div");
+$decoLeft.classList.add("left");
+$decoBlocks.forEach(($block: Node[]) => {
+  $block.forEach((el) => {
+    // $decoLeft.appendChild(el);
+    $decoLeft.append(el);
   });
 });
+const $decoRight = $decoLeft.cloneNode(true) as HTMLElement;
+$decoRight.classList.remove("left");
+$decoRight.classList.add("right");
+$decoRight.style.setProperty("transform", "rotateY(180deg)");
+$decoration.appendChild($decoLeft);
+$decoration.appendChild($decoRight);
+
 
 // tetris initialization
 window.tetris = {
