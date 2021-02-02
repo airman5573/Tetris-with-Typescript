@@ -3,6 +3,7 @@
   padding: 0;
   box-sizing: border-box;
 }
+
 $yellow: #efcc19;
 $white: #fff;
 $black: #000;
@@ -13,10 +14,12 @@ $gameScreenContainerBorderWidth: 5px;
 .fr {
   float: right;
 }
+
 .fl {
   float: left;
 }
-#page > .container {
+
+#page>.container {
   width: 640px;
   padding-top: 42px; // 이거 왜 하는거지?
   box-shadow: inset 0 0 10px #fff;
@@ -50,7 +53,7 @@ $gameScreenContainerBorderWidth: 5px;
       }
     }
   }
-  & > .top {
+  &>.top {
     width: 480px;
     padding-top: 45px;
     padding-bottom: 35px;
@@ -62,16 +65,16 @@ $gameScreenContainerBorderWidth: 5px;
     border-bottom-width: 10px;
     position: relative;
   }
-  & > .bottom {
+  &>.bottom {
     width: 580px;
     height: 330px;
     border-width: 0 10px 10px;
     margin: 0 auto;
     position: relative;
   }
-  & > .top {
+  &>.top {
     .decoration {
-      & > .top {
+      &>.top {
         height: 10px;
         top: 0;
         overflow: hidden;
@@ -84,12 +87,18 @@ $gameScreenContainerBorderWidth: 5px;
           height: 10px;
           overflow: hidden;
           background: $black;
-          &.fl { margin-right: 10px; }
-          &.fr { margin-left: 10px; }
-          &.long { width: 40px; }
+          &.fl {
+            margin-right: 10px;
+          }
+          &.fr {
+            margin-left: 10px;
+          }
+          &.long {
+            width: 40px;
+          }
         }
       }
-      & > .title {
+      &>.title {
         position: absolute;
         width: 100%;
         left: 0;
@@ -100,15 +109,16 @@ $gameScreenContainerBorderWidth: 5px;
         padding: 0;
         font-size: 30px;
       }
-      & > .left, & > .right {
+      &>.left,
+      &>.right {
         position: absolute;
         width: 44px;
         top: 0;
       }
-      & > .left {
+      &>.left {
         left: -70px;
       }
-      & > .right {
+      &>.right {
         right: -70px;
       }
       b {
@@ -133,6 +143,7 @@ $gameScreenContainerBorderWidth: 5px;
       margin: 0 auto;
       position: relative;
       .game-screen {
+        position: relative;
         width: $gameScreenWidth;
         height: $gameScreenHeight;
         padding: 8px;
@@ -142,8 +153,28 @@ $gameScreenContainerBorderWidth: 5px;
           border: 2px solid #000;
           padding: 2px;
           width: 228px;
+          overflow: hidden;
           p {
             width: ((20+2)*10)px;
+          }
+        }
+        .logo {
+          display: none;
+          position: absolute;
+          width: 224px;
+          top: 100px;
+          left: 10px;
+          text-align: center;
+          &.active {
+            display: block;
+          }
+          p {
+            line-height: 1.4;
+            font-family: initial;
+            letter-spacing: 6px;
+            text-shadow: 1px 1px 1px hsla(0,0%,100%,.35);
+            margin-left: auto;
+            margin-right: auto;
           }
         }
         .sidebar {

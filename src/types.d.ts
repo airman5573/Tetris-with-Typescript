@@ -6,6 +6,7 @@ import Logo from './Components/Logo';
 import StartLines from './Components/StartLines';
 import Speed from './Components/Speed';
 import StateManager from './stateManager';
+import KeyEventListener from './Events/KeyEventListener';
 import KeyEventProcessor from './Events/KeyEventProcessor';
 
 export namespace Tetris {
@@ -58,7 +59,7 @@ export namespace Tetris {
   export interface KeyTimer {
     [keyType: string]: NodeJS.Timeout,
   }
-  export type KeyType = 'arrowUp' | 'arrowRight' | 'arrowDown' | 'arrowLeft' | 'space' | 'p' | 'r';
+  export type KeyType = 'arrowUp' | 'arrowRight' | 'arrowDown' | 'arrowLeft' | 'space';
 }
 
 declare global {

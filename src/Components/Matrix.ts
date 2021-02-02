@@ -17,8 +17,10 @@ class Matrix {
       }
       this.matrixNode.appendChild($p);
     }
+    this.init();
   }
   init = () => {
+    alert("Init!");
     this.matrixNode.childNodes.forEach((line) => {
       line.childNodes.forEach((block: HTMLDivElement) => {
         block.className = 'b';
@@ -26,8 +28,7 @@ class Matrix {
     });
   }
   autoDown = () => {
-    const states = window.tetris.states;
-    const stateManager = window.tetris.stateManager;
+    const {states, stateManager} = window.tetris;
     const fall = () => {
       if (states.lock == true) { return }
       let currentBlock = states.currentBlock;
@@ -42,6 +43,7 @@ class Matrix {
         stateManager.nextAround();
       }
     }
+    fall();
   }
   addBlock = (matrix: Tetris.MatrixState, $block: Block): Tetris.MatrixState => {
     const {yx, shape} = $block;
@@ -118,9 +120,14 @@ class Matrix {
     }
   }
   render = (matrix = window.tetris.states.matrix) => {
-    this.init(); // 초기상태로 만들고 시작하자
-    
-  } 
+    for(let i = 0; i < matrix.length; i++) {
+      const line = this.matrixNode.childNodes[i];
+      for(let j = 0; j < matrix[i].length; j++) {
+        const block = line.childNodes[j] as HTMLElement;
+        block.className = matrix[i][j] == 1 ? 'b active' : 'b';
+      }
+    }
+  }
 }
 
 export default Matrix;

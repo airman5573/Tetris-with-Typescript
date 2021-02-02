@@ -2,66 +2,66 @@ import { tryMove } from '../utils';
 import { Tetris } from '../types';
 
 const tetris = window.tetris;
-const [gs, components, stateManager] = [tetris.states, tetris.components, tetris.stateManager];
-const [$matrix, $speed, $startLines] = [components.$matrix, components.$speed, components.$startLines];
+const [states, components, stateManager] = [tetris.states, tetris.components, tetris.stateManager];
+const {$matrix, $speed, $startLines} = components;
 
 const blockControl = {
   rotate: () => { // 위키를 누르면 블럭이 회전한다
-    if (gs.lock === true) {return}
-    if (gs.currentBlock == null) {return}
-    const nextBlock = gs.currentBlock.rotate();
-    if (tryMove(gs.matrix, nextBlock)) {
-      const nextMatrix = $matrix.addBlock(gs.matrix, nextBlock);
+    if (states.lock === true) {return}
+    if (states.currentBlock == null) {return}
+    const nextBlock = states.currentBlock.rotate();
+    if (tryMove(states.matrix, nextBlock)) {
+      const nextMatrix = $matrix.addBlock(states.matrix, nextBlock);
       $matrix.render(nextMatrix);
-      gs.currentBlock = nextBlock;
+      states.currentBlock = nextBlock;
     }
   },
   down: () => {
-    if (gs.currentBlock == null) { return }
-    const nextBlock = gs.currentBlock.fall();
+    if (states.currentBlock == null) { return }
+    const nextBlock = states.currentBlock.fall();
     // 갈수있으면 가고, 못가면 어쩔 수 없고
-    if (tryMove(gs.matrix, nextBlock)) {
-      const nextMatrix = $matrix.addBlock(gs.matrix, nextBlock);
+    if (tryMove(states.matrix, nextBlock)) {
+      const nextMatrix = $matrix.addBlock(states.matrix, nextBlock);
       $matrix.render(nextMatrix);
-      gs.currentBlock = nextBlock;
+      states.currentBlock = nextBlock;
     }
   },
   right: () => {
-    if (gs.lock === true) {return}
-    if (gs.currentBlock == null) {return}
-    const nextBlock = gs.currentBlock.right();
+    if (states.lock === true) {return}
+    if (states.currentBlock == null) {return}
+    const nextBlock = states.currentBlock.right();
     // 갈수있으면 가고, 못가면 어쩔 수 없고
-    if (tryMove(gs.matrix, nextBlock)) {
-      const nextMatrix = $matrix.addBlock(gs.matrix, nextBlock);
+    if (tryMove(states.matrix, nextBlock)) {
+      const nextMatrix = $matrix.addBlock(states.matrix, nextBlock);
       $matrix.render(nextMatrix);
-      gs.currentBlock = nextBlock;
+      states.currentBlock = nextBlock;
     }
   },
   left: () => {
-    if (gs.lock === true) {return}
-    if (gs.currentBlock == null) {return}
-    const nextBlock = gs.currentBlock.left();
+    if (states.lock === true) {return}
+    if (states.currentBlock == null) {return}
+    const nextBlock = states.currentBlock.left();
     // 갈수있으면 가고, 못가면 어쩔 수 없고
-    if (tryMove(gs.matrix, nextBlock)) {
-      const nextMatrix = $matrix.addBlock(gs.matrix, nextBlock);
+    if (tryMove(states.matrix, nextBlock)) {
+      const nextMatrix = $matrix.addBlock(states.matrix, nextBlock);
       $matrix.render(nextMatrix);
-      gs.currentBlock = nextBlock;
+      states.currentBlock = nextBlock;
     }
   },
   drop: () => {
-    if (gs.lock === true) {return}
-    if (gs.currentBlock == null) {return}
-    let bottom = gs.currentBlock;
+    if (states.lock === true) {return}
+    if (states.currentBlock == null) {return}
+    let bottom = states.currentBlock;
     for(var n = 1; n < 20; n++) {
-      bottom = gs.currentBlock.fall(n);
-      if (tryMove(gs.matrix, bottom) == false) {
-        bottom = gs.currentBlock.fall(n-1);
+      bottom = states.currentBlock.fall(n);
+      if (tryMove(states.matrix, bottom) == false) {
+        bottom = states.currentBlock.fall(n-1);
         break
       }
     }
-    gs.currentBlock = bottom;
-    gs.matrix = $matrix.addBlock(gs.matrix, gs.currentBlock);
-    $matrix.render(gs.matrix);
+    states.currentBlock = bottom;
+    states.matrix = $matrix.addBlock(states.matrix, states.currentBlock);
+    $matrix.render(states.matrix);
     stateManager.nextAround();
   }
 };

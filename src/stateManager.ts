@@ -1,11 +1,14 @@
 import {getNextBlock, deepCopy, getClearLines, isOver, getStartMatrix} from './utils';
 import {blankMatrix, LAST_ROUND, POINT} from './const';
+import KeyEventListener from './Events/KeyEventListener';
 
 class StateManager {
   ready = (callback?: () => void) => {
+    new KeyEventListener(); // key event를 받자구~
+    
     this.lock();
-    const [states, components] = [window.tetris.states, window.tetris.components];
-    const [$matrix, $next, $point, $logo, $startLines, $speed] = [components.$matrix, components.$next, components.$point, components.$logo, components.$startLines, components.$speed];
+    const {states, components} = window.tetris;
+    const {$matrix, $next, $point, $logo, $startLines, $speed} = components;
     clearTimeout($matrix.timer); // 더이상 autodown이 일어나지 않도록
     $matrix.render(deepCopy(blankMatrix)); // 빈화면으로 초기화
 
@@ -22,24 +25,24 @@ class StateManager {
     }
 
     // 로고등장
-    $logo.show();
-    $logo.animate();
-    $startLines.render(states.startLines);
-    $speed.render(states.speed);
+    // $logo.show();
+    // $logo.animate();
+    // $startLines.render(states.startLines);
+    // $speed.render(states.speed);
     this.unlock();
     if (callback) {callback()}
   }
   start = () => {
-    const [states, components] = [window.tetris.states, window.tetris.components];
-    const [$matrix, $next, $point, $logo] = [components.$matrix, components.$next, components.$point, components.$logo];
+    const {states, components} = window.tetris;
+    const {$matrix, $next, $point, $logo} = components;
     $logo.hide();
-    $point.reset(POINT); // 포인트 리셋해야지
+    // $point.reset(POINT); // 포인트 리셋해야지
     setTimeout(() => {
       const gs = window.tetris.states;
       states.matrix = getStartMatrix(gs.startLines);
       gs.currentBlock = gs.nextBlock; // ready에서 nextBlock에 담아놨다!
       gs.nextBlock = getNextBlock(); // deep copy를 안했는데 이게 문제가 될까?
-      $next.render(gs.nextBlock);
+      // $next.render(gs.nextBlock);
       $matrix.render(); // startLine 먼저 그리자
       setTimeout(() => {
         $matrix.render($matrix.addBlock(gs.matrix, gs.currentBlock));
@@ -71,8 +74,8 @@ class StateManager {
     });
   }
   nextAround = () => {
-    const [states, components] = [window.tetris.states, window.tetris.components];
-    const [$matrix, $next, $point, $logo] = [components.$matrix, components.$next, components.$point, components.$logo];
+    const {states, components} = window.tetris;
+    const {$matrix, $next, $point, $logo} = components;
     clearTimeout($matrix.timer);
     const lines = getClearLines();
     if (lines.length > 0) {

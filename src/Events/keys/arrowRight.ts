@@ -5,7 +5,7 @@ export default class ArrowRight implements Tetris.KeyControl {
   constructor() {}
   type: Tetris.KeyType = 'arrowRight';
   keyDown = () => {
-    const [states, keyEventProcessor] = [window.tetris.states, window.tetris.keyEventProcessor];
+    const {states, keyEventProcessor} = window.tetris;
     keyEventProcessor.down({
       keyType: this.type,
       callback: (states.currentBlock != null ) ? blockControl.left : startLineControl.up,

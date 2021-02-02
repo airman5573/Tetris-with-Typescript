@@ -6,13 +6,17 @@ import ArrowLeft from './keys/arrowLeft';
 import Space from './keys/space';
 import { Tetris } from '../types';
 
-class Keyboard {
+class KeyEventListener {
   arrowUp: ArrowUp;
   arrowRight: ArrowRight;
   arrowDown: ArrowDown;
   arrowLeft: ArrowLeft;
   space: Space;
+  static instance: KeyEventListener;
   constructor() {
+    if (KeyEventListener.instance != null) {
+      return KeyEventListener.instance;
+    }
     this.arrowUp = new ArrowUp();
     this.arrowRight = new ArrowRight();
     this.arrowDown = new ArrowDown();
@@ -20,6 +24,7 @@ class Keyboard {
     this.space = new Space();
     document.addEventListener("keydown", this.keyDown);
     document.addEventListener("keyup", this.keyUp);
+    KeyEventListener.instance = this;
   }
   keyDown = (e:KeyboardEvent) => {
     const gs = window.tetris.states;
@@ -41,4 +46,4 @@ class Keyboard {
 }
 
 
-export default Keyboard
+export default KeyEventListener
