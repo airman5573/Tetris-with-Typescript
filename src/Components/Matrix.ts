@@ -5,9 +5,8 @@ import { deepCopy, tryMove } from '../utils';
 
 class Matrix {
   matrixNode: HTMLDivElement;
-  count: number = 0;
   timer: NodeJS.Timeout;
-  width: 10;
+  width: number = 10;
   constructor() {
     this.matrixNode = document.querySelector(".game-screen > .matrix");
     for (let i = 0; i < 20; i++) {
@@ -22,7 +21,7 @@ class Matrix {
   init = () => {
     this.matrixNode.childNodes.forEach((line) => {
       line.childNodes.forEach((block: HTMLDivElement) => {
-        block.className = 'b';
+        block.className = '';
       });
     });
   }
@@ -37,9 +36,12 @@ class Matrix {
         states.currentBlock = nextBlock;
         this.timer = setTimeout(fall, states.speed);
       } else {
-        // 다음 블럭이 못가면, 현재 블럭을 matrixState에 고정(?) 시킨다
-        states.matrix = this.addBlock(states.matrix, currentBlock);
-        stateManager.nextAround();
+        // 다음 블럭이 못가면, 현재 블럭을 반짝! 이펙트를 준다음에
+        currentBlock.blink(states.matrix, this, () => {
+          // matrixState에 고정 시킨다
+          states.matrix = this.addBlock(states.matrix, currentBlock);
+          stateManager.nextAround();
+        });
       }
     }
     fall();
@@ -59,18 +61,16 @@ class Matrix {
     });
     return newMatrixState;
   }
-  clearLines = (lines: number[], callback: (point: number)=>void): void => {
-    const stateManager = window.tetris.stateManager;
+  clearLines = (lines: number[], updatePoint: (point: number)=>void) => {
+    const {stateManager, states: {matrix}} = window.tetris;
     stateManager.lock(); // 잠그고
     this.animateLines(lines, () => {
-      let newMatrix = deepCopy(window.tetris.states.matrix);
       lines.forEach(n => {
-        newMatrix.splice(n, 1);
-        newMatrix.unshift(blankLine);
+        matrix.splice(n, 1);
+        matrix.unshift(blankLine);
       });
-      window.tetris.states.matrix = newMatrix;
       this.render();
-      callback(lines.length * 50);
+      updatePoint(lines.length * 50);
       stateManager.unlock(); // 풀어준다
       stateManager.nextAround();
     });
@@ -84,13 +84,12 @@ class Matrix {
         setTimeout(() => {
           this.render(this.setLine(lines, 0));
           callback();
-        }, 150);
-      }, 150);
-    }, 150);
+        }, 300);
+      }, 300);
+    }, 300);
   }
   setLine = (lines: number[], blockState: number) => {
-    const states = window.tetris.states;
-    const matrix = deepCopy(states.matrix);
+    const matrix = deepCopy(window.tetris.states.matrix);
     lines.forEach(i => {
       matrix[i] = Array(this.width).fill(blockState);
     });
@@ -123,7 +122,7 @@ class Matrix {
       const line = this.matrixNode.childNodes[i];
       for(let j = 0; j < matrix[i].length; j++) {
         const block = line.childNodes[j] as HTMLElement;
-        block.className = matrix[i][j] == 1 ? 'b active' : 'b';
+        block.className = matrix[i][j] == 1 ? 'b black' : (matrix[i][j] == 2 ? 'b red' : '');
       }
     }
   }

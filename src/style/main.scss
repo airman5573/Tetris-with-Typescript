@@ -7,6 +7,7 @@
 $yellow: #efcc19;
 $white: #fff;
 $black: #000;
+$red: #900603;
 $oldScreen: #9ead86;
 $gameScreenWidth: 380px;
 $gameScreenHeight: 468px;
@@ -46,10 +47,16 @@ $gameScreenContainerBorderWidth: 5px;
       background: #879372;
       overflow: hidden;
     }
-    &.active {
-      border-color: black;
+    &.black {
+      border-color: $black;
       &::after {
-        background-color: black;
+        background-color: $black;
+      }
+    }
+    &.red {
+      border-color: $red;
+      &::after {
+        background-color: $red;
       }
     }
   }

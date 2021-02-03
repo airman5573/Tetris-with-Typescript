@@ -151,7 +151,7 @@ const tryMove = (matrix: Tetris.MatrixState, nextBlock: Block): boolean => {
 const getDecoBlocks = () => {
   const doc = document.createElement;
   let $b: HTMLElement = document.createElement("b");
-  $b.classList.add('active');
+  $b.classList.add('black');
   let $clear: HTMLElement = document.createElement("div");
   $clear.classList.add('clear');
   let $empty: HTMLElement = document.createElement("b");
@@ -187,5 +187,12 @@ const getDecoBlocks = () => {
   $blocks.splice(4, 1);
   return $blocks;
 }
+const shake = () => {
+  const $top: HTMLElement = document.querySelector("#page > .container > .top");
+  $top.style.setProperty("transform", "translateY(6px)");
+  setTimeout(() => {
+    $top.style.setProperty("transform", "translateY(0px)");
+  }, 50);
+}
 
-export {getStartMatrix, getClearLines, isOver, deepCopy, getNextBlock, tryMove, resize, getDecoBlocks}
+export {getStartMatrix, getClearLines, isOver, deepCopy, getNextBlock, tryMove, resize, getDecoBlocks, shake}

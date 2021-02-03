@@ -21,7 +21,7 @@ class Next {
   reset = () => {
     this.blocks.forEach((line: NodeListOf<Element>, i) => {
       line.forEach((el:Element, j) => {
-        el.className = 'b';
+        el.className = '';
       });
     })
   }

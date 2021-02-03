@@ -1,4 +1,4 @@
-import { tryMove } from '../utils';
+import { shake, tryMove } from '../utils';
 import { Tetris } from '../types';
 
 const blockControl = {
@@ -49,21 +49,24 @@ const blockControl = {
     }
   },
   drop: () => {
-    const {states, stateManager, components: {$matrix}} = window.tetris;
-    if (states.lock === true) {return}
-    if (states.currentBlock == null) {return}
-    let bottom = states.currentBlock;
+    const tetris = window.tetris;
+    const {states, states: {lock, currentBlock, matrix}, stateManager, components: {$matrix}} = tetris;
+    if (lock === true) {return}
+    if (currentBlock == null) {return}
+    let bottom = currentBlock;
     for(var n = 1; n < 20; n++) {
-      bottom = states.currentBlock.fall(n);
-      if (tryMove(states.matrix, bottom) == false) {
-        bottom = states.currentBlock.fall(n-1);
+      bottom = currentBlock.fall(n);
+      if (tryMove(matrix, bottom) == false) {
+        bottom = currentBlock.fall(n-1);
         break
       }
     }
-    states.currentBlock = bottom;
-    states.matrix = $matrix.addBlock(states.matrix, states.currentBlock);
-    $matrix.render(states.matrix);
-    stateManager.nextAround();
+    bottom.blink(matrix, $matrix, () => {
+      states.matrix = $matrix.addBlock(matrix, bottom);
+      $matrix.render(states.matrix);
+      shake();
+      stateManager.nextAround();
+    });
   }
 };
 
