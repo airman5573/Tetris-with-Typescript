@@ -8,7 +8,7 @@ export default class ArrowRight implements Tetris.KeyControl {
     const {states, keyEventProcessor} = window.tetris;
     keyEventProcessor.down({
       keyType: this.type,
-      callback: (states.currentBlock != null ) ? blockControl.left : startLineControl.up,
+      callback: (states.currentBlock != null ) ? blockControl.right : startLineControl.up,
       once: (states.currentBlock != null ) ? false : true,
     });
   }

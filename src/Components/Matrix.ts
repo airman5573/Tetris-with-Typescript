@@ -20,7 +20,6 @@ class Matrix {
     this.init();
   }
   init = () => {
-    alert("Init!");
     this.matrixNode.childNodes.forEach((line) => {
       line.childNodes.forEach((block: HTMLDivElement) => {
         block.className = 'b';

@@ -22,9 +22,11 @@ class KeyEventListener {
     this.arrowDown = new ArrowDown();
     this.arrowLeft = new ArrowLeft();
     this.space = new Space();
+    KeyEventListener.instance = this;
+  }
+  listen = () => {
     document.addEventListener("keydown", this.keyDown);
     document.addEventListener("keyup", this.keyUp);
-    KeyEventListener.instance = this;
   }
   keyDown = (e:KeyboardEvent) => {
     const gs = window.tetris.states;

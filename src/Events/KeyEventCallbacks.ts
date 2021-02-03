@@ -1,12 +1,9 @@
 import { tryMove } from '../utils';
 import { Tetris } from '../types';
 
-const tetris = window.tetris;
-const [states, components, stateManager] = [tetris.states, tetris.components, tetris.stateManager];
-const {$matrix, $speed, $startLines} = components;
-
 const blockControl = {
   rotate: () => { // 위키를 누르면 블럭이 회전한다
+    const {states, components: {$matrix}} = window.tetris;
     if (states.lock === true) {return}
     if (states.currentBlock == null) {return}
     const nextBlock = states.currentBlock.rotate();
@@ -17,6 +14,7 @@ const blockControl = {
     }
   },
   down: () => {
+    const {states, components: {$matrix}} = window.tetris;
     if (states.currentBlock == null) { return }
     const nextBlock = states.currentBlock.fall();
     // 갈수있으면 가고, 못가면 어쩔 수 없고
@@ -27,6 +25,7 @@ const blockControl = {
     }
   },
   right: () => {
+    const {states, components: {$matrix}} = window.tetris;
     if (states.lock === true) {return}
     if (states.currentBlock == null) {return}
     const nextBlock = states.currentBlock.right();
@@ -38,6 +37,7 @@ const blockControl = {
     }
   },
   left: () => {
+    const {states, components: {$matrix}} = window.tetris;
     if (states.lock === true) {return}
     if (states.currentBlock == null) {return}
     const nextBlock = states.currentBlock.left();
@@ -49,6 +49,7 @@ const blockControl = {
     }
   },
   drop: () => {
+    const {states, stateManager, components: {$matrix}} = window.tetris;
     if (states.lock === true) {return}
     if (states.currentBlock == null) {return}
     let bottom = states.currentBlock;
@@ -67,17 +68,32 @@ const blockControl = {
 };
 
 const speedControl = {
-  up: () => { $speed.updateSpeed(-100); },
-  down: () => { $speed.updateSpeed(100); }
+  up: () => {
+    const {components: {$speed}} = window.tetris; 
+    $speed.updateSpeed(-100);
+  },
+  down: () => {
+    const {components: {$speed}} = window.tetris; 
+    $speed.updateSpeed(100);
+  }
 };
 
 const startLineControl = {
-  up: () => { $startLines.updateStartLines(-1); },
-  down: () => { $startLines.updateStartLines(1); }
+  up: () => {
+    const {components: {$startLines}} = window.tetris; 
+    $startLines.updateStartLines(-1);
+  },
+  down: () => {
+    const {components: {$startLines}} = window.tetris; 
+    $startLines.updateStartLines(1);
+  }
 };
 
 const gameControl = {
-  start: () => { stateManager.start(); }
+  start: () => {
+    const {stateManager} = window.tetris; 
+    stateManager.run();
+  }
 }
 
 export {blockControl, speedControl, startLineControl, gameControl}

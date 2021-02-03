@@ -55,4 +55,4 @@ window.tetris = {
   stateManager: new StateManager(),
   keyEventProcessor: new KeyEventProcessor()
 }
-window.tetris.stateManager.ready();
+window.tetris.stateManager.begin();

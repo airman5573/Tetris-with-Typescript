@@ -3,12 +3,13 @@ import {blankMatrix, LAST_ROUND, POINT} from './const';
 import KeyEventListener from './Events/KeyEventListener';
 
 class StateManager {
-  ready = (callback?: () => void) => {
-    new KeyEventListener(); // key event를 받자구~
-    
+  begin = () => {
+    (new KeyEventListener()).listen(); // 이제 spacebar를 누르면 게임이 시작된다.
+    this.init();
+  }
+  init = (callback?: () => void) => {
     this.lock();
-    const {states, components} = window.tetris;
-    const {$matrix, $next, $point, $logo, $startLines, $speed} = components;
+    const {states, components: {$matrix, $next, $point, $logo, $startLines, $speed}} = window.tetris;
     clearTimeout($matrix.timer); // 더이상 autodown이 일어나지 않도록
     $matrix.render(deepCopy(blankMatrix)); // 빈화면으로 초기화
 
@@ -32,15 +33,14 @@ class StateManager {
     this.unlock();
     if (callback) {callback()}
   }
-  start = () => {
-    const {states, components} = window.tetris;
-    const {$matrix, $next, $point, $logo} = components;
+  run = () => {
+    const {states, components: {$matrix, $next, $point, $logo}} = window.tetris;
     $logo.hide();
     // $point.reset(POINT); // 포인트 리셋해야지
     setTimeout(() => {
       const gs = window.tetris.states;
       states.matrix = getStartMatrix(gs.startLines);
-      gs.currentBlock = gs.nextBlock; // ready에서 nextBlock에 담아놨다!
+      gs.currentBlock = gs.nextBlock; // init에서 nextBlock에 담아놨다!
       gs.nextBlock = getNextBlock(); // deep copy를 안했는데 이게 문제가 될까?
       // $next.render(gs.nextBlock);
       $matrix.render(); // startLine 먼저 그리자
@@ -52,30 +52,19 @@ class StateManager {
       }, 500);
     }, 300);
   }
-  reset = () => {
+  end = () => {
     this.lock();
-    const [states, $matrix] = [window.tetris.states, window.tetris.components.$matrix];
-    states.currentBlock = null;
-    states.nextBlock = null;
-    $matrix.reset(() => {
-      this.ready(this.unlock);
-    });
-  }
-  gameOver = () => {
-    this.lock();
-    const tetris = window.tetris;
-    const [point, keyEventProcessor, $matrix] = [tetris.states.point, tetris.keyEventProcessor, tetris.components.$matrix]
+    const {states: {point}, keyEventProcessor, components: {$matrix}} = window.tetris;
     keyEventProcessor.clearEventAll(); // 이전에 막 화살표를 누른게 있을수도 있으니까 지워준다.
     localStorage.setItem('last-point', `${point}`);
     $matrix.reset(() => {
       setTimeout(() => {
-        this.ready(this.unlock);
+        this.init(this.unlock);
       }, 500);
     });
   }
   nextAround = () => {
-    const {states, components} = window.tetris;
-    const {$matrix, $next, $point, $logo} = components;
+    const {states, components: {$matrix, $next, $point, $logo}} = window.tetris;
     clearTimeout($matrix.timer);
     const lines = getClearLines();
     if (lines.length > 0) {
@@ -85,7 +74,7 @@ class StateManager {
       return
     }
     if (isOver()) {
-      this.gameOver();
+      this.end();
       return
     }
     setTimeout(() => {
