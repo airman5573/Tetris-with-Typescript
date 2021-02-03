@@ -13,15 +13,24 @@ const blockControl = {
       states.currentBlock = nextBlock;
     }
   },
-  down: () => {
-    const {states, components: {$matrix}} = window.tetris;
-    if (states.currentBlock == null) { return }
-    const nextBlock = states.currentBlock.fall();
-    // 갈수있으면 가고, 못가면 어쩔 수 없고
-    if (tryMove(states.matrix, nextBlock)) {
-      const nextMatrix = $matrix.addBlock(states.matrix, nextBlock);
+  down: (callback: () => void) => {
+    const tetris = window.tetris;
+    const {states: {currentBlock, matrix}, components: {$matrix}} = tetris;
+    if (currentBlock == null) { return }
+    const nextBlock = currentBlock.fall();
+    // 갈수있으면 가고,
+    if (tryMove(matrix, nextBlock)) {
+      const nextMatrix = $matrix.addBlock(matrix, nextBlock);
       $matrix.render(nextMatrix);
-      states.currentBlock = nextBlock;
+      tetris.states.currentBlock = nextBlock;
+      callback();
+    } else {
+      // 못가면 반짝 하고 고정시켜야지!
+      currentBlock.blink(matrix, $matrix, () => {
+        tetris.states.matrix = $matrix.addBlock(matrix, currentBlock);
+        $matrix.render(tetris.states.matrix);
+        callback();
+      });
     }
   },
   right: () => {

@@ -63,7 +63,7 @@ class StateManager {
       }, 500);
     });
   }
-  nextAround = () => {
+  nextAround = (stop: () => void) => {
     const {states, components: {$matrix, $next, $point, $logo}} = window.tetris;
     clearTimeout($matrix.timer);
     const lines = getClearLines();

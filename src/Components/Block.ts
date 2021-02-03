@@ -1,6 +1,6 @@
 import { blockColors, yxRotateOrigin } from '../const';
 import { Tetris } from '../types';
-import { deepCopy } from '../utils';
+import { deepCopy, getNextBlock } from '../utils';
 import Matrix from './Matrix';
 
 class Block implements Tetris.BlockOption {
@@ -21,18 +21,21 @@ class Block implements Tetris.BlockOption {
     this.shape.forEach((line, i) => {
       line.forEach((blockState, j) => {
         if (blockState == 0) { return }
-        matrix[y+i][x+j] = color; 
+        if (y+i >= matrix.length || x+j >= matrix[0].length) { return }
+        if (y+i < 0 || x+j < 0) { return }
+        const el = $matrix.matrixNode.childNodes[y+i].childNodes[x+j] as HTMLElement;
+        el.className = (color == blockColors.BLACK ? 'b black' : (color == blockColors.RED ? 'b red' : ''));
       });
     });
-    $matrix.render(matrix);
   }
   blink = (_matrix: Tetris.MatrixState, $matrix: Matrix, callback: ()=>void) => {
+    console.log("blink!");
     const matrix = deepCopy(_matrix);
     this.updateColor(matrix, $matrix, blockColors.RED);
     setTimeout(() => {
       this.updateColor(matrix, $matrix, blockColors.BLACK);
       callback();
-    }, 80);
+    }, 50);
   }
   rotate = () => {
     const shape = this.shape;

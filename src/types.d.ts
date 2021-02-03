@@ -52,8 +52,10 @@ export namespace Tetris {
     keyUp: (type: KeyType) => void
   }
   export type KeyCallback = {
+    begin?: number,
+    interval?: number,
     keyType: KeyType,
-    callback?: () => void,
+    callback?: (callback: ()=>void) => void,
     once?: boolean
   }
   export interface KeyTimer {

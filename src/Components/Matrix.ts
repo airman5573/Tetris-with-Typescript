@@ -84,9 +84,9 @@ class Matrix {
         setTimeout(() => {
           this.render(this.setLine(lines, 0));
           callback();
-        }, 300);
-      }, 300);
-    }, 300);
+        }, 150);
+      }, 150);
+    }, 150);
   }
   setLine = (lines: number[], blockState: number) => {
     const matrix = deepCopy(window.tetris.states.matrix);
