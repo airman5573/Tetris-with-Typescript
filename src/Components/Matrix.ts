@@ -1,5 +1,5 @@
 import Block from './block';
-import { blankLine } from '../const';
+import { blankLine, blockColors } from '../const';
 import { Tetris } from '../types';
 import { deepCopy, tryMove } from '../utils';
 
@@ -35,29 +35,25 @@ class Matrix {
         this.moveBlock(matrix, nextBlock);
         this.timer = setTimeout(fall, speed);
       } else {
-        let newMatrix = [];
-        const {shape, yx} = currentBlock;
-        
-        stateManager.nextAround();
+        const newMatrix = this.mergeBlock(matrix, currentBlock); 
+        stateManager.nextAround(newMatrix);
       }
     }
+    clearTimeout(this.timer);
     fall();
   }
   moveBlock = (matrix: Tetris.MatrixState, nextBlock: Block) => {
-    this.render(this.addBlock(matrix, nextBlock));
+    this.render(this.mergeBlock(matrix, nextBlock));
     window.tetris.stateManager.updateCurrentBlock(nextBlock);
   }
-  addBlock = (matrix: Tetris.MatrixState, $block: Block): Tetris.MatrixState => {
+  mergeBlock = (matrix: Tetris.MatrixState, $block: Block): Tetris.MatrixState => {
     const {yx, shape} = $block;
     const newMatrixState = deepCopy(matrix);
     shape.forEach((line, i) => {
       line.forEach((blockState, j) => {
-        const y = yx[0]+i;
-        const x = yx[1]+j;
+        const [y, x] = [yx[0]+i, yx[1]+j];
         if (y < 0 || y >= 20 || x < 0 || x >= 10) { return }
-        if (blockState == 1) {
-          if (newMatrixState[y][x] == 0) { newMatrixState[y][x] = 1; }
-        }
+        newMatrixState[y][x] = blockState;
       });
     });
     return newMatrixState;
@@ -118,7 +114,24 @@ class Matrix {
       setTimeout(animateLine.bind(null, i), 40 * (i+1));
     }
   }
+  getOverlapedMatrix = (matrix: Tetris.MatrixState) => {
+    const currentBlock = window.tetris.states.currentBlock;
+    if (currentBlock == null) return matrix;
+    const {shape, yx} = currentBlock;
+    const newMatrix = deepCopy(matrix);
+    shape.forEach((line, i) => {
+      line.forEach((blockState, j) => {
+        const [y, x] = [yx[0]+i, yx[1]+j];
+        if (y < 0 || y >= 20 || x < 0 || x >= 10) { return }
+        let color = 1;
+        if (newMatrix[y][x] == 1 && blockState == 1) color = 2;
+        newMatrix[y][x] = color;
+      });
+    });
+    return newMatrix;
+  }
   render = (matrix = window.tetris.states.matrix) => {
+    matrix = this.getOverlapedMatrix(matrix);
     for(let i = 0; i < matrix.length; i++) {
       const line = this.matrixNode.childNodes[i];
       for(let j = 0; j < matrix[i].length; j++) {

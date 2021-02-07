@@ -8,7 +8,7 @@ const blockControl = {
     if (states.currentBlock == null) {return}
     const nextBlock = states.currentBlock.rotate();
     if (tryMove(states.matrix, nextBlock)) {
-      const nextMatrix = $matrix.addBlock(states.matrix, nextBlock);
+      const nextMatrix = $matrix.mergeBlock(states.matrix, nextBlock);
       $matrix.render(nextMatrix);
       states.currentBlock = nextBlock;
     }

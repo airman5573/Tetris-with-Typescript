@@ -29,7 +29,6 @@ class Block implements Tetris.BlockOption {
     });
   }
   blink = (_matrix: Tetris.MatrixState, $matrix: Matrix, callback: ()=>void) => {
-    console.log("blink!");
     const matrix = deepCopy(_matrix);
     this.updateColor(matrix, $matrix, blockColors.RED);
     setTimeout(() => {
