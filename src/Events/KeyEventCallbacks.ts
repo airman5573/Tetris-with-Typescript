@@ -15,46 +15,36 @@ const blockControl = {
   },
   down: (callback: () => void) => {
     const tetris = window.tetris;
-    const {states: {currentBlock, matrix}, components: {$matrix}} = tetris;
+    const {states: {currentBlock, matrix}, stateManager, components: {$matrix}} = tetris;
     if (currentBlock == null) { return }
     const nextBlock = currentBlock.fall();
     // 갈수있으면 가고,
     if (tryMove(matrix, nextBlock)) {
-      const nextMatrix = $matrix.addBlock(matrix, nextBlock);
-      $matrix.render(nextMatrix);
-      tetris.states.currentBlock = nextBlock;
+      $matrix.moveBlock(matrix, nextBlock);
       callback();
     } else {
       // 못가면 반짝 하고 고정시켜야지!
-      currentBlock.blink(matrix, $matrix, () => {
-        tetris.states.matrix = $matrix.addBlock(matrix, currentBlock);
-        $matrix.render(tetris.states.matrix);
-        callback();
-      });
+      // stateManager.nextAround()
     }
   },
   right: () => {
-    const {states, components: {$matrix}} = window.tetris;
-    if (states.lock === true) {return}
-    if (states.currentBlock == null) {return}
-    const nextBlock = states.currentBlock.right();
+    const {states: {lock, currentBlock, matrix}, components: {$matrix}} = window.tetris;
+    if (lock === true) {return}
+    if (currentBlock == null) {return}
+    const nextBlock = currentBlock.right();
     // 갈수있으면 가고, 못가면 어쩔 수 없고
-    if (tryMove(states.matrix, nextBlock)) {
-      const nextMatrix = $matrix.addBlock(states.matrix, nextBlock);
-      $matrix.render(nextMatrix);
-      states.currentBlock = nextBlock;
+    if (tryMove(matrix, nextBlock)) {
+      $matrix.moveBlock(matrix, nextBlock);
     }
   },
   left: () => {
-    const {states, components: {$matrix}} = window.tetris;
-    if (states.lock === true) {return}
-    if (states.currentBlock == null) {return}
-    const nextBlock = states.currentBlock.left();
+    const {states: {lock, currentBlock, matrix}, components: {$matrix}} = window.tetris;
+    if (lock === true) {return}
+    if (currentBlock == null) {return}
+    const nextBlock = currentBlock.left();
     // 갈수있으면 가고, 못가면 어쩔 수 없고
-    if (tryMove(states.matrix, nextBlock)) {
-      const nextMatrix = $matrix.addBlock(states.matrix, nextBlock);
-      $matrix.render(nextMatrix);
-      states.currentBlock = nextBlock;
+    if (tryMove(matrix, nextBlock)) {
+      $matrix.moveBlock(matrix, nextBlock);
     }
   },
   drop: () => {
@@ -70,12 +60,8 @@ const blockControl = {
         break
       }
     }
-    bottom.blink(matrix, $matrix, () => {
-      states.matrix = $matrix.addBlock(matrix, bottom);
-      $matrix.render(states.matrix);
-      shake();
-      stateManager.nextAround();
-    });
+    // 떨궜으니까 반짝 반짝 안하노?
+    
   }
 };
 

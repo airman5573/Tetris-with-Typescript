@@ -1,6 +1,9 @@
 import {getNextBlock, deepCopy, getClearLines, isOver, getStartMatrix} from './utils';
 import {blankMatrix, LAST_ROUND, POINT} from './const';
 import KeyEventListener from './Events/KeyEventListener';
+import { Tetris } from './types';
+import Block from './Components/Block';
+
 
 class StateManager {
   begin = () => {
@@ -63,9 +66,16 @@ class StateManager {
       }, 500);
     });
   }
-  nextAround = (stop: () => void) => {
+  nextAround = (matrix: Tetris.MatrixState, stop?: () => void) => {
+    this.lock(); // 잠그고 작업하자
+
     const {states, components: {$matrix, $next, $point, $logo}} = window.tetris;
+    
+    // 혹시 모르니까 타이머를 꺼주자.
     clearTimeout($matrix.timer);
+
+
+
     const lines = getClearLines();
     if (lines.length > 0) {
       $matrix.clearLines(lines, (point:number) => {
@@ -84,6 +94,9 @@ class StateManager {
       $matrix.render($matrix.addBlock(states.matrix, states.currentBlock));
       $matrix.autoDown();
     }, 100);
+  }
+  updateCurrentBlock = (currentBlock: Block) => {
+    window.tetris.states.currentBlock = currentBlock;
   }
   lock = () => { window.tetris.states.lock = true; }
   unlock = () => { window.tetris.states.lock = false; }

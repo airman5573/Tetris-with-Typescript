@@ -26,25 +26,26 @@ class Matrix {
     });
   }
   autoDown = () => {
-    const {states, stateManager} = window.tetris;
     const fall = () => {
-      if (states.lock == true) { return }
-      let currentBlock = states.currentBlock;
+      const {states: {lock, currentBlock, matrix, speed}, stateManager} = window.tetris;
+      if (lock == true) { return }
+      if (currentBlock === null) { return }
       const nextBlock = currentBlock.fall();
-      if (tryMove(states.matrix, nextBlock)) {
-        this.render(this.addBlock(states.matrix, nextBlock)); // 핵심은 여기서 update 된 matrix를 gameState.matrixState 에 넣지 않는다는거~
-        states.currentBlock = nextBlock;
-        this.timer = setTimeout(fall, states.speed);
+      if (tryMove(matrix, nextBlock)) {
+        this.moveBlock(matrix, nextBlock);
+        this.timer = setTimeout(fall, speed);
       } else {
-        // 다음 블럭이 못가면, 현재 블럭을 반짝! 이펙트를 준다음에
-        currentBlock.blink(states.matrix, this, () => {
-          // matrixState에 고정 시킨다
-          states.matrix = this.addBlock(states.matrix, currentBlock);
-          stateManager.nextAround();
-        });
+        let newMatrix = [];
+        const {shape, yx} = currentBlock;
+        
+        stateManager.nextAround();
       }
     }
     fall();
+  }
+  moveBlock = (matrix: Tetris.MatrixState, nextBlock: Block) => {
+    this.render(this.addBlock(matrix, nextBlock));
+    window.tetris.stateManager.updateCurrentBlock(nextBlock);
   }
   addBlock = (matrix: Tetris.MatrixState, $block: Block): Tetris.MatrixState => {
     const {yx, shape} = $block;
