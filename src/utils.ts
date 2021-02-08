@@ -100,10 +100,9 @@ const getStartMatrix = (startLines: number) => {
   }
   return startMatrix;
 }
-const getClearLines = (): number[] => {
-  const gs = window.tetris.states;
+const getClearLines = (matrix: Tetris.MatrixState): number[] => {
   const clearLines: number[] = [];
-  gs.matrix.forEach((line, i) => {
+  matrix.forEach((line, i) => {
     if (line.every(n => !!n)) { clearLines.push(i); }
   });
   return clearLines;

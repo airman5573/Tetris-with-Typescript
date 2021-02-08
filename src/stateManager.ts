@@ -72,9 +72,14 @@ class StateManager {
     // 혹시 모르니까 타이머를 꺼주자.
     clearTimeout($matrix.timer);
 
+    const clearLines = getClearLines(matrix);
+    if (clearLines.length > 0) states.clearLines = clearLines;
+
+    // 여기서 그릴때 내부적으로 clearLines가 있으면 어떻게 그리고, 아니면 저렇게 그린다.
+    // 솔직히 이렇게 하는게 읽기좋은 코드인지 모르겠다.
+    // 숨겨놓은 느낌?
     $matrix.render(matrix);
 
-    const lines = getClearLines();
     if (lines.length > 0) {
       $matrix.clearLines(lines, (point:number) => {
         $point.updatePoint(point); // clear한다음에 점수도 주자

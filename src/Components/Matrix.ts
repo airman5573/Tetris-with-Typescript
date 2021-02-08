@@ -1,12 +1,13 @@
 import Block from './block';
 import { blankLine, blockColors } from '../const';
 import { Tetris } from '../types';
-import { deepCopy, tryMove } from '../utils';
+import { deepCopy, getClearLines, tryMove } from '../utils';
 
 class Matrix {
   matrixNode: HTMLDivElement;
   timer: NodeJS.Timeout;
   width: number = 10;
+  animateColor: number = 1;
   constructor() {
     this.matrixNode = document.querySelector(".game-screen > .matrix");
     for (let i = 0; i < 20; i++) {
@@ -114,7 +115,7 @@ class Matrix {
       setTimeout(animateLine.bind(null, i), 40 * (i+1));
     }
   }
-  getOverlapedMatrix = (matrix: Tetris.MatrixState) => {
+  getOverlappedMatrixWithCurrentBlock = (matrix: Tetris.MatrixState) => {
     const currentBlock = window.tetris.states.currentBlock;
     if (currentBlock == null) return matrix;
     const {shape, yx} = currentBlock;
@@ -123,6 +124,7 @@ class Matrix {
       line.forEach((blockState, j) => {
         const [y, x] = [yx[0]+i, yx[1]+j];
         if (y < 0 || y >= 20 || x < 0 || x >= 10) { return }
+        // 기본적으로는 1로 해서 검은색으로 체워준다. 그냥 안부딫이고 아래로 내려가는 경우겠지
         let color = 1;
         if (newMatrix[y][x] == 1 && blockState == 1) color = 2;
         newMatrix[y][x] = color;
@@ -130,8 +132,20 @@ class Matrix {
     });
     return newMatrix;
   }
+  getMarkedMatrixByClearLines = (matrix: Tetris.MatrixState, clearLines: number[], animateColor: number) => {
+    let newMatrix = deepCopy(matrix);
+    clearLines.forEach((i) => {
+      newMatrix[i] = Array(10).fill(animateColor);
+    });
+    return newMatrix;
+  }
   render = (matrix = window.tetris.states.matrix) => {
-    matrix = this.getOverlapedMatrix(matrix);
+    const clearLines = window.tetris.states.clearLines;
+    if (clearLines.length > 0) {
+      matrix = this.getMarkedMatrixByClearLines(matrix, clearLines, this.animateColor);
+    } else {
+      matrix = this.getOverlappedMatrixWithCurrentBlock(matrix);
+    }
     for(let i = 0; i < matrix.length; i++) {
       const line = this.matrixNode.childNodes[i];
       for(let j = 0; j < matrix[i].length; j++) {
