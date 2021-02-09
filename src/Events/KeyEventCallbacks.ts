@@ -21,10 +21,10 @@ const blockControl = {
     // 갈수있으면 가고,
     if (tryMove(matrix, nextBlock)) {
       $matrix.moveBlock(matrix, nextBlock);
-      callback();
+      $matrix.autoDown(150);
     } else {
-      // 못가면 반짝 하고 고정시켜야지!
-      // stateManager.nextAround()
+      const newMatrix = mergeBlock(matrix, currentBlock);
+      stateManager.nextAround(newMatrix)
     }
   },
   right: () => {

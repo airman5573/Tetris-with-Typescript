@@ -69,9 +69,15 @@ class StateManager {
   // 여기서 matrix는 nextAround로 가기 전의 현재 matrix를 의미하는거야
   nextAround = async (matrix: Tetris.MatrixState, stop?: () => void) => {
     this.lock(); // 잠그고 작업하자
-    const {states, components: {$matrix, $next, $point, $logo}} = window.tetris;
-    // 혹시 모르니까 타이머를 꺼주자.
-    clearTimeout($matrix.timer);
+    const {states, components: {$matrix, $next, $point, $logo}, keyEventProcessor} = window.tetris;
+    
+    // lock걸었는데 그때 아래키를 때는 이벤트(up)을 인식 못할수도 있잖아.
+    // 그래서 새로운 블록이 내려오기 전에 걸려있는 key event를 삭제하는거야
+    keyEventProcessor.clearEventAll();
+
+    // autoDown을 멈춰야 하는 경우도 있지.
+    // 키보드 아래 방향키 계속 누르고 있으면 autoDown이랑 중복되서 툭툭툭 슝~ 툭툭 슝~ 하고 내려간다.
+    if (typeof stop === 'function') stop();
 
     const clearLines = getClearLines(matrix);
     if (clearLines.length > 0) {

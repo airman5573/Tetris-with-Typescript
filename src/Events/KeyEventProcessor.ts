@@ -24,9 +24,7 @@ class KeyEventProcessor {
     if (this.activeKey == e.keyType) { return }
     else { this.activeKey = e.keyType; }
 
-    // 이벤트는 한번에 하나씩만 받기 때문에
-    // 등록된 모든 이벤트를 삭제한다.
-    // 예를들어서, 왼쪽으로 가는 이벤트와 아래로 가는 이벤트가 공존할 수 없다.
+    // 다른 타이머들은 삭제한다
     this.clearEventAll();
 
     // undefined가 맞나?

@@ -36,7 +36,6 @@ class Matrix {
         this.moveBlock(matrix, nextBlock);
         this.timer = setTimeout(fall, speed);
       } else {
-        console.log("더이상 못가유");
         const newMatrix = mergeBlock(matrix, currentBlock); 
         stateManager.nextAround(newMatrix);
       }
@@ -51,7 +50,7 @@ class Matrix {
   clearLines = (matrix: Tetris.MatrixState, lines: number[]) => {
     let newMatrix = deepcopy(matrix);
     return new Promise<Tetris.MatrixState>(async (resolve, reject) => {
-      await this.animateLines(lines);
+      await this.animateLines(newMatrix, lines);
       lines.forEach(n => {
         newMatrix.splice(n, 1);
         newMatrix.unshift(Array(10).fill(blockColors.GRAY));
@@ -59,23 +58,25 @@ class Matrix {
       resolve(newMatrix);
     });
   }
-  animateLines = (lines: number[]) => {
-    return new Promise(async () => {
-      await this.changeLineColor(lines, 2, 0);
-      await this.changeLineColor(lines, 0, 150);
-      await this.changeLineColor(lines, 2, 150);
-      await this.changeLineColor(lines, 0, 150);
+  animateLines = (matrix: Tetris.MatrixState, lines: number[]) => {
+    return new Promise<void>(async (resolve) => {
+      await this.changeLineColor(matrix, lines, 2, 0);
+      await this.changeLineColor(matrix, lines, 0, 200);
+      await this.changeLineColor(matrix, lines, 2, 200);
+      await this.changeLineColor(matrix, lines, 0, 200);
+      resolve();
     });
   }
-  changeLineColor = (lines: number[], color: number, sec: number) => {
-    return new Promise(() => {
+  changeLineColor = (matrix: Tetris.MatrixState, lines: number[], color: number, sec: number) => {
+    return new Promise<void>((resolve) => {
       setTimeout(() => {
-        this.render(this.setLine(lines, color));
+        this.render(this.setLine(matrix, lines, color));
+        resolve();
       }, sec);
     });
   }
-  setLine = (lines: number[], blockState: number) => {
-    const matrix = deepcopy(window.tetris.states.matrix);
+  setLine = (matrix: Tetris.MatrixState, lines: number[], blockState: number) => {
+    matrix = deepcopy(matrix);
     lines.forEach(i => {
       matrix[i] = Array(this.width).fill(blockState);
     });
