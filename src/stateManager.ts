@@ -1,4 +1,4 @@
-import {getNextBlock, deepCopy, getClearLines, isOver, getStartMatrix} from './utils';
+import {getRandomNextBlock, deepcopy, getClearLines, isOver, getStartMatrix, getOverlappedMatrixWithCurrentBlock, mergeBlock} from './utils';
 import {blankMatrix, blockColors, LAST_ROUND, POINT} from './const';
 import KeyEventListener from './Events/KeyEventListener';
 import { Tetris } from './types';
@@ -14,11 +14,11 @@ class StateManager {
     this.lock();
     const {states, components: {$matrix, $next, $point, $logo, $startLines, $speed}} = window.tetris;
     clearTimeout($matrix.timer); // 더이상 autodown이 일어나지 않도록
-    $matrix.render(deepCopy(blankMatrix)); // 빈화면으로 초기화
+    $matrix.render(deepcopy(blankMatrix)); // 빈화면으로 초기화
 
     // nextBlock도 초기화
     states.currentBlock = null;
-    states.nextBlock = getNextBlock();
+    states.nextBlock = getRandomNextBlock();
     $next.reset(); // next를 지우고
 
     // Point도 초기화
@@ -41,14 +41,14 @@ class StateManager {
     $logo.hide();
     // $point.reset(POINT); // 포인트 리셋해야지
     setTimeout(() => {
-      const gs = window.tetris.states;
-      states.matrix = getStartMatrix(gs.startLines);
-      gs.currentBlock = gs.nextBlock; // init에서 nextBlock에 담아놨다!
-      gs.nextBlock = getNextBlock(); // deep copy를 안했는데 이게 문제가 될까?
-      // $next.render(gs.nextBlock);
+      const states = window.tetris.states;
+      states.matrix = getStartMatrix(states.startLines);
+      states.currentBlock = states.nextBlock; // init에서 nextBlock에 담아놨다!
+      states.nextBlock = getRandomNextBlock(); // deep copy를 안했는데 이게 문제가 될까?
+      // $next.render(states.nextBlock);
       $matrix.render(); // startLine 먼저 그리자
       setTimeout(() => {
-        $matrix.render($matrix.mergeBlock(gs.matrix, gs.currentBlock));
+        $matrix.render(mergeBlock(states.matrix, states.currentBlock));
         setTimeout(() => {
           $matrix.autoDown();
         }, 500);
@@ -66,40 +66,46 @@ class StateManager {
       }, 500);
     });
   }
-  nextAround = (matrix: Tetris.MatrixState, stop?: () => void) => {
+  // 여기서 matrix는 nextAround로 가기 전의 현재 matrix를 의미하는거야
+  nextAround = async (matrix: Tetris.MatrixState, stop?: () => void) => {
     this.lock(); // 잠그고 작업하자
     const {states, components: {$matrix, $next, $point, $logo}} = window.tetris;
     // 혹시 모르니까 타이머를 꺼주자.
     clearTimeout($matrix.timer);
 
     const clearLines = getClearLines(matrix);
-    if (clearLines.length > 0) states.clearLines = clearLines;
-
-    // 여기서 그릴때 내부적으로 clearLines가 있으면 어떻게 그리고, 아니면 저렇게 그린다.
-    // 솔직히 이렇게 하는게 읽기좋은 코드인지 모르겠다.
-    // 숨겨놓은 느낌?
-    $matrix.render(matrix);
-
-    if (lines.length > 0) {
-      $matrix.clearLines(lines, (point:number) => {
-        $point.updatePoint(point); // clear한다음에 점수도 주자
-      });
-      return
+    if (clearLines.length > 0) {
+      $point.updatePoint(clearLines.length*50);
+      matrix = await $matrix.clearLines(matrix, clearLines);
+      $matrix.render(matrix);
+    } else {
+      // states.matrix에 getOverlappedMatrixWithCurrentBlock(matrix)로 받은 새로운 matrix를 넣지 않는다.
+      $matrix.render(getOverlappedMatrixWithCurrentBlock(matrix));
     }
+    
+    states.matrix = matrix; // matrix를 업데이트 해줘야지!
+
+    // 게임이 끝났는지 체크
     if (isOver()) {
       this.end();
       return
     }
+
     setTimeout(() => {
-      states.currentBlock = states.nextBlock;
-      states.nextBlock = getNextBlock(); // deep copy를 안했는데 이게 문제가 될까?
-      $next.render(states.nextBlock);
-      $matrix.render($matrix.mergeBlock(states.matrix, states.currentBlock, blockColors.BLACK));
-      $matrix.autoDown();
+      this.updateCurrentBlock(states.nextBlock);
+      this.updateNextBlock(getRandomNextBlock());
+      $matrix.moveBlock(states.matrix, states.currentBlock); // 새로 업데이트된 currentBlock을 화면에 그려준다
+      $matrix.autoDown(150); // init delay를 준다. 왜냐면 위에서 방금 moveBlock으로 한칸 내렸으니까!
+      this.unlock();
     }, 100);
   }
-  updateCurrentBlock = (currentBlock: Block) => {
-    window.tetris.states.currentBlock = currentBlock;
+  updateCurrentBlock = (block: Block) => {
+    window.tetris.states.currentBlock = block;
+  }
+  updateNextBlock = (block: Block) => {
+    const {$next} = window.tetris.components;
+    window.tetris.states.nextBlock = block;
+    $next.render(block);
   }
   lock = () => { window.tetris.states.lock = true; }
   unlock = () => { window.tetris.states.lock = false; }

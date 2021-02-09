@@ -6,8 +6,8 @@ export default class ArrowDown implements Tetris.KeyControl {
   keyDown = () => {
     const {states, keyEventProcessor} = window.tetris;
     keyEventProcessor.down({
-      begin: 60,
-      interval: 60,
+      begin: 80,
+      interval: 80,
       keyType: this.type,
       callback: (stop) => {
         if (states.currentBlock != null ) {

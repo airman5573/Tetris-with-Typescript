@@ -1,6 +1,6 @@
 import { blockColors, yxRotateOrigin } from '../const';
 import { Tetris } from '../types';
-import { deepCopy, getNextBlock } from '../utils';
+import { deepcopy, getRandomNextBlock } from '../utils';
 import Matrix from './Matrix';
 
 class Block implements Tetris.BlockOption {
@@ -29,7 +29,7 @@ class Block implements Tetris.BlockOption {
     });
   }
   blink = (_matrix: Tetris.MatrixState, $matrix: Matrix, callback: ()=>void) => {
-    const matrix = deepCopy(_matrix);
+    const matrix = deepcopy(_matrix);
     this.updateColor(matrix, $matrix, blockColors.RED);
     setTimeout(() => {
       this.updateColor(matrix, $matrix, blockColors.BLACK);

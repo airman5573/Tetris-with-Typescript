@@ -111,12 +111,12 @@ const isOver = (): boolean => {
   const gs = window.tetris.states;
   return gs.matrix[0].some((blockState)=> { return !!blockState })
 }
-const deepCopy = (matrix: Tetris.MatrixState): Tetris.MatrixState => {
+const deepcopy = (matrix: Tetris.MatrixState): Tetris.MatrixState => {
   const newMatrix: Tetris.MatrixState = [];
   matrix.forEach((line: Tetris.Line) => { newMatrix.push([...line]); });
   return newMatrix;
 }
-const getNextBlock = (): Block => {
+const getRandomNextBlock = (): Block => {
   const typeArr = Object.keys(blockTypes);
   const randomIndex = Math.floor(Math.random() * typeArr.length);
   const randomType = typeArr[randomIndex] as Tetris.BlockType;
@@ -193,5 +193,34 @@ const shake = () => {
     $top.style.setProperty("transform", "translateY(0px)");
   }, 50);
 }
+const getOverlappedMatrixWithCurrentBlock = (matrix: Tetris.MatrixState) => {
+  const currentBlock = window.tetris.states.currentBlock;
+  if (currentBlock == null) return matrix;
+  const {shape, yx} = currentBlock;
+  const newMatrix = deepcopy(matrix);
+  shape.forEach((line, i) => {
+    line.forEach((blockState, j) => {
+      const [y, x] = [yx[0]+i, yx[1]+j];
+      if (y < 0 || y >= 20 || x < 0 || x >= 10) { return }
+      // if문 안쓰고 덧셈으로 처리해도 된다. 0, 1, 2셋중에 하나가 되겠지. 
+      newMatrix[y][x] = newMatrix[y][x] + blockState;
+    });
+  });
+  return newMatrix;
+}
+const mergeBlock = (matrix: Tetris.MatrixState, $block: Block): Tetris.MatrixState => {
+  const {yx, shape} = $block;
+  const newMatrixState = deepcopy(matrix);
+  shape.forEach((line, i) => {
+    line.forEach((blockState, j) => {
+      const [y, x] = [yx[0]+i, yx[1]+j];
+      if (y < 0 || y >= 20 || x < 0 || x >= 10) { return }
+      newMatrixState[y][x] = (blockState === 1) ? 1 : newMatrixState[y][x];
+    });
+  });
+  return newMatrixState;
+}
 
-export {getStartMatrix, getClearLines, isOver, deepCopy, getNextBlock, tryMove, resize, getDecoBlocks, shake}
+export {getStartMatrix, getClearLines, isOver,
+        deepcopy, getRandomNextBlock, tryMove, resize, getDecoBlocks, shake,
+        getOverlappedMatrixWithCurrentBlock, mergeBlock}

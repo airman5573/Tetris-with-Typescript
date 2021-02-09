@@ -1,7 +1,7 @@
 import Block from './block';
 import { blankLine, blockColors } from '../const';
 import { Tetris } from '../types';
-import { deepCopy, getClearLines, tryMove } from '../utils';
+import { deepcopy, getClearLines, tryMove, mergeBlock } from '../utils';
 
 class Matrix {
   matrixNode: HTMLDivElement;
@@ -26,7 +26,7 @@ class Matrix {
       });
     });
   }
-  autoDown = () => {
+  autoDown = (initDelay: number = 0) => {
     const fall = () => {
       const {states: {lock, currentBlock, matrix, speed}, stateManager} = window.tetris;
       if (lock == true) { return }
@@ -36,58 +36,46 @@ class Matrix {
         this.moveBlock(matrix, nextBlock);
         this.timer = setTimeout(fall, speed);
       } else {
-        const newMatrix = this.mergeBlock(matrix, currentBlock); 
+        console.log("더이상 못가유");
+        const newMatrix = mergeBlock(matrix, currentBlock); 
         stateManager.nextAround(newMatrix);
       }
     }
     clearTimeout(this.timer);
-    fall();
+    setTimeout(() => { fall(); }, (initDelay));
   }
-  moveBlock = (matrix: Tetris.MatrixState, nextBlock: Block) => {
-    this.render(this.mergeBlock(matrix, nextBlock));
-    window.tetris.stateManager.updateCurrentBlock(nextBlock);
+  moveBlock = (matrix: Tetris.MatrixState, block: Block) => {
+    this.render(mergeBlock(matrix, block));
+    window.tetris.stateManager.updateCurrentBlock(block);
   }
-  mergeBlock = (matrix: Tetris.MatrixState, $block: Block): Tetris.MatrixState => {
-    const {yx, shape} = $block;
-    const newMatrixState = deepCopy(matrix);
-    shape.forEach((line, i) => {
-      line.forEach((blockState, j) => {
-        const [y, x] = [yx[0]+i, yx[1]+j];
-        if (y < 0 || y >= 20 || x < 0 || x >= 10) { return }
-        newMatrixState[y][x] = blockState;
-      });
-    });
-    return newMatrixState;
-  }
-  clearLines = (lines: number[], updatePoint: (point: number)=>void) => {
-    const {stateManager, states: {matrix}} = window.tetris;
-    stateManager.lock(); // 잠그고
-    this.animateLines(lines, () => {
+  clearLines = (matrix: Tetris.MatrixState, lines: number[]) => {
+    let newMatrix = deepcopy(matrix);
+    return new Promise<Tetris.MatrixState>(async (resolve, reject) => {
+      await this.animateLines(lines);
       lines.forEach(n => {
-        matrix.splice(n, 1);
-        matrix.unshift(blankLine);
+        newMatrix.splice(n, 1);
+        newMatrix.unshift(Array(10).fill(blockColors.GRAY));
       });
-      this.render();
-      updatePoint(lines.length * 50);
-      stateManager.unlock(); // 풀어준다
-      stateManager.nextAround();
+      resolve(newMatrix);
     });
   }
-  animateLines = (lines: number[], callback: () => void) => {
-    this.render(this.setLine(lines, 2));
-    setTimeout(() => {
-      this.render(this.setLine(lines, 0));
+  animateLines = (lines: number[]) => {
+    return new Promise(async () => {
+      await this.changeLineColor(lines, 2, 0);
+      await this.changeLineColor(lines, 0, 150);
+      await this.changeLineColor(lines, 2, 150);
+      await this.changeLineColor(lines, 0, 150);
+    });
+  }
+  changeLineColor = (lines: number[], color: number, sec: number) => {
+    return new Promise(() => {
       setTimeout(() => {
-        this.render(this.setLine(lines, 2));
-        setTimeout(() => {
-          this.render(this.setLine(lines, 0));
-          callback();
-        }, 150);
-      }, 150);
-    }, 150);
+        this.render(this.setLine(lines, color));
+      }, sec);
+    });
   }
   setLine = (lines: number[], blockState: number) => {
-    const matrix = deepCopy(window.tetris.states.matrix);
+    const matrix = deepcopy(window.tetris.states.matrix);
     lines.forEach(i => {
       matrix[i] = Array(this.width).fill(blockState);
     });
@@ -115,37 +103,7 @@ class Matrix {
       setTimeout(animateLine.bind(null, i), 40 * (i+1));
     }
   }
-  getOverlappedMatrixWithCurrentBlock = (matrix: Tetris.MatrixState) => {
-    const currentBlock = window.tetris.states.currentBlock;
-    if (currentBlock == null) return matrix;
-    const {shape, yx} = currentBlock;
-    const newMatrix = deepCopy(matrix);
-    shape.forEach((line, i) => {
-      line.forEach((blockState, j) => {
-        const [y, x] = [yx[0]+i, yx[1]+j];
-        if (y < 0 || y >= 20 || x < 0 || x >= 10) { return }
-        // 기본적으로는 1로 해서 검은색으로 체워준다. 그냥 안부딫이고 아래로 내려가는 경우겠지
-        let color = 1;
-        if (newMatrix[y][x] == 1 && blockState == 1) color = 2;
-        newMatrix[y][x] = color;
-      });
-    });
-    return newMatrix;
-  }
-  getMarkedMatrixByClearLines = (matrix: Tetris.MatrixState, clearLines: number[], animateColor: number) => {
-    let newMatrix = deepCopy(matrix);
-    clearLines.forEach((i) => {
-      newMatrix[i] = Array(10).fill(animateColor);
-    });
-    return newMatrix;
-  }
   render = (matrix = window.tetris.states.matrix) => {
-    const clearLines = window.tetris.states.clearLines;
-    if (clearLines.length > 0) {
-      matrix = this.getMarkedMatrixByClearLines(matrix, clearLines, this.animateColor);
-    } else {
-      matrix = this.getOverlappedMatrixWithCurrentBlock(matrix);
-    }
     for(let i = 0; i < matrix.length; i++) {
       const line = this.matrixNode.childNodes[i];
       for(let j = 0; j < matrix[i].length; j++) {

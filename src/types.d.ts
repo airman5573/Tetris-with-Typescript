@@ -31,7 +31,6 @@ export namespace Tetris {
       currentBlock: Block | null,
       nextBlock: Block | null,
       matrix: MatrixState,
-      clearLines: number[],
       speed: number,
       lock: boolean,
       startLines: number,

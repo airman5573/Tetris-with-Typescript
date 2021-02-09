@@ -1,4 +1,4 @@
-import { shake, tryMove } from '../utils';
+import { shake, tryMove, mergeBlock } from '../utils';
 import { Tetris } from '../types';
 
 const blockControl = {
@@ -8,7 +8,7 @@ const blockControl = {
     if (states.currentBlock == null) {return}
     const nextBlock = states.currentBlock.rotate();
     if (tryMove(states.matrix, nextBlock)) {
-      const nextMatrix = $matrix.mergeBlock(states.matrix, nextBlock);
+      const nextMatrix = mergeBlock(states.matrix, nextBlock);
       $matrix.render(nextMatrix);
       states.currentBlock = nextBlock;
     }

@@ -1,7 +1,7 @@
 import './style/main.scss';
 import { blankMatrix } from './const';
 import Matrix from './Components/matrix';
-import { getNextBlock, resize, getDecoBlocks } from './utils';
+import { getRandomNextBlock, resize, getDecoBlocks } from './utils';
 import StateManager from './stateManager';
 import Logo from './Components/logo'; 
 import Point from './Components/point';
@@ -37,7 +37,7 @@ $decoration.appendChild($decoRight);
 window.tetris = {
   states: {
     currentBlock: null, // 시작은 null로 둬야한다. 그래야, space를 눌렀을때 게임을 시작하는건지 block을 drop하는건지 알수있기 때문
-    nextBlock: getNextBlock(),
+    nextBlock: getRandomNextBlock(),
     matrix: blankMatrix,
     speed: 500,
     lock: false,
