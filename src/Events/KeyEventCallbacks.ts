@@ -13,18 +13,22 @@ const blockControl = {
       states.currentBlock = nextBlock;
     }
   },
-  down: (callback: () => void) => {
+  down: (stopDownTrigger: () => void) => {
     const tetris = window.tetris;
     const {states: {currentBlock, matrix}, stateManager, components: {$matrix}} = tetris;
     if (currentBlock == null) { return }
     const nextBlock = currentBlock.fall();
     // 갈수있으면 가고,
     if (tryMove(matrix, nextBlock)) {
+      // 한번 띡 가고
       $matrix.moveBlock(matrix, nextBlock);
-      $matrix.autoDown(150);
+      // 왜 autoDown에게 일을 또 맡기는걸까? 이 down함수는 계속 실행될텐데,,,
+      $matrix.autoDown();
     } else {
+      // 못가면? 다음 블럭으로 넘어가야지
       const newMatrix = mergeBlock(matrix, currentBlock);
-      stateManager.nextAround(newMatrix)
+      console.log('nextAround!');
+      stateManager.nextAround(newMatrix, stopDownTrigger);
     }
   },
   right: () => {

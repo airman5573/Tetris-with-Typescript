@@ -26,9 +26,10 @@ class Matrix {
       });
     });
   }
-  autoDown = (initDelay: number = 0) => {
+  autoDown = (timeout?: number) => {
+    const speed = window.tetris.states.speed;
     const fall = () => {
-      const {states: {lock, currentBlock, matrix, speed}, stateManager} = window.tetris;
+      const {states: {lock, currentBlock, matrix}, stateManager} = window.tetris;
       if (lock == true) { return }
       if (currentBlock === null) { return }
       const nextBlock = currentBlock.fall();
@@ -41,7 +42,7 @@ class Matrix {
       }
     }
     clearTimeout(this.timer);
-    setTimeout(() => { fall(); }, (initDelay));
+    setTimeout(() => { fall(); }, (timeout === undefined ? speed : timeout));
   }
   moveBlock = (matrix: Tetris.MatrixState, block: Block) => {
     this.render(mergeBlock(matrix, block));
