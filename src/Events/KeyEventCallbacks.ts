@@ -1,11 +1,12 @@
-import { shake, tryMove, mergeBlock } from '../utils';
+import { shake, tryMove, mergeBlock, getRandomNextBlock } from '../utils';
 import { Tetris } from '../types';
+import { delays, speeds } from '../const';
 
 const blockControl = {
   rotate: () => { // 위키를 누르면 블럭이 회전한다
     const {states, components: {$matrix}} = window.tetris;
-    if (states.lock === true) {return}
-    if (states.currentBlock == null) {return}
+    if (states.lock === true) { return }
+    if (states.currentBlock == null) { return }
     const nextBlock = states.currentBlock.rotate();
     if (tryMove(states.matrix, nextBlock)) {
       const nextMatrix = mergeBlock(states.matrix, nextBlock);
@@ -31,24 +32,44 @@ const blockControl = {
     }
   },
   right: () => {
-    const {states: {lock, currentBlock, matrix}, components: {$matrix}} = window.tetris;
+    const {states: {lock, currentBlock, matrix, speed}, components: {$matrix}} = window.tetris;
     if (lock === true) {return}
     if (currentBlock == null) {return}
     const nextBlock = currentBlock.right();
     // 갈수있으면 가고, 못가면 어쩔 수 없고
+    const delay = delays[speed-1];
+    let timestamp;
     if (tryMove(matrix, nextBlock)) {
+      nextBlock.timestamp += delay;
       $matrix.moveBlock(matrix, nextBlock);
+      timestamp = nextBlock.timestamp;
+    } else {
+      currentBlock.timestamp += Math.floor(delay/1.5);
+      $matrix.moveBlock(matrix, currentBlock);
+      timestamp = currentBlock.timestamp;
     }
+    const remain = speeds[speed-1] - (Date.now() - timestamp);
+    $matrix.autoDown(remain);
   },
   left: () => {
-    const {states: {lock, currentBlock, matrix}, components: {$matrix}} = window.tetris;
+    const {states: {lock, currentBlock, matrix, speed}, components: {$matrix}} = window.tetris;
     if (lock === true) {return}
     if (currentBlock == null) {return}
     const nextBlock = currentBlock.left();
     // 갈수있으면 가고, 못가면 어쩔 수 없고
+    const delay = delays[speed-1];
+    let timestamp;
     if (tryMove(matrix, nextBlock)) {
+      nextBlock.timestamp += delay;
       $matrix.moveBlock(matrix, nextBlock);
+      timestamp = nextBlock.timestamp;
+    } else {
+      currentBlock.timestamp += Math.floor(delay/1.5);
+      $matrix.moveBlock(matrix, currentBlock);
+      timestamp = currentBlock.timestamp;
     }
+    const remain = speeds[speed-1] - (Date.now() - timestamp);
+    $matrix.autoDown(remain);
   },
   drop: () => {
     const tetris = window.tetris;
@@ -92,7 +113,7 @@ const startLineControl = {
 
 const gameControl = {
   start: () => {
-    const {stateManager} = window.tetris; 
+    const {stateManager, states} = window.tetris;
     stateManager.run();
   }
 }

@@ -23,7 +23,7 @@ export namespace Tetris {
     type: BlockType;
     shape: Shape,
     rotateIndex: number;
-    timeStamp: number;
+    timestamp: number;
     yx: YX;
   }
   export type Store = {
@@ -31,7 +31,7 @@ export namespace Tetris {
       currentBlock: Block | null,
       nextBlock: Block | null,
       matrix: MatrixState,
-      blockStack: Array<number>,
+      blockStack: Array<BlockType>,
       speed: number,
       lock: boolean,
       startLines: number,

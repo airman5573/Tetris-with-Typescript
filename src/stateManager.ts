@@ -37,21 +37,21 @@ class StateManager {
     if (callback) {callback()}
   }
   run = () => {
+    this.lock();
     const {states, components: {$matrix, $next, $point, $logo}} = window.tetris;
     $logo.hide();
     // $point.reset(POINT); // 포인트 리셋해야지
     setTimeout(() => {
       const states = window.tetris.states;
       states.matrix = getStartMatrix(states.startLines);
-      states.currentBlock = states.nextBlock; // init에서 nextBlock에 담아놨다!
-      states.nextBlock = getRandomNextBlock(); // deep copy를 안했는데 이게 문제가 될까?
-      // $next.render(states.nextBlock);
+      this.updateNextBlock(getRandomNextBlock());
       $matrix.render(); // startLine 먼저 그리자
       setTimeout(() => {
+        this.nextBlockToCurrentBlock();
+        this.updateNextBlock(getRandomNextBlock());
         $matrix.render(mergeBlock(states.matrix, states.currentBlock));
-        setTimeout(() => {
-          $matrix.autoDown();
-        }, 500);
+        $matrix.autoDown(300);
+        this.unlock();
       }, 500);
     }, 300);
   }
@@ -68,7 +68,6 @@ class StateManager {
   }
   // 여기서 matrix는 nextAround로 가기 전의 현재 matrix를 의미하는거야
   nextAround = async (matrix: Tetris.MatrixState, stopDownTrigger?: () => void) => {
-    console.log('nextAround');
     this.lock(); // 잠그고 작업하자
     const {states, components: {$matrix, $next, $point, $logo}, keyEventProcessor} = window.tetris;
 
@@ -120,7 +119,7 @@ class StateManager {
 
     setTimeout(() => {
       // 다음 nextBlock을 이제 currentBlock으로 지정한다.
-      this.updateCurrentBlock(states.nextBlock);
+      this.nextBlockToCurrentBlock();
 
       // 그리고 nextBlock에는 새로운 랜덤한 block을 넣는다.
       this.updateNextBlock(getRandomNextBlock());
@@ -134,7 +133,8 @@ class StateManager {
       this.unlock();
     }, 100);
   }
-  updateCurrentBlock = (block: Block) => {
+  updateCurrentBlock = (block: Block, timestamp?: number) => {
+    if (timestamp !== undefined) { block.timestamp = timestamp }
     window.tetris.states.currentBlock = block;
   }
   updateNextBlock = (block: Block) => {
@@ -144,6 +144,12 @@ class StateManager {
   }
   lock = () => { window.tetris.states.lock = true; }
   unlock = () => { window.tetris.states.lock = false; }
+  nextBlockToCurrentBlock = () => {
+    const states = window.tetris.states;
+    const nextBlock = states.nextBlock;
+    nextBlock.timestamp = Date.now();
+    states.currentBlock = nextBlock;
+  }
 }
 
 export default StateManager;

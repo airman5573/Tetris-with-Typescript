@@ -1,5 +1,5 @@
 import Block from './block';
-import { blankLine, blockColors } from '../const';
+import { blankLine, blockColors, speeds } from '../const';
 import { Tetris } from '../types';
 import { deepcopy, getClearLines, tryMove, mergeBlock } from '../utils';
 
@@ -26,8 +26,9 @@ class Matrix {
       });
     });
   }
-  autoDown = (timeout?: number) => {
-    const speed = window.tetris.states.speed;
+  autoDown = (startDelay?: number) => {
+    if (startDelay !== undefined && startDelay < 0) startDelay = 0;
+    const speed = speeds[window.tetris.states.speed-1];
     const fall = () => {
       const {states: {lock, currentBlock, matrix}, stateManager} = window.tetris;
       if (lock == true) { return }
@@ -42,7 +43,7 @@ class Matrix {
       }
     }
     clearTimeout(this.timer);
-    this.timer = setTimeout(fall, (timeout === undefined ? speed : timeout));
+    this.timer = setTimeout(fall, (startDelay === undefined || startDelay < 0) ? speed : startDelay);
   }
   moveBlock = (matrix: Tetris.MatrixState, block: Block) => {
     this.render(mergeBlock(matrix, block));

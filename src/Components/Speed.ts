@@ -1,4 +1,5 @@
 import Numbers from './numbers';
+import {speeds} from '../const';
 
 class Speed extends Numbers {
   title: string;
@@ -7,12 +8,12 @@ class Speed extends Numbers {
     super('speed');
   }
   updateSpeed = (_speed: number) => {
-    const gs = window.tetris.states;
-    const speed = gs.speed + _speed;
-    if (speed >= 1500) { gs.speed = 1500; }
-    else if (speed >= 300) { gs.speed = speed; }
-    else { gs.speed = 300; }
-    this.render(gs.speed); 
+    const states = window.tetris.states;
+    const speed = speeds[states.speed] + _speed;
+    if (speed >= 1500) { states.speed = 1500; }
+    else if (speed >= 300) { states.speed = speed; }
+    else { states.speed = 300; }
+    this.render(states.speed); 
   }
   reset = () => {
     this.updateSpeed(0);

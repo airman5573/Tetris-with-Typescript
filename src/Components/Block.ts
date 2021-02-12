@@ -7,13 +7,13 @@ class Block implements Tetris.BlockOption {
   type: Tetris.BlockType;
   shape: Tetris.Shape;
   rotateIndex: number;
-  timeStamp: number;
+  timestamp: number;
   yx: Tetris.YX;
   constructor(options: Tetris.BlockOption) {
     this.type = options.type;
     this.shape = options.shape;
     this.rotateIndex = options.rotateIndex;
-    this.timeStamp = options.timeStamp;
+    this.timestamp = options.timestamp;
     this.yx = options.yx;
   }
   updateColor = (matrix: Tetris.MatrixState, $matrix: Matrix, color: number) => {
@@ -58,7 +58,7 @@ class Block implements Tetris.BlockOption {
       shape: nextShape,
       yx: nextYX,
       rotateIndex: nextRotateIndex,
-      timeStamp: Date.now()
+      timestamp: this.timestamp
     });
   }
   fall = (n = 1): Block => {
@@ -67,7 +67,7 @@ class Block implements Tetris.BlockOption {
       shape: this.shape,
       yx: [this.yx[0] + n, this.yx[1]],
       rotateIndex: this.rotateIndex,
-      timeStamp: Date.now()
+      timestamp: Date.now() // 떨어지는거는 정말 새로운 블럭이다.
     });
   }
   right = () => {
@@ -76,7 +76,7 @@ class Block implements Tetris.BlockOption {
       shape: this.shape,
       yx: [this.yx[0], this.yx[1]+1],
       rotateIndex: this.rotateIndex,
-      timeStamp: Date.now()
+      timestamp: this.timestamp // 우로 움직이는거는 이전 timestamp를 줘야한다.
     });
   }
   left = () => {
@@ -85,7 +85,7 @@ class Block implements Tetris.BlockOption {
       shape: this.shape,
       yx: [this.yx[0], this.yx[1]-1],
       rotateIndex: this.rotateIndex,
-      timeStamp: Date.now()
+      timestamp: this.timestamp // 좌로 움직이는거는 이전 timestamp를 줘야한다.
     });
   }
 }

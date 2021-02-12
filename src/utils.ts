@@ -117,16 +117,23 @@ const deepcopy = (matrix: Tetris.MatrixState): Tetris.MatrixState => {
   return newMatrix;
 }
 const getRandomNextBlock = (): Block => {
-  const typeArr = Object.keys(blockTypes);
-  const randomIndex = Math.floor(Math.random() * typeArr.length);
-  const randomType = typeArr[randomIndex] as Tetris.BlockType;
+  const blockStack = getBlockStack();
+  const randomIndex = Math.floor(Math.random() * blockStack.length);
+  const randomType = blockStack[randomIndex];
+  blockStack.splice(randomIndex, 1); // 제거해준다
   return new Block({
     type: randomType,
     shape: blockShapes[randomType],
     rotateIndex: 0,
-    timeStamp: Date.now(),
+    timestamp: Date.now(),
     yx: yxStartPosition[randomType]
   });
+}
+const getBlockStack = ():Array<Tetris.BlockType> => {
+  const states = window.tetris.states;
+  if (states.blockStack.length > 0) return states.blockStack;
+  states.blockStack = Object.keys(blockTypes)  as Array<Tetris.BlockType>;
+  return states.blockStack;
 }
 const tryMove = (matrix: Tetris.MatrixState, nextBlock: Block): boolean => {
   const yx = nextBlock.yx;
