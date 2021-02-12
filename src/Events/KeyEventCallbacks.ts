@@ -27,7 +27,6 @@ const blockControl = {
     } else {
       // 못가면? 다음 블럭으로 넘어가야지
       const newMatrix = mergeBlock(matrix, currentBlock);
-      console.log('nextAround!');
       stateManager.nextAround(newMatrix, stopDownTrigger);
     }
   },

@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack --progress",
     "clean": "npm cache clean --force && rd /s /q node_modules && del /f package-lock.json",
-    "start": "webpack serve --open \"C:/Program Files (x86)/Google/Chrome/Application/chrome.exe\" --progress"
+    "start": "webpack serve --open \"C:/Program Files (x86)/Naver/Naver Whale/Application/whale.exe\" --progress --port 9000"
   },
   "repository": {
     "type": "git",

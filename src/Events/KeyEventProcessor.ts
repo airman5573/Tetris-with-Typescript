@@ -33,7 +33,7 @@ class KeyEventProcessor {
     // 이 clear가 왜 필요하냐면
     // 누른다 -> down이 실행되고 -> autoDown을 돌린다 -> 한칸 내려가는게 끝나면 -> autoDown멈추지마
     const clear = () => {
-      clearTimeout(this.events[e.keyType]);
+      this.clearEvent(e.keyType);
     }
 
     // 한번 실행한다
@@ -45,11 +45,16 @@ class KeyEventProcessor {
     let begin = e.begin || 100;
     const interval = e.interval || 100;
     const loop = () => {
-      console.log('loop is called');
       this.events[e.keyType] = setTimeout(() => {
         begin = null;
-        e.callback(clear);
+        // 이 순서가 정말 중요하다.
+        // loop를 한다음에 e.callback을 해줘야한다.
+        // callback을 먼저해서 nextAround까지 가서 clear가 호출되서 timer가 없어졌다 한들..
+        // loop가 그 다음에 바로 호출되기 때문에 의미가 없다.... 또 그안에서 callback이 호출 -> nextAround -> clear...하지만 재귀적으로
+        // 뒤에 loop가 바로 호출되기 때문에 clear는 무용지물이 된다.
+        // 그래서 loop() -> e.callback(clear)가 되야한다.
         loop();
+        e.callback(clear);
       }, begin|interval);
     }
     loop();

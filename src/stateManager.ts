@@ -72,8 +72,6 @@ class StateManager {
     this.lock(); // 잠그고 작업하자
     const {states, components: {$matrix, $next, $point, $logo}, keyEventProcessor} = window.tetris;
 
-    keyEventProcessor.clearEventAll();
-
     // 아래에서 autoDown을 실행하면 내부적으로 clearTimeout을 하지만,
     // 아래 autoDown이 100ms이따가 호출되기 때문에 그전에 그냥 지워주자. 새로운 블록이 생겨서 내려오기 전에 autoDown이 실행될 수 도 있으니까
     // 블럭이 바닥에 닿고 그 다음에 안정적으로 새로운 블럭이 따악 나오려면 autoDown을 이 시점에 지워주는게 낫다.
@@ -85,7 +83,6 @@ class StateManager {
     // 그래서 autoDown안에서 nextAround를 할때는 stopDownTrigger가 필요하진 않지만,
     // 아래키를 눌러서 event loop가 도는 경우에는 그 이벤트를 멈춰야한다.
     if (typeof stopDownTrigger === 'function') {
-      console.log('stop down trigger 작동 했스요~');
       stopDownTrigger();
     }
 
@@ -131,12 +128,11 @@ class StateManager {
       // 새로 업데이트된 currentBlock을 화면에 그려준다
       $matrix.moveBlock(states.matrix, states.currentBlock);
 
-      // init delay를 준다. 왜냐면 위에서 방금 moveBlock으로 한칸 내렸으니까!
       $matrix.autoDown();
 
       // lock을 풀어주고, 이벤트를 받을 수 있게 한다.
       this.unlock();
-    }, 1000);
+    }, 100);
   }
   updateCurrentBlock = (block: Block) => {
     window.tetris.states.currentBlock = block;

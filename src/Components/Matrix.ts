@@ -42,7 +42,7 @@ class Matrix {
       }
     }
     clearTimeout(this.timer);
-    setTimeout(() => { fall(); }, (timeout === undefined ? speed : timeout));
+    this.timer = setTimeout(fall, (timeout === undefined ? speed : timeout));
   }
   moveBlock = (matrix: Tetris.MatrixState, block: Block) => {
     this.render(mergeBlock(matrix, block));

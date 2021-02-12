@@ -6,8 +6,8 @@ export default class ArrowDown implements Tetris.KeyControl {
   keyDown = () => {
     const {states, keyEventProcessor} = window.tetris;
     keyEventProcessor.down({
-      begin: 100,
-      interval: 200,
+      begin: 60,
+      interval: 80,
       keyType: this.type,
       callback: (stopDownTrigger?: () => void) => {
         // currentBlock이 있으면 블럭을 아래로 내리라는거고
