@@ -1,4 +1,4 @@
-import { shake, tryMove, mergeBlock, getRandomNextBlock } from '../utils';
+import { shake, tryMove, mergeBlock, getRandomNextBlock, deepcopy } from '../utils';
 import { Tetris } from '../types';
 import { delays, speeds } from '../const';
 
@@ -84,8 +84,10 @@ const blockControl = {
         break
       }
     }
-    // 떨궜으니까 반짝 반짝 안하노?
-    
+    states.currentBlock = bottom;
+    const newMatrix = mergeBlock(matrix, states.currentBlock); // bottom을 주면 반짝! 하는 애니메이션이 없다.
+    shake();
+    stateManager.nextAround(newMatrix);
   }
 };
 

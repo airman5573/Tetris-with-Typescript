@@ -20,6 +20,11 @@ $gameScreenContainerBorderWidth: 5px;
   float: left;
 }
 
+.bg {
+  background: url('../assets/bg.png') no-repeat;
+  overflow:hidden;
+}
+
 #page>.container {
   width: 640px;
   padding-top: 42px; // 이거 왜 하는거지?
@@ -71,6 +76,9 @@ $gameScreenContainerBorderWidth: 5px;
     border-top-width: 0px;
     border-bottom-width: 10px;
     position: relative;
+    &.shake {
+      top: 6px;
+    }
   }
   &>.bottom {
     width: 580px;
@@ -172,16 +180,39 @@ $gameScreenContainerBorderWidth: 5px;
           top: 100px;
           left: 10px;
           text-align: center;
+          & > .dragon {
+            width: 80px;
+            height: 86px;
+            margin: 0 auto;
+            background-position: 0 -100px;
+            &.r1,&.l1 {
+              background-position: 0 -100px;
+            }
+            &.r2,&.l2 {
+              background-position: -100px -100px;
+            }
+            &.r3,&.l3 {
+              background-position: -200px -100px;
+            }
+            &.r4,&.l4 {
+              background-position: -300px -100px;
+            }
+            &.l1,&.l2,&.l3,&.l4{
+              transform: scale(-1, 1);
+            }
+          }
           &.active {
             display: block;
           }
           p {
             line-height: 1.4;
             font-family: initial;
+            font-size: 22px;
             letter-spacing: 6px;
             text-shadow: 1px 1px 1px hsla(0,0%,100%,.35);
             margin-left: auto;
             margin-right: auto;
+            margin-top: 15px;
           }
         }
         .sidebar {

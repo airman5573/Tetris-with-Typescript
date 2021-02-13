@@ -193,12 +193,13 @@ const getDecoBlocks = () => {
   $blocks.splice(4, 1);
   return $blocks;
 }
-const shake = () => {
+const shake = (callback?: () => void) => {
   const $top: HTMLElement = document.querySelector("#page > .container > .top");
-  $top.style.setProperty("transform", "translateY(6px)");
+  $top.classList.add('shake');
   setTimeout(() => {
-    $top.style.setProperty("transform", "translateY(0px)");
-  }, 50);
+    $top.classList.remove('shake');
+    callback();
+  }, 100);
 }
 const getOverlappedMatrixWithCurrentBlock = (matrix: Tetris.MatrixState) => {
   const currentBlock = window.tetris.states.currentBlock;

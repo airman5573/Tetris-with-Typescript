@@ -14,56 +14,43 @@ class Logo {
     this.logo.className = 'logo';
     clearTimeout(this.timer);
   }
-  eye = (callback: () => void) => {
-    let count = 0;
-    let cn = 'r';
-    const f = (callback: () => void) => {
-      this.timer = setTimeout(() => {
-        this.dragon.className = `${this.basicClassName} ${cn+1}`;
-        this.timer = setTimeout(() => {
-          count += 1;
-          if (count < 3) {
-            this.dragon.className = `${this.basicClassName} ${cn+2}`;
-            f(callback);
-          }
-          callback();
-        }, 550);
-      }, 550);
-    }
-    f(callback);
+  eye = (timeout: number) => {
+    return new Promise<void>(async (resolve, reject) => {
+      let direction = 'r';
+      for(let i = 0; i < 2; i++) {
+        await this.dragonBGmove(`${direction+2}`, timeout);
+        await this.dragonBGmove(`${direction+1}`, timeout);
+      }
+      resolve();
+    });
   }
-  run = (callback: () => void) => {
-    let count = 0
-    let cn = 'r';
-    const f = (callback: () => void) => {
+  run = (timeout: number) => {
+    return new Promise<void>(async (resolve, reject) => {
+      let direction = 'r';
+      for(let i = 0; i < 15; i++) {
+        if (i == 6) { direction = 'l'; }
+        if (i == 10) { direction = 'r'; }
+        await this.dragonBGmove(`${direction+4}`, timeout);
+        await this.dragonBGmove(`${direction+3}`, timeout);
+      }
+      resolve();
+    });
+  }
+  dragonBGmove = (className: string, timeout: number) => {
+    return new Promise<void>((resolve, reject) => {
       this.timer = setTimeout(() => {
-        this.dragon.className = `${this.basicClassName} ${cn+4}`;
-        this.timer = setTimeout(() => {
-          count += 1;
-          if (count == 10 || count == 20) {
-            cn = cn === 'r' ? 'l' : 'r';
-          }
-          if (count < 30) {
-            this.dragon.className = `${this.basicClassName} ${cn+3}`;
-            f(callback);
-          } else {
-            this.dragon.className = `${this.basicClassName} ${cn+1}`;
-          }
-          callback();
-        }, 150);
-      }, 150);
-    }
-    f(callback);
+        this.dragon.className = `${this.basicClassName} ${className}`;
+        resolve();
+      }, timeout);
+    });
   }
   animate = () => {
     this.dragon.className = `${this.basicClassName} r1`;
-    this.timer = setTimeout(() => {
-      this.run(() => {
-        this.eye(() => {
-          this.animate();
-        })
-      });
-    }, 800);
+    this.timer = setTimeout(async () => {
+      await this.run(100);
+      await this.eye(600);
+      this.animate();
+    }, 500);
   }
 }
 

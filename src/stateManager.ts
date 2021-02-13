@@ -29,8 +29,8 @@ class StateManager {
     }
 
     // 로고등장
-    // $logo.show();
-    // $logo.animate();
+    $logo.show();
+    $logo.animate();
     // $startLines.render(states.startLines);
     // $speed.render(states.speed);
     this.unlock();
@@ -131,7 +131,7 @@ class StateManager {
 
       // lock을 풀어주고, 이벤트를 받을 수 있게 한다.
       this.unlock();
-    }, 100);
+    }, 80);
   }
   updateCurrentBlock = (block: Block, timestamp?: number) => {
     if (timestamp !== undefined) { block.timestamp = timestamp }
