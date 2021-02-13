@@ -7,16 +7,8 @@ class Speed extends Numbers {
   constructor() {
     super('speed');
   }
-  updateSpeed = (_speed: number) => {
-    const states = window.tetris.states;
-    const speed = speeds[states.speed] + _speed;
-    if (speed >= 1500) { states.speed = 1500; }
-    else if (speed >= 300) { states.speed = speed; }
-    else { states.speed = 300; }
-    this.render(states.speed); 
-  }
   reset = () => {
-    this.updateSpeed(0);
+    window.tetris.states.speedStep = (speeds.length/2)-1
     this.render(0);
   }
 }

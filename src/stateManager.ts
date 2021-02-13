@@ -1,5 +1,5 @@
 import {getRandomNextBlock, deepcopy, getClearLines, isOver, getStartMatrix, getOverlappedMatrixWithCurrentBlock, mergeBlock} from './utils';
-import {blankMatrix, blockColors, LAST_ROUND, POINT} from './const';
+import {blankMatrix, blockColors, LAST_ROUND, POINT, speeds} from './const';
 import KeyEventListener from './Events/KeyEventListener';
 import { Tetris } from './types';
 import Block from './Components/Block';
@@ -31,8 +31,8 @@ class StateManager {
     // 로고등장
     $logo.show();
     $logo.animate();
-    // $startLines.render(states.startLines);
-    // $speed.render(states.speed);
+    $startLines.render(states.startLines);
+    $speed.render(speeds[states.speedStep-1]);
     this.unlock();
     if (callback) {callback()}
   }
@@ -40,7 +40,7 @@ class StateManager {
     this.lock();
     const {states, components: {$matrix, $next, $point, $logo}} = window.tetris;
     $logo.hide();
-    // $point.reset(POINT); // 포인트 리셋해야지
+    $point.reset(POINT); // 포인트 리셋해야지
     setTimeout(() => {
       const states = window.tetris.states;
       states.matrix = getStartMatrix(states.startLines);

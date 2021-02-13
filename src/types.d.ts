@@ -32,7 +32,7 @@ export namespace Tetris {
       nextBlock: Block | null,
       matrix: MatrixState,
       blockStack: Array<BlockType>,
-      speed: number,
+      speedStep: number,
       lock: boolean,
       startLines: number,
       point: number

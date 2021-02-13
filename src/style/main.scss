@@ -36,32 +36,35 @@ $gameScreenContainerBorderWidth: 5px;
   margin-top: -480px;
   margin-left: -320px;
   background: $yellow;
-  b {
-    display: block;
-    width: 20px;
-    height: 20px;
-    padding: 2px;
-    border: 2px solid #879372;
-    margin: 0 2px 2px 0;
-    float: left;
-    &::after {
-      content: "";
+  p {
+    overflow: hidden;
+    b {
       display: block;
-      width: 12px;
-      height: 12px;
-      background: #879372;
-      overflow: hidden;
-    }
-    &.black {
-      border-color: $black;
+      width: 20px;
+      height: 20px;
+      padding: 2px;
+      border: 2px solid #879372;
+      margin: 0 2px 2px 0;
+      float: left;
       &::after {
-        background-color: $black;
+        content: "";
+        display: block;
+        width: 12px;
+        height: 12px;
+        background: #879372;
+        overflow: hidden;
       }
-    }
-    &.red {
-      border-color: $red;
-      &::after {
-        background-color: $red;
+      &.black {
+        border-color: $black;
+        &::after {
+          background-color: $black;
+        }
+      }
+      &.red {
+        border-color: $red;
+        &::after {
+          background-color: $red;
+        }
       }
     }
   }
@@ -170,7 +173,7 @@ $gameScreenContainerBorderWidth: 5px;
           width: 228px;
           overflow: hidden;
           p {
-            width: ((20+2)*10)px;
+            width: (20+2)*10px;
           }
         }
         .logo {
@@ -218,8 +221,36 @@ $gameScreenContainerBorderWidth: 5px;
         .sidebar {
           width: 108px;
           position: absolute;
-          top: 0;
+          top: 6px;
           right: 15px;
+          label {
+            width: 100%;
+            font-size: 18px;
+            font-weight: 400;
+          }
+          .container {
+            overflow: hidden;
+            margin-top: 6px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: flex-end;
+          }
+          .next-block .container {
+            flex-flow: column;
+            align-items: flex-end;
+          }
+          .led-number {
+            width: 14px;
+            height: 24px;
+          }
+          .ln-empty {
+            background-position: -215px -25px;
+          }
+          @for $i from 0 through 9 {
+            .ln-#{$i} {
+              background-position: -(75px+$i*14px) -25px;
+            }
+          }
         }
       }
     }

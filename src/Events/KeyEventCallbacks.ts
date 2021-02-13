@@ -1,6 +1,7 @@
 import { shake, tryMove, mergeBlock, getRandomNextBlock, deepcopy } from '../utils';
 import { Tetris } from '../types';
 import { delays, speeds } from '../const';
+import StartLines from '../Components/StartLines';
 
 const blockControl = {
   rotate: () => { // 위키를 누르면 블럭이 회전한다
@@ -32,12 +33,12 @@ const blockControl = {
     }
   },
   right: () => {
-    const {states: {lock, currentBlock, matrix, speed}, components: {$matrix}} = window.tetris;
+    const {states: {lock, currentBlock, matrix, speedStep}, components: {$matrix}} = window.tetris;
     if (lock === true) {return}
     if (currentBlock == null) {return}
     const nextBlock = currentBlock.right();
     // 갈수있으면 가고, 못가면 어쩔 수 없고
-    const delay = delays[speed-1];
+    const delay = delays[speedStep-1];
     let timestamp;
     if (tryMove(matrix, nextBlock)) {
       nextBlock.timestamp += delay;
@@ -48,16 +49,16 @@ const blockControl = {
       $matrix.moveBlock(matrix, currentBlock);
       timestamp = currentBlock.timestamp;
     }
-    const remain = speeds[speed-1] - (Date.now() - timestamp);
+    const remain = speeds[speedStep-1] - (Date.now() - timestamp);
     $matrix.autoDown(remain);
   },
   left: () => {
-    const {states: {lock, currentBlock, matrix, speed}, components: {$matrix}} = window.tetris;
+    const {states: {lock, currentBlock, matrix, speedStep}, components: {$matrix}} = window.tetris;
     if (lock === true) {return}
     if (currentBlock == null) {return}
     const nextBlock = currentBlock.left();
     // 갈수있으면 가고, 못가면 어쩔 수 없고
-    const delay = delays[speed-1];
+    const delay = delays[speedStep-1];
     let timestamp;
     if (tryMove(matrix, nextBlock)) {
       nextBlock.timestamp += delay;
@@ -68,7 +69,7 @@ const blockControl = {
       $matrix.moveBlock(matrix, currentBlock);
       timestamp = currentBlock.timestamp;
     }
-    const remain = speeds[speed-1] - (Date.now() - timestamp);
+    const remain = speeds[speedStep-1] - (Date.now() - timestamp);
     $matrix.autoDown(remain);
   },
   drop: () => {
@@ -93,12 +94,14 @@ const blockControl = {
 
 const speedControl = {
   up: () => {
-    const {components: {$speed}} = window.tetris; 
-    $speed.updateSpeed(-100);
+    const {states, components: {$speed}} = window.tetris;
+    states.speedStep = states.speedStep < speeds.length ? states.speedStep + 1 : speeds.length; 
+    $speed.render(speeds[states.speedStep-1]);
   },
   down: () => {
-    const {components: {$speed}} = window.tetris; 
-    $speed.updateSpeed(100);
+    const {states, components: {$speed}} = window.tetris;
+    states.speedStep = states.speedStep > 1 ? states.speedStep - 1 : 1; 
+    $speed.render(speeds[states.speedStep-1]);
   }
 };
 

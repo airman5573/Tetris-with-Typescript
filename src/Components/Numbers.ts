@@ -1,7 +1,7 @@
 class Numbers {
   node: HTMLDivElement;
   constructor(className: string) {
-    this.node = document.querySelector(`.game-screen > .sidebar > .${className} > .numbers`);
+    this.node = document.querySelector(`.game-screen > .sidebar > .${className} > .led-numbers`);
   }
   render = (num: number) => {
     let arr: number[] = (Array.from(String(num), Number)).reverse();
@@ -11,9 +11,9 @@ class Numbers {
     for(let i = 0; i < len; i++) {
       const el = this.node.children.item(i);
       if (i >= startIndex) {
-        el.className = `bg s_${arr.pop()}`;
+        el.className = `bg led-number ln-${arr.pop()}`;
       } else {
-        el.className = `bg s_n`;
+        el.className = `bg led-number ln-empty`;
       }
     }
   }

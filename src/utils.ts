@@ -198,7 +198,7 @@ const shake = (callback?: () => void) => {
   $top.classList.add('shake');
   setTimeout(() => {
     $top.classList.remove('shake');
-    callback();
+    if (typeof callback === 'function') callback();
   }, 100);
 }
 const getOverlappedMatrixWithCurrentBlock = (matrix: Tetris.MatrixState) => {

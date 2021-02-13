@@ -14,14 +14,14 @@ class Point extends Numbers {
     this.titleEl.innerText = this.title;
   }
   updatePoint = (_point: number) => {
-    const gs = window.tetris.states;
-    gs.point += _point;
-    this.render(gs.point);
+    const states = window.tetris.states;
+    states.point += _point;
+    this.render(states.point);
   }
   setPoint = (_point: number) => {
-    const gs = window.tetris.states;
-    gs.point = _point;
-    this.render(gs.point);
+    const states = window.tetris.states;
+    states.point = _point;
+    this.render(states.point);
   }
   reset = (title: string) => {
     this.changeTitle(title);

@@ -41,7 +41,7 @@ window.tetris = {
     nextBlock: null,
     matrix: blankMatrix,
     blockStack: Object.keys(blockTypes) as Array<Tetris.BlockType>,
-    speed: Math.floor(speeds.length/2)-1,
+    speedStep: Math.floor(speeds.length/2)-1,
     lock: false,
     startLines: 0,
     point: 0

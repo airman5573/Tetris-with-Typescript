@@ -28,7 +28,7 @@ class Matrix {
   }
   autoDown = (startDelay?: number) => {
     if (startDelay !== undefined && startDelay < 0) startDelay = 0;
-    const speed = speeds[window.tetris.states.speed-1];
+    const speed = speeds[window.tetris.states.speedStep-1];
     const fall = () => {
       const {states: {lock, currentBlock, matrix}, stateManager} = window.tetris;
       if (lock == true) { return }
