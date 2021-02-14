@@ -81,10 +81,11 @@ class StateManager {
     $pause.off();
   }
   reset = () => {
-    const {states, components: {$logo}} = window.tetris;
+    const {states, components: {$logo, $point}} = window.tetris;
     states.reset = true;
     $logo.hide();
     localStorage.setItem('last-point', '0');
+    $point.reset(POINT);
     this.end(() => {
       setTimeout(() => {
         this.init(() => { states.reset = false; });

@@ -69,7 +69,7 @@ const yxStartPosition: {[key: string]: Tetris.YX} = {
   T: [-1, 4],
 }
 const speeds: number[] = [800, 650, 500, 370, 250, 160];
-const delays: number[] = [100, 90, 80, 70, 60, 50];
+const delays: number[] = [60, 50, 40, 40, 40, 30];
 const fullLine: Tetris.FillLine = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
 const blankLine: Tetris.Line = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 const blankMatrix: Tetris.MatrixState = (() => {
