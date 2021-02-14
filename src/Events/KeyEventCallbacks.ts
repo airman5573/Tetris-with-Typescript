@@ -1,13 +1,12 @@
-import { shake, tryMove, mergeBlock, getRandomNextBlock, deepcopy } from '../utils';
+import { shake, tryMove, mergeBlock, getRandomNextBlock, deepcopy, isLock } from '../utils';
 import { Tetris } from '../types';
 import { delays, speeds } from '../const';
 import StartLines from '../Components/StartLines';
 
 const blockControl = {
   rotate: () => { // 위키를 누르면 블럭이 회전한다
-    const {states, components: {$matrix}} = window.tetris;
-    if (states.lock === true) { return }
-    if (states.currentBlock == null) { return }
+    const {states, stateManager, components: {$matrix}} = window.tetris;
+    if (states.currentBlock === null) { return }
     const nextBlock = states.currentBlock.rotate();
     if (tryMove(states.matrix, nextBlock)) {
       const nextMatrix = mergeBlock(states.matrix, nextBlock);
@@ -18,7 +17,7 @@ const blockControl = {
   down: (stopDownTrigger: () => void) => {
     const tetris = window.tetris;
     const {states: {currentBlock, matrix}, stateManager, components: {$matrix}} = tetris;
-    if (currentBlock == null) { return }
+    if (currentBlock === null) { return }
     const nextBlock = currentBlock.fall();
     // 갈수있으면 가고,
     if (tryMove(matrix, nextBlock)) {
@@ -34,28 +33,26 @@ const blockControl = {
   },
   right: () => {
     const {states: {lock, currentBlock, matrix, speedStep}, components: {$matrix}} = window.tetris;
-    if (lock === true) {return}
-    if (currentBlock == null) {return}
+    if (currentBlock === null) {return}
     const nextBlock = currentBlock.right();
     // 갈수있으면 가고, 못가면 어쩔 수 없고
     const delay = delays[speedStep-1];
     let timestamp;
     if (tryMove(matrix, nextBlock)) {
       nextBlock.timestamp += delay;
-      $matrix.moveBlock(matrix, nextBlock);
       timestamp = nextBlock.timestamp;
+      $matrix.moveBlock(matrix, nextBlock);
     } else {
       currentBlock.timestamp += Math.floor(delay/1.5);
-      $matrix.moveBlock(matrix, currentBlock);
       timestamp = currentBlock.timestamp;
+      $matrix.moveBlock(matrix, currentBlock);
     }
     const remain = speeds[speedStep-1] - (Date.now() - timestamp);
     $matrix.autoDown(remain);
   },
   left: () => {
     const {states: {lock, currentBlock, matrix, speedStep}, components: {$matrix}} = window.tetris;
-    if (lock === true) {return}
-    if (currentBlock == null) {return}
+    if (currentBlock === null) {return}
     const nextBlock = currentBlock.left();
     // 갈수있으면 가고, 못가면 어쩔 수 없고
     const delay = delays[speedStep-1];
@@ -75,8 +72,7 @@ const blockControl = {
   drop: () => {
     const tetris = window.tetris;
     const {states, states: {lock, currentBlock, matrix}, stateManager, components: {$matrix}} = tetris;
-    if (lock === true) {return}
-    if (currentBlock == null) {return}
+    if (currentBlock === null) {return}
     let bottom = currentBlock;
     for(var n = 1; n < 20; n++) {
       bottom = currentBlock.fall(n);
@@ -108,19 +104,19 @@ const speedControl = {
 const startLineControl = {
   up: () => {
     const {components: {$startLines}} = window.tetris; 
-    $startLines.updateStartLines(-1);
+    $startLines.up();
   },
   down: () => {
     const {components: {$startLines}} = window.tetris; 
-    $startLines.updateStartLines(1);
+    $startLines.down();
   }
 };
 
 const gameControl = {
-  start: () => {
-    const {stateManager, states} = window.tetris;
-    stateManager.run();
-  }
+  start: () => { window.tetris.stateManager.run(); },
+  pause: () => { window.tetris.stateManager.pause(); },
+  unpause: () => { window.tetris.stateManager.unpause(); },
+  reset: () => { window.tetris.stateManager.reset(); }
 }
 
 export {blockControl, speedControl, startLineControl, gameControl}

@@ -203,7 +203,7 @@ const shake = (callback?: () => void) => {
 }
 const getOverlappedMatrixWithCurrentBlock = (matrix: Tetris.MatrixState) => {
   const currentBlock = window.tetris.states.currentBlock;
-  if (currentBlock == null) return matrix;
+  if (currentBlock === null) return matrix;
   const {shape, yx} = currentBlock;
   const newMatrix = deepcopy(matrix);
   shape.forEach((line, i) => {
@@ -228,7 +228,20 @@ const mergeBlock = (matrix: Tetris.MatrixState, $block: Block): Tetris.MatrixSta
   });
   return newMatrixState;
 }
+const isInGame = () => {
+  if (window.tetris.states.currentBlock === null) return false;
+  return true;
+}
+const isLock = (e?:KeyboardEvent) => {
+  const states = window.tetris.states;
+  // reset은 현재 reset animation이 실행되고 있는 중이 아니라면 언제든지 reset키를 누를 수 있다.
+  if (e.key === 'r' && states.reset === false ) return false;
+  // pause는 게임중일때 lock무시하고 모든 keyEvent를 받아야지
+  if (e.key === 'p' && isInGame()) return false;
+  // 나머지의 경우에서는 이전에 입력한 lock을 return한다. 
+  return states.lock;
+}
 
 export {getStartMatrix, getClearLines, isOver,
         deepcopy, getRandomNextBlock, tryMove, resize, getDecoBlocks, shake,
-        getOverlappedMatrixWithCurrentBlock, mergeBlock}
+        getOverlappedMatrixWithCurrentBlock, mergeBlock, isInGame, isLock}

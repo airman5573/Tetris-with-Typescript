@@ -1,4 +1,5 @@
 import { Tetris } from '../../types';
+import { isInGame } from '../../utils';
 import { blockControl, startLineControl } from '../KeyEventCallbacks';
 
 export default class ArrowRight implements Tetris.KeyControl {
@@ -8,8 +9,8 @@ export default class ArrowRight implements Tetris.KeyControl {
     const {states, keyEventProcessor} = window.tetris;
     keyEventProcessor.down({
       keyType: this.type,
-      callback: (states.currentBlock != null ) ? blockControl.right : startLineControl.up,
-      once: (states.currentBlock != null ) ? false : true,
+      callback: (isInGame()) ? blockControl.right : startLineControl.up,
+      once: (isInGame()) ? false : true,
     });
   }
   keyUp = () => {

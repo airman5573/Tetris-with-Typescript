@@ -6,16 +6,18 @@ class StartLines extends Numbers {
   constructor() {
     super('start-lines');
   }
-  updateStartLines = (sl: number) => {
-    const gs = window.tetris.states;
-    const startLines = gs.startLines + sl;
-    if (startLines >= 10) { gs.startLines = 10; }
-    else if (startLines < 0) { gs.startLines = 0; }
-    else { gs.startLines = startLines; }
-    this.render(gs.startLines); 
+  up = () => {
+    const states = window.tetris.states;
+    states.startLines = Math.max(0, Math.min(states.startLines+1, 9));
+    this.render(states.startLines);
+  }
+  down = () => {
+    const states = window.tetris.states;
+    states.startLines = Math.max(0, Math.min(states.startLines-1, 9));
+    this.render(states.startLines);
   }
   reset = () => {
-    this.updateStartLines(0);
+    window.tetris.states.startLines = 0;
     this.render(0);
   }
 }

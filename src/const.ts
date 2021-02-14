@@ -69,7 +69,7 @@ const yxStartPosition: {[key: string]: Tetris.YX} = {
   T: [-1, 4],
 }
 const speeds: number[] = [800, 650, 500, 370, 250, 160];
-const delays: number[] = [50, 60, 70, 80, 90, 100];
+const delays: number[] = [100, 90, 80, 70, 60, 50];
 const fullLine: Tetris.FillLine = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
 const blankLine: Tetris.Line = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 const blankMatrix: Tetris.MatrixState = (() => {
@@ -83,7 +83,7 @@ const maxPoint: number = 999999;
 const eachLines: number = 20;
 const keyCodeWithType: {[key: number]: Tetris.KeyType;} = {
   37: 'arrowLeft', 38: 'arrowUp', 39: 'arrowRight', 40: 'arrowDown',
-  32: 'space',
+  32: 'space', 80: 'p', 82: 'r'
 }
 const keyCodes = Object.keys(keyCodeWithType).map(e => parseInt(e, 10));
 const LAST_ROUND = 'Last Round';

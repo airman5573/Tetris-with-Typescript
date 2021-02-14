@@ -28,14 +28,6 @@ class Block implements Tetris.BlockOption {
       });
     });
   }
-  blink = (_matrix: Tetris.MatrixState, $matrix: Matrix, callback: ()=>void) => {
-    const matrix = deepcopy(_matrix);
-    this.updateColor(matrix, $matrix, blockColors.RED);
-    setTimeout(() => {
-      this.updateColor(matrix, $matrix, blockColors.BLACK);
-      callback();
-    }, 50);
-  }
   rotate = () => {
     const shape = this.shape;
     let nextShape: Array<number[]> = [];

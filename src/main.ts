@@ -10,6 +10,9 @@ import StartLines from './Components/startLines';
 import Speed from './Components/speed';
 import KeyEventProcessor from './Events/KeyEventProcessor';
 import { Tetris } from './types';
+import Sound from './Components/Sound';
+import Pause from './Components/Pause';
+import Clock from './Components/Clock';
 
 // resize
 resize();
@@ -43,6 +46,8 @@ window.tetris = {
     blockStack: Object.keys(blockTypes) as Array<Tetris.BlockType>,
     speedStep: Math.floor(speeds.length/2)-1,
     lock: false,
+    pause: false,
+    reset: false,
     startLines: 0,
     point: 0
   },
@@ -52,7 +57,10 @@ window.tetris = {
     $point: new Point(),
     $next: new Next(),
     $startLines: new StartLines(),
-    $speed: new Speed()
+    $speed: new Speed(),
+    $sound: new Sound(),
+    $pause: new Pause(),
+    $clock: new Clock()
   },
   stateManager: new StateManager(),
   keyEventProcessor: new KeyEventProcessor()

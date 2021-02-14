@@ -25,6 +25,54 @@ $gameScreenContainerBorderWidth: 5px;
   overflow:hidden;
 }
 
+.led-container {
+  display: flex;
+  justify-content: flex-end;
+}
+.led-number {
+  width: 14px;
+  height: 24px;
+}
+.ln-empty {
+  background-position: -215px -25px;
+}
+@for $i from 0 through 9 {
+  .ln-#{$i} {
+    background-position: -(75px+$i*14px) -25px;
+  }
+}
+
+// block
+b {
+  display: block;
+  width: 20px;
+  height: 20px;
+  padding: 2px;
+  border: 2px solid #879372;
+  margin: 0 2px 2px 0;
+  float: left;
+  &::after {
+    content: "";
+    display: block;
+    width: 12px;
+    height: 12px;
+    background: #879372;
+    overflow: hidden;
+  }
+  &.black {
+    border-color: $black;
+    &::after {
+      background-color: $black;
+    }
+  }
+  &.red {
+    border-color: $red;
+    &::after {
+      background-color: $red;
+    }
+  }
+}
+
 #page>.container {
   width: 640px;
   padding-top: 42px; // 이거 왜 하는거지?
@@ -38,37 +86,8 @@ $gameScreenContainerBorderWidth: 5px;
   background: $yellow;
   p {
     overflow: hidden;
-    b {
-      display: block;
-      width: 20px;
-      height: 20px;
-      padding: 2px;
-      border: 2px solid #879372;
-      margin: 0 2px 2px 0;
-      float: left;
-      &::after {
-        content: "";
-        display: block;
-        width: 12px;
-        height: 12px;
-        background: #879372;
-        overflow: hidden;
-      }
-      &.black {
-        border-color: $black;
-        &::after {
-          background-color: $black;
-        }
-      }
-      &.red {
-        border-color: $red;
-        &::after {
-          background-color: $red;
-        }
-      }
-    }
   }
-  &>.top {
+  & > .top {
     width: 480px;
     padding-top: 45px;
     padding-bottom: 35px;
@@ -83,14 +102,14 @@ $gameScreenContainerBorderWidth: 5px;
       top: 6px;
     }
   }
-  &>.bottom {
+  & > .bottom {
     width: 580px;
     height: 330px;
     border-width: 0 10px 10px;
     margin: 0 auto;
     position: relative;
   }
-  &>.top {
+  & > .top {
     .decoration {
       &>.top {
         height: 10px;
@@ -161,6 +180,7 @@ $gameScreenContainerBorderWidth: 5px;
       margin: 0 auto;
       position: relative;
       .game-screen {
+        display: flex;
         position: relative;
         width: $gameScreenWidth;
         height: $gameScreenHeight;
@@ -219,36 +239,56 @@ $gameScreenContainerBorderWidth: 5px;
           }
         }
         .sidebar {
-          width: 108px;
-          position: absolute;
-          top: 6px;
-          right: 15px;
+          width: 132px;
+          padding-left: 10px;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
           label {
             width: 100%;
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 400;
           }
-          .container {
+          .point > .container, .start-lines > .container,
+          .speed > .container, .next-block > .container {
             overflow: hidden;
-            margin-top: 6px;
-            margin-bottom: 15px;
+            margin-top: 10px;
+            margin-bottom: 25px;
             display: flex;
             justify-content: flex-end;
           }
-          .next-block .container {
+          .next-block > .container {
             flex-flow: column;
             align-items: flex-end;
           }
-          .led-number {
-            width: 14px;
-            height: 24px;
-          }
-          .ln-empty {
-            background-position: -215px -25px;
-          }
-          @for $i from 0 through 9 {
-            .ln-#{$i} {
-              background-position: -(75px+$i*14px) -25px;
+          .etc > .container {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            .sound {
+              width: 25px;
+              height: 21px;
+              background-position: -175px -75px;
+            }
+            .pause {
+              width: 20px;
+              height: 18px;
+              background-position: -100px -75px;
+              &.on { background-position: -75px -75px; }
+            }
+            .clock > .container {
+              display: flex;
+              margin-left: 4px;
+              justify-content: space-evenly;
+              .led-colon {
+                width: 10px;
+                height: 24px;
+                background-position: -247px -25px;
+                &.on {
+                  background-position: -233px -25px;
+                }
+              }
             }
           }
         }

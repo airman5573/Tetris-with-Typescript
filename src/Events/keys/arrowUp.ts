@@ -1,4 +1,5 @@
 import { Tetris } from '../../types';
+import { isInGame } from '../../utils';
 import { blockControl, speedControl } from '../KeyEventCallbacks';
 
 export default class ArrowUp implements Tetris.KeyControl {
@@ -7,7 +8,7 @@ export default class ArrowUp implements Tetris.KeyControl {
     const {states, keyEventProcessor} = window.tetris;
     keyEventProcessor.down({
       keyType: this.type,
-      callback: (states.currentBlock != null ) ? blockControl.rotate : speedControl.up,
+      callback: (isInGame()) ? blockControl.rotate : speedControl.up,
       once: true
     });
   }

@@ -7,7 +7,7 @@ class Point extends Numbers {
   constructor() {
     super('point');
     this.title = LAST_ROUND;
-    this.titleEl = document.querySelector(".game-screen > .sidebar > .point > label");
+    this.titleEl = document.querySelector(".game-screen > .sidebar .point > label");
   }
   changeTitle = (_title: string) => {
     this.title = _title;

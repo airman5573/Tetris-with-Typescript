@@ -5,6 +5,9 @@ import Point from './Components/Point';
 import Logo from './Components/Logo';
 import StartLines from './Components/StartLines';
 import Speed from './Components/Speed';
+import Sound from './Components/Sound';
+import Pause from './Components/Pause';
+import Clock from './Components/Clock';
 import StateManager from './stateManager';
 import KeyEventListener from './Events/KeyEventListener';
 import KeyEventProcessor from './Events/KeyEventProcessor';
@@ -34,6 +37,8 @@ export namespace Tetris {
       blockStack: Array<BlockType>,
       speedStep: number,
       lock: boolean,
+      pause: boolean,
+      reset: boolean,
       startLines: number,
       point: number
     },
@@ -43,7 +48,10 @@ export namespace Tetris {
       $point: Point,
       $logo: Logo,
       $startLines: StartLines,
-      $speed: Speed
+      $speed: Speed,
+      $sound: Sound,
+      $pause: Pause,
+      $clock: Clock
     },
     stateManager: StateManager,
     keyEventProcessor: KeyEventProcessor
@@ -62,7 +70,7 @@ export namespace Tetris {
   export interface KeyTimer {
     [keyType: string]: NodeJS.Timeout,
   }
-  export type KeyType = 'arrowUp' | 'arrowRight' | 'arrowDown' | 'arrowLeft' | 'space';
+  export type KeyType = 'arrowUp' | 'arrowRight' | 'arrowDown' | 'arrowLeft' | 'space' | 'p' | 'r';
 }
 
 declare global {

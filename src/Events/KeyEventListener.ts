@@ -4,7 +4,10 @@ import ArrowRight from './keys/arrowRight';
 import ArrowDown from './keys/arrowDown';
 import ArrowLeft from './keys/arrowLeft';
 import Space from './keys/space';
+import P from './keys/p';
+import R from './keys/r';
 import { Tetris } from '../types';
+import { isLock } from '../utils';
 
 class KeyEventListener {
   arrowUp: ArrowUp;
@@ -12,6 +15,8 @@ class KeyEventListener {
   arrowDown: ArrowDown;
   arrowLeft: ArrowLeft;
   space: Space;
+  p: P;
+  r: R;
   static instance: KeyEventListener;
   constructor() {
     if (KeyEventListener.instance != null) {
@@ -22,6 +27,8 @@ class KeyEventListener {
     this.arrowDown = new ArrowDown();
     this.arrowLeft = new ArrowLeft();
     this.space = new Space();
+    this.p = new P();
+    this.r = new R();
     KeyEventListener.instance = this;
   }
   listen = () => {
@@ -29,18 +36,14 @@ class KeyEventListener {
     document.addEventListener("keyup", this.keyUp);
   }
   keyDown = (e:KeyboardEvent) => {
-    const lock = window.tetris.states.lock;
-    // 잠겨있으면 이벤트를 받지 않는다.
-    if (lock === true) { return; }
+    if (isLock(e)) { return }
     // metaKey는 윈도우 혹은 cmd를 의미한다
     if (e.metaKey === true || keyCodes.indexOf(e.keyCode) === -1) { return; }
     const type: Tetris.KeyType = keyCodeWithType[e.keyCode];
     this[type].keyDown();
   }
   keyUp = (e: KeyboardEvent) => {
-    const lock = window.tetris.states.lock;
-    // 잠겨있으면 이벤트를 받지 않는다.
-    if (lock === true) { return; }
+    if (isLock(e)) { return }
     if (e.metaKey === true || keyCodes.indexOf(e.keyCode) === -1) { return; }
     const type: Tetris.KeyType = keyCodeWithType[e.keyCode];
     this[type].keyUp();

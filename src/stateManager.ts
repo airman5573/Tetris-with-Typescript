@@ -1,9 +1,8 @@
-import {getRandomNextBlock, deepcopy, getClearLines, isOver, getStartMatrix, getOverlappedMatrixWithCurrentBlock, mergeBlock} from './utils';
+import {getRandomNextBlock, deepcopy, getClearLines, isOver, getStartMatrix, getOverlappedMatrixWithCurrentBlock, mergeBlock, isInGame} from './utils';
 import {blankMatrix, blockColors, LAST_ROUND, POINT, speeds} from './const';
 import KeyEventListener from './Events/KeyEventListener';
 import { Tetris } from './types';
 import Block from './Components/Block';
-
 
 class StateManager {
   begin = () => {
@@ -12,14 +11,14 @@ class StateManager {
   }
   init = (callback?: () => void) => {
     this.lock();
-    const {states, components: {$matrix, $next, $point, $logo, $startLines, $speed}} = window.tetris;
+    const {states, components: {$matrix, $next, $point, $logo, $startLines, $speed, $clock}} = window.tetris;
     clearTimeout($matrix.timer); // 더이상 autodown이 일어나지 않도록
     $matrix.render(deepcopy(blankMatrix)); // 빈화면으로 초기화
 
     // nextBlock도 초기화
     states.currentBlock = null;
-    states.nextBlock = getRandomNextBlock();
     $next.reset(); // next를 지우고
+    this.updateNextBlock(getRandomNextBlock()); // nextBlock을 새로 그려준다
 
     // Point도 초기화
     const lastPoint = Number(localStorage.getItem('last-point'));
@@ -33,6 +32,10 @@ class StateManager {
     $logo.animate();
     $startLines.render(states.startLines);
     $speed.render(speeds[states.speedStep-1]);
+
+    // 시계등장
+    $clock.work(1);
+
     this.unlock();
     if (callback) {callback()}
   }
@@ -44,7 +47,6 @@ class StateManager {
     setTimeout(() => {
       const states = window.tetris.states;
       states.matrix = getStartMatrix(states.startLines);
-      this.updateNextBlock(getRandomNextBlock());
       $matrix.render(); // startLine 먼저 그리자
       setTimeout(() => {
         this.nextBlockToCurrentBlock();
@@ -55,18 +57,42 @@ class StateManager {
       }, 500);
     }, 300);
   }
-  end = () => {
+  end = (callback: () => void) => {
     this.lock();
     const {states: {point}, keyEventProcessor, components: {$matrix}} = window.tetris;
     keyEventProcessor.clearEventAll(); // 이전에 막 화살표를 누른게 있을수도 있으니까 지워준다.
     localStorage.setItem('last-point', `${point}`);
     $matrix.reset(() => {
+      callback();
+    });
+  }
+  pause = () => {
+    this.lock();
+    const {states, components: {$matrix, $pause}} = window.tetris;
+    states.pause = true;
+    clearTimeout($matrix.timer);
+    $pause.blink(1);
+  }
+  unpause = () => {
+    this.unlock();
+    const {states, components: {$matrix, $pause}} = window.tetris;
+    states.pause = false;
+    $matrix.autoDown();
+    $pause.off();
+  }
+  reset = () => {
+    const {states, components: {$logo}} = window.tetris;
+    states.reset = true;
+    $logo.hide();
+    localStorage.setItem('last-point', '0');
+    this.end(() => {
       setTimeout(() => {
-        this.init(this.unlock);
+        this.init(() => { states.reset = false; });
       }, 500);
     });
   }
-  // 여기서 matrix는 nextAround로 가기 전의 현재 matrix를 의미하는거야
+  lock = () => { window.tetris.states.lock = true; }
+  unlock = () => { window.tetris.states.lock = false; }
   nextAround = async (matrix: Tetris.MatrixState, stopDownTrigger?: () => void) => {
     this.lock(); // 잠그고 작업하자
     const {states, components: {$matrix, $next, $point, $logo}, keyEventProcessor} = window.tetris;
@@ -113,7 +139,7 @@ class StateManager {
     // 게임이 끝났는지 체크하는 부분을 clearLines를 체크하는 부분보다 뒤에 넣은 이유는
     // 딱 게임이 끝나는줄 알았지만! 딱 블럭이 딱 맞아가지고 딱 라인이 지워지면서 화면 위로 안높아질 수 있기 때문이다.
     if (isOver()) {
-      this.end();
+      this.end(this.init);
       return
     }
 
@@ -142,8 +168,6 @@ class StateManager {
     window.tetris.states.nextBlock = block;
     $next.render(block);
   }
-  lock = () => { window.tetris.states.lock = true; }
-  unlock = () => { window.tetris.states.lock = false; }
   nextBlockToCurrentBlock = () => {
     const states = window.tetris.states;
     const nextBlock = states.nextBlock;
