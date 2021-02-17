@@ -1,9 +1,13 @@
 import { Tetris } from '../../types';
 import { isInGame } from '../../utils';
 import { gameControl } from '../KeyEventCallbacks';
+import Key from './key';
 
-export default class R implements Tetris.KeyControl {
+export default class R extends Key implements Tetris.KeyControl {
   type: Tetris.KeyType = 'r';
+  constructor() {
+    super('reset');
+  }
   keyDown = () => {
     const {keyEventProcessor} = window.tetris;
     keyEventProcessor.down({

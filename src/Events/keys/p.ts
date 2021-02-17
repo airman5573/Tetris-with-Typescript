@@ -1,9 +1,13 @@
 import { Tetris } from '../../types';
 import { isInGame } from '../../utils';
 import { gameControl } from '../KeyEventCallbacks';
+import Key from './key';
 
-export default class P implements Tetris.KeyControl {
+export default class P extends Key implements Tetris.KeyControl {
   type: Tetris.KeyType = 'p';
+  constructor() {
+    super('pause');
+  }
   keyDown = () => {
     const {states: {pause}, keyEventProcessor} = window.tetris;
     keyEventProcessor.down({

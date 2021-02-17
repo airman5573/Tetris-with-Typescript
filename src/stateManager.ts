@@ -81,14 +81,32 @@ class StateManager {
     $pause.off();
   }
   reset = () => {
-    const {states, components: {$logo, $point}} = window.tetris;
+    const {states, components: {$matrix, $pause, $logo, $point}} = window.tetris;
+    if (states.reset === true) return; // 이미 reset하고 있는 중이라면 또 reset하지는 말아야지!
     states.reset = true;
+    this.lock(); // reset하는동안 암것도 못하게 잠궈놓자
+
+    // autoDown reset
+    clearTimeout($matrix.timer);
+
+    // pause reset
+    states.pause = false; // 일시정지도 해제
+    $pause.off(); // 일시정지할때 깜빡이는 이벤트 없애고
+
+    // logo reset
     $logo.hide();
+
+    // point reset
+    states.point = 0;
     localStorage.setItem('last-point', '0');
     $point.reset(POINT);
+
     this.end(() => {
       setTimeout(() => {
-        this.init(() => { states.reset = false; });
+        this.init(() => {
+          states.reset = false;
+          this.unlock();
+        });
       }, 500);
     });
   }
@@ -158,7 +176,7 @@ class StateManager {
 
       // lock을 풀어주고, 이벤트를 받을 수 있게 한다.
       this.unlock();
-    }, 80);
+    }, 120);
   }
   updateCurrentBlock = (block: Block, timestamp?: number) => {
     if (timestamp !== undefined) { block.timestamp = timestamp }

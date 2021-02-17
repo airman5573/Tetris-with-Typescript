@@ -1,10 +1,14 @@
 import { Tetris } from '../../types';
 import { isInGame } from '../../utils';
 import { blockControl, startLineControl } from '../KeyEventCallbacks';
+import Key from './key';
 
-export default class ArrowRight implements Tetris.KeyControl {
-  constructor() {}
+export default class ArrowRight extends Key implements Tetris.KeyControl {
   type: Tetris.KeyType = 'arrowRight';
+  btnNode: HTMLDivElement;
+  constructor() {
+    super('right');
+  }
   keyDown = () => {
     const {states, keyEventProcessor} = window.tetris;
     keyEventProcessor.down({
