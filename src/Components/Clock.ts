@@ -8,6 +8,10 @@ class Clock {
     this.ledNumbers = document.querySelectorAll('.game-screen > .sidebar .clock .led-number');
     this.ledColon = document.querySelector('.game-screen > .sidebar .clock .led-colon');
   }
+  reset = () => {
+    clearTimeout(this.clockTimer);
+    this.work(1);
+  }
   work = (colonOnOff: number) => {
     this.clockTimer = setTimeout(() => {
       this.render(colonOnOff);

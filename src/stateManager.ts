@@ -81,7 +81,7 @@ class StateManager {
     $pause.off();
   }
   reset = () => {
-    const {states, components: {$matrix, $pause, $logo, $point}} = window.tetris;
+    const {states, components: {$matrix, $pause, $logo, $point, $clock, $startLines}} = window.tetris;
     if (states.reset === true) return; // 이미 reset하고 있는 중이라면 또 reset하지는 말아야지!
     states.reset = true;
     this.lock(); // reset하는동안 암것도 못하게 잠궈놓자
@@ -100,6 +100,12 @@ class StateManager {
     states.point = 0;
     localStorage.setItem('last-point', '0');
     $point.reset(POINT);
+
+    // clock reset
+    $clock.reset();
+
+    // startLines reset
+    $startLines.reset();
 
     this.end(() => {
       setTimeout(() => {
