@@ -71,6 +71,7 @@ export namespace Tetris {
     [keyType: string]: NodeJS.Timeout,
   }
   export type KeyType = 'arrowUp' | 'arrowRight' | 'arrowDown' | 'arrowLeft' | 'space' | 'p' | 'r';
+  export type BlockColor = 0 | 1 | 2;
 }
 
 declare global {

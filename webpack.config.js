@@ -2,15 +2,15 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const path = require('path');
-const join = path.join;
-const resolve = path.resolve;
+
+const { join } = path;
 
 module.exports = {
   entry: join(__dirname, '/src/main.ts'),
   mode: 'development',
   devtool: 'source-map',
   output: {
-    filename: "main.js",
+    filename: 'main.js',
     path: join(__dirname, '/dist'),
   },
   module: {
@@ -19,13 +19,13 @@ module.exports = {
         test: /\.(png|jpe?g|gif)$/i,
         loader: 'file-loader',
         options: {
-          name: 'assets/[contenthash].[ext]'
-        }
+          name: 'assets/[contenthash].[ext]',
+        },
       },
       {
         test: /\.(ts|tsx)$/,
         exclude: /node_modules/,
-        use: 'ts-loader'
+        use: ['ts-loader', 'eslint-loader'],
       },
       {
         test: /\.(scss|css)$/,
@@ -33,25 +33,25 @@ module.exports = {
           {
             loader: MiniCssExtractPlugin.loader,
             options: {
-              publicPath: ''
-            }
+              publicPath: '',
+            },
           },
-          "css-loader", "sass-loader"]
+          'css-loader', 'sass-loader'],
       },
-    ]
+    ],
   },
   plugins: [
     new MiniCssExtractPlugin({
-      filename: "style.css",
+      filename: 'style.css',
     }),
     new HtmlWebpackPlugin({
-      template: join(__dirname, '/src/index.html')
+      template: join(__dirname, '/src/index.html'),
     }),
     new CleanWebpackPlugin({
-      cleanAfterEveryBuildPatterns: ['dist']
+      cleanAfterEveryBuildPatterns: ['dist'],
     }),
   ],
   resolve: {
-    extensions: ['.js', '.ts', '.json', 'scss']
-  }
+    extensions: ['.js', '.ts', '.json', 'scss'],
+  },
 };

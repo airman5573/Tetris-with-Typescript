@@ -351,15 +351,40 @@ class StateManager {
       this.unlock();
     }, 120);
   }
+  /**
+   * currentBlock을 입력받은 block으로 지정한다
+   * 
+   * @param block
+   *  
+   * @param timestamp
+   * 좌우로 블럭을 이동할때 살짝 delay를 준다. 그러니까 아래로 가만히 내려갈때는 매 speed초마다 뚝뚝 내려가는데
+   * 좌우로 움직일때는 그 블럭의 생성 시점을 바탕으로 약간의 딜레이를 준다. 이때 그 블럭의 생성시점을 기록해놔야 하기 때문에
+   * timestamp를 쓰는것이고, 새로운 블럭을 currentBlock으로 대체하는데 이게 아래로 내려가는게 아니라 좌우로 움직이는거라면
+   * 이전 블럭의 timestamp를 넘겨줘야한다. 안그러면 자칫하다가는 좌우로 키보드를 계속 눌러서 빠르게 왔다리갔다리 하면
+   * 블럭이 영원히 안내려오게 만들수도 있기 때문이다. 이거는 사실 좌우로 움직일때 어떻게 timestamp를 활용해서 delay를 주는지
+   * 봐야 이해가 가는 부분이니, 그 부분을 살펴보도록 한다
+   */
   updateCurrentBlock = (block: Block, timestamp?: number) => {
     if (timestamp !== undefined) { block.timestamp = timestamp }
     window.tetris.states.currentBlock = block;
   }
+
+  /**
+   * 넘겨받은 block을 nextBlock으로 지정한다
+   * @param block
+   */
   updateNextBlock = (block: Block) => {
     const {$next} = window.tetris.components;
     window.tetris.states.nextBlock = block;
     $next.render(block);
   }
+
+  /**
+   * states.nextBlock을 currentBlock으로 지정한다
+   * 여기서 주의해야할점은 timestamp를 새로 업데이트 해줘야 한다는것이다
+   * 그렇지 않으면 아~~까전에 만든 nextBlock의 timestamp가 너무 예전걸로 되어있기 떄문에
+   * delay를 주는 로직에 의해서 키보드를 좌우로 움직였을때 nextBlock이 안떨어지는 문제가 발생활수도있다
+   */
   nextBlockToCurrentBlock = () => {
     const states = window.tetris.states;
     const nextBlock = states.nextBlock;

@@ -1,6 +1,5 @@
 import { blockColors, yxRotateOrigin } from '../const';
-import { Tetris } from '../types';
-import { deepcopy, getRandomNextBlock } from '../utils';
+import { Shape } from '../types';
 import Matrix from './Matrix';
 
 class Block implements Tetris.BlockOption {
