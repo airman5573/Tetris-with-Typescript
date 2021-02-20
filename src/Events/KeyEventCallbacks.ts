@@ -26,9 +26,7 @@ const blockControl = {
       // 왜 autoDown에게 일을 또 맡기는걸까? 이 down함수는 계속 실행될텐데,,,
       $matrix.autoDown();
     } else {
-      // 못가면? 다음 블럭으로 넘어가야지
-      const newMatrix = mergeBlock(matrix, currentBlock);
-      stateManager.nextAround(newMatrix, stopDownTrigger);
+      stateManager.nextAround(stopDownTrigger);
     }
   },
   right: () => {
@@ -82,9 +80,8 @@ const blockControl = {
       }
     }
     states.currentBlock = bottom;
-    const newMatrix = mergeBlock(matrix, states.currentBlock); // bottom을 주면 반짝! 하는 애니메이션이 없다.
     shake();
-    stateManager.nextAround(newMatrix);
+    stateManager.nextAround();
   }
 };
 

@@ -9,6 +9,7 @@ import Next from './Components/next';
 import StartLines from './Components/startLines';
 import Speed from './Components/speed';
 import KeyEventProcessor from './Events/KeyEventProcessor';
+import KeyEventListener from './Events/KeyEventListener';
 import { Tetris } from './types';
 import Sound from './Components/Sound';
 import Pause from './Components/Pause';
@@ -64,5 +65,8 @@ window.tetris = {
   },
   stateManager: new StateManager(),
   keyEventProcessor: new KeyEventProcessor()
-}
-window.tetris.stateManager.begin();
+};
+
+(new KeyEventListener()).listen(); // 이제 spacebar를 누르면 게임이 시작된다.
+
+window.tetris.stateManager.init();

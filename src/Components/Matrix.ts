@@ -38,8 +38,7 @@ class Matrix {
         this.moveBlock(matrix, nextBlock);
         this.timer = setTimeout(fall, speed);
       } else {
-        const newMatrix = mergeBlock(matrix, currentBlock); 
-        stateManager.nextAround(newMatrix);
+        stateManager.nextAround();
       }
     }
     clearTimeout(this.timer);

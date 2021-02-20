@@ -5,64 +5,147 @@ import { Tetris } from './types';
 import Block from './Components/Block';
 
 class StateManager {
-  begin = () => {
-    (new KeyEventListener()).listen(); // 이제 spacebar를 누르면 게임이 시작된다.
-    this.init();
-  }
+
+  /**
+   * 게임을 시작할때 호출한다
+   * 
+   * callback함수를 인자값으로 받는 이유는 reset을 잘 처리하기 위해서이다.
+   * reset하는 과정속에 init이 있는데, 어쨋든 init은 reset의 한 과정일 뿐이니까 init에 callback을 넣어서
+   * reset을 마무리 해야한다. 그렇지 않으면 init하는 도중에 (플레이어가 의도적으로) reset을 할수 있게된다.
+   */
   init = (callback?: () => void) => {
+    /**
+     * 작업 시작하기 전에 화면을 잠궈준다
+     */
     this.lock();
+
     const {states, components: {$matrix, $next, $point, $logo, $startLines, $speed, $clock}} = window.tetris;
-    clearTimeout($matrix.timer); // 더이상 autodown이 일어나지 않도록
-    $matrix.render(deepcopy(blankMatrix)); // 빈화면으로 초기화
+    
+    $matrix.render(deepcopy(blankMatrix));
 
-    // nextBlock도 초기화
-    states.currentBlock = null;
-    $next.reset(); // next를 지우고
-    this.updateNextBlock(getRandomNextBlock()); // nextBlock을 새로 그려준다
+    this.updateNextBlock(getRandomNextBlock());
 
-    // Point도 초기화
     const lastPoint = Number(localStorage.getItem('last-point'));
     if (lastPoint > 0) {
       $point.changeTitle(LAST_ROUND);
       $point.render(lastPoint); // 그리기만 하고 point에 실제로 숫자값을 넣지는 말자(당연)
     }
 
-    // 로고등장
     $logo.show();
     $logo.animate();
+
     $startLines.render(states.startLines);
+
     $speed.render(speeds[states.speedStep-1]);
 
-    // 시계등장
     $clock.work(1);
 
     this.unlock();
+
     if (callback) {callback()}
   }
+
+  /**
+   * space를 누르면 게임을 시작한다(run호출)
+   */
   run = () => {
+    
+    /**
+     * 바로 게임을 시작하지 않고 600ms(300+300)후에 autoDown을 호출하면서 시작할것이기 때문에
+     * 준비가 되기 전까지 lock을 걸어놓자
+     */
     this.lock();
     const {states, components: {$matrix, $next, $point, $logo}} = window.tetris;
+
+    /**
+     * 로고를 이제 안보이게 해야지
+     */
     $logo.hide();
-    $point.reset(POINT); // 포인트 리셋해야지
+
+    /**
+     * 포인트도 새로 입력받을 준비 해야지, 과거는 잊자구
+     */
+    $point.reset(POINT);
+
+    /**
+     * 300ms후에 실행하는 이유는, 약간의 텀을 줘야 게임 같잖아
+     * 다음 진도로 넘어갈때마다 약간씩 뚝뚝 끊기는 맛이 좋다
+     */
     setTimeout(() => {
+
+      /** 
+       * 게임 시작전에 입력받은 startLines를 먼저 그려주는데
+       * 단순히 그리는게 아니라, tetris.states.matrix에 넣어준다
+       * fixed된 block들이니까 states에 넣어주는게 맞다 
+       */
       const states = window.tetris.states;
       states.matrix = getStartMatrix(states.startLines);
-      $matrix.render(); // startLine 먼저 그리자
+      $matrix.render();
+ 
+      /**
+       * matrix를 그리고 나서 바로 툭하고 블럭이 내려오면 좀 급한느낌이 들기때문에 텀을둔다.
+       */
       setTimeout(() => {
+
+        /**
+         * init에서 설정해놨던 nextBlock을 currentBlock으로 옮긴다
+         */
         this.nextBlockToCurrentBlock();
+
+        /**
+         * nextBlock에는 새로운 block을 넣는다
+         * 이때 들어가는 block은 6개중에서 랜덤이 아니라 아직 안쓴 블럭중에서 랜덤으로 뽑는다
+         * 한텀에 6개를 다 써야하는게 테트리스의 규칙이기 때문이다
+         */
         this.updateNextBlock(getRandomNextBlock());
+
+        /**
+         * states.matrix에 현재 블럭을 넣어서 화면에 그린다.
+         * 이때 mergeBlock이라는것은 matrix에 currentBlock을 넣는게 아니라,
+         * matrix를 복사해서 새로운 matrix를 만들고, 거기에 currentBlock을 넣은다음에
+         * 그 새로운 matrix를 return하는것이기 떄문에, global matrix인 states.matrix에는 영향을 주지 않는다
+         */
         $matrix.render(mergeBlock(states.matrix, states.currentBlock));
+
+        /**
+         * 이제 화면에 그렸으니까 한칸씩 뚝뚝 떨어지게 만든다.
+         * 300은 초기 딜레이인데, 화면에 currentBlock을 그리자 마자 바로 뚝 떨어지면 좀 이상하니까
+         * 약간의 delay를 주는거다
+         */
         $matrix.autoDown(300);
+
+        /** 
+         * 지금부터는 key event를 받아야 하니까 lock을 풀어준다
+         */
         this.unlock();
-      }, 500);
+      }, 300);
     }, 300);
   }
-  end = (callback: () => void) => {
+  
+  /**
+   * 블럭이 화면 위쪽으로 벗어나서 게임이 끝나야 할때 호출된다
+   * 
+   * @param callback
+   * end이후에 init으로 다시 게임을 준비해야할 필요가 있기때문에 callback을 넣어준다
+   */
+  end = (callback?: () => void) => {
+    /**
+     * 여기도 간섭이 발생하면 안되니까 lock을 걸어놓는다
+     */
     this.lock();
     const {states: {point}, keyEventProcessor, components: {$matrix}} = window.tetris;
-    keyEventProcessor.clearEventAll(); // 이전에 막 화살표를 누른게 있을수도 있으니까 지워준다.
+    
+    /**
+     * 이전에 키를 막 눌러놓은게 있을 수 있으니까 모든 loop를 제거해준다
+     */
+    keyEventProcessor.clearEventAll();
+
     localStorage.setItem('last-point', `${point}`);
     $matrix.reset(() => {
+      /**
+       * reset animation까지 끝났으니까 lock을 풀어준다
+       */
+      this.unlock();
       callback();
     });
   }
@@ -80,107 +163,191 @@ class StateManager {
     $matrix.autoDown();
     $pause.off();
   }
+  
+  /**
+   * 모든 설정을 reset하는거야
+   */
   reset = () => {
-    const {states, components: {$matrix, $pause, $logo, $point, $clock, $startLines}} = window.tetris;
-    if (states.reset === true) return; // 이미 reset하고 있는 중이라면 또 reset하지는 말아야지!
+    const {states, components: {$matrix, $pause, $logo, $point, $clock, $startLines, $next}} = window.tetris;
+    
+    /**
+     * reset을 여러번 연속으로 빠르게 누를 수 있잖아(이러면 에러남)
+     * 그래서 reset을 하고 있는 중인지 검사하는거야
+     */
+    if (states.reset === true) return;
     states.reset = true;
-    this.lock(); // reset하는동안 암것도 못하게 잠궈놓자
+    
+    /**
+     * reset하는동안 암것도 못하게 잠궈놓자
+     */
+    this.lock();
 
-    // autoDown reset
+    /**
+     * currentBlock을 먼저 비운다
+     */
+    states.currentBlock = null;
+
+    /**
+     * autoDown을 멈춘다
+     */
     clearTimeout($matrix.timer);
 
-    // pause reset
-    states.pause = false; // 일시정지도 해제
-    $pause.off(); // 일시정지할때 깜빡이는 이벤트 없애고
+    /**
+     * 일시정지도 해제해야 일시정지하고 -> reset눌렀을때 일시정지 그 깜빡이는 아이콘이 안보이게된다
+     */
+    states.pause = false;
+    $pause.off();
 
-    // logo reset
     $logo.hide();
 
-    // point reset
     states.point = 0;
     localStorage.setItem('last-point', '0');
     $point.reset(POINT);
 
-    // clock reset
+    /**
+     * 시계도 리셋해야 그 숫자 사이에 있는 깜빡이는 :(콜론) 이것도 꺼진다
+     * 물론 다시 init할때 켜진다. 지금 안끄면 timer가 중복되기 때문에 지금 꺼주는거다
+     */
     $clock.reset();
 
-    // startLines reset
     $startLines.reset();
 
-    this.end(() => {
+    $next.reset();
+
+    $matrix.reset(() => {
+      /**
+       * reset animation하고 나서 잠깐 텀을 두고 다시 시작한다
+       */
       setTimeout(() => {
         this.init(() => {
           states.reset = false;
           this.unlock();
         });
-      }, 500);
+      }, 300);
     });
   }
   lock = () => { window.tetris.states.lock = true; }
   unlock = () => { window.tetris.states.lock = false; }
-  nextAround = async (matrix: Tetris.MatrixState, stopDownTrigger?: () => void) => {
-    this.lock(); // 잠그고 작업하자
+
+  /**
+   * 블럭이 땅에 닿았을때 하늘에서 새로운 블럭이 내려오도록 하는 역할을한다
+   * (1)audoDown으로 내려오다가 닿거나, (2)키보드를 아래로 내려서 닿거나, (3)space를 눌러서 drop시켜가지고
+   * 블럭이 땅에 닿는다. 이 3가지 경우에 nextAround가 호출된다
+   *  
+   * @param stopDownTrigger
+   * 아래키를 누르면 loop가 하나 돈다. 땅에 닿았을때는 이 loop을 제거해 줘야
+   * 다음 위에서 내려오는 block에 영향을 주지 않는다
+   * 예를들어서, 아래키를 누르고 -> loop가 돌고 -> 블럭이 내려온다 -> 바닥에 부딪힌다 -> nextAround가 호출된다
+   * -> lock이 걸린다 -> 아래키를 땐다(하지만 lock이 걸려있기 때문에 loop는 안사라진다) -> loop가 다음 블럭에도 영향을 끼친다
+   */
+  nextAround = async (stopDownTrigger?: () => void) => {
+    this.lock();
     const {states, components: {$matrix, $next, $point, $logo}, keyEventProcessor} = window.tetris;
 
-    // 아래에서 autoDown을 실행하면 내부적으로 clearTimeout을 하지만,
-    // 아래 autoDown이 100ms이따가 호출되기 때문에 그전에 그냥 지워주자. 새로운 블록이 생겨서 내려오기 전에 autoDown이 실행될 수 도 있으니까
-    // 블럭이 바닥에 닿고 그 다음에 안정적으로 새로운 블럭이 따악 나오려면 autoDown을 이 시점에 지워주는게 낫다.
-    clearTimeout($matrix.timer);
-    
-    // stopDownTrigger가 필요한 이유
-    // 아래키를누른다 -> 내려온다 -> 바닥에 부딪힌다 -> 아래키를 땐다 ->
-    // lock이 걸려있는 상태니까 땐거를 인식 못한다 -> 다음 블럭도 계속 event loop가 걸려있는 상태라서 계속 내려온다.
-    // 그래서 autoDown안에서 nextAround를 할때는 stopDownTrigger가 필요하진 않지만,
-    // 아래키를 눌러서 event loop가 도는 경우에는 그 이벤트를 멈춰야한다.
-    if (typeof stopDownTrigger === 'function') {
-      stopDownTrigger();
-    }
+    /**
+     * 깔끔하게 새출발한다는 느낌으로, 이전의 timer는 전부 삭제해준다
+     */
+    // clearTimeout($matrix.timer);
+    // keyEventProcessor.clearEventAll();
 
-    // 블럭이 땅에 닿고, 지워야할 라인이 있다면
+    /**
+     * 현재 땅에 닿은 블럭이랑 states.matrix랑 합쳐서 새로운 matrix를 만든다.
+     */
+    let matrix = mergeBlock(states.matrix, states.currentBlock);
+
+    if (stopDownTrigger !== undefined) stopDownTrigger();
+
+    /**
+     * 블럭이 땅에 닿고, 지워야할 블럭이 있다면 지워준다
+     * 몇줄 완성한 경우겠지
+     */
     const clearLines = getClearLines(matrix);
     if (clearLines.length > 0) {
 
-      // 포인트를 업데이트하고
+      /**
+       * 꽉 채운 줄수만큼 포인트를 지급한다
+       */
       $point.updatePoint(clearLines.length*50);
 
-      // 라인을 지운 matrix를 가져오고
+      /**
+       * line을 지운 matrix를 만든다
+       */
       matrix = await $matrix.clearLines(matrix, clearLines);
 
-      // 화면에 그려준다.
-      // 다만 아직 states.matrix는 업데이트 하지 않은 상태이다.
+      /**
+       * 화면에 그려준다. 아직 states.matrix를 업데이트 하지는 않는다
+       */
       $matrix.render(matrix);
     } else {
-      // states.matrix에 getOverlappedMatrixWithCurrentBlock(matrix)로 받은 새로운 matrix를 넣지 않는다.
-      // 왜냐하면 currentBlock과 overlap된 matrix는 0과 1이 아니라 2도 들어가 있기 때문이다. 이거는 그릴때만 필요하고
-      // 실제 states.matrix는 0과 1로만 이루어져야한다.
+      /**
+       * 꽉채운 라인이 없으면 그냥 바닥에 닿으면 되는데, 이때 빨간색으로 잠깐 깜빡거리는 이펙트를 주기 위해서
+       * matrix랑 currentBlock이랑 겹쳐지는 부분의 (matrix안의) 숫자값을 1이 아닌 2로 만든다. 그러면 render함수 에서 blockState가 2인 경우에는
+       * 빨간 블럭을 그리기 때문이다.
+       * matrix랑 currentBlock이랑 겹쳐지는 이유는 위에서 merge했기 때문이다
+       * 그러면 'merge한다음에 겹쳐지는 부분에 2를 넣지 말고, 그냥 처음부터 matrix에 currentBlock부분을 그냥 2로 하면 되는거 아닌가?' 라고
+       * 생각할 수 있다. 하지만, (1)꽉채운 라인을 제거해야 할때 matrix에 currentBlock을 어차피 넣어야 하고,
+       * (2) 위에서 matrix에 currentBlock을 넣을때 1대신 2을 넣으면 이따가 또 그부분만 다시 2 -> 1로 바꿔줘야 하기 때문에
+       * 코드가 불필요하게 길어진다. 그래서 그냥 1을 박아놓고, 겹쳐지는 부분에 2를 넣는게 더 깔끔하다. 물론 getOverlappedMatrixWithCurrentBlock
+       * 의 반대가 되는 함수를 만들면 되긴 하겠지만,,,지금 이 방식이 좀 더 깔끔하다고 느껴진다
+       */
       $matrix.render(getOverlappedMatrixWithCurrentBlock(matrix));
     }
     
-    // 이제 matrix를 업데이트하는데
-    // 1. clearLine이 있다면 라인을 지운 matrix가 될것이고
-    // 2. 없다면, 그냥 nextAround를 호출하기 전에 currentBlock을 matrix에 고정시킨 그 matrix가 될것이다.
+    /**
+     * 이제 matrix를 업데이트하는데
+     * 1. clearLine이 있다면 라인을 지운 matrix가 될것이고
+     * 2. 없다면, 그냥 nextAround를 호출하기 전에 currentBlock을 matrix에 고정시킨 그 matrix가 될것이다.
+     */
     states.matrix = matrix;
 
-    // 게임이 끝났는지 체크하는 부분을 clearLines를 체크하는 부분보다 뒤에 넣은 이유는
-    // 딱 게임이 끝나는줄 알았지만! 딱 블럭이 딱 맞아가지고 딱 라인이 지워지면서 화면 위로 안높아질 수 있기 때문이다.
+    /**
+     * 게임이 끝났는지 체크하는 부분을 clearLines를 체크하는 부분보다 뒤에 넣은 이유는
+     * 딱 게임이 끝나는줄 알았지만! 딱 블럭이 딱 맞아가지고 딱 라인이 지워지면서 화면 위로 안높아질 수 있기 때문이다.
+     */
     if (isOver()) {
+      /**
+       * 만약에 게임이 끝났다면, end를 통해 matrix를 촤라락 촤라락 애니메이션 주고
+       * 그 작업이 끝나면 init으로 새로 게임을 시작해준다
+       */
       this.end(this.init);
+
+      /** 
+       * 게임이 끝났으니까 return시켜서 nextAround 코드 진행을 막는다
+       * 여기서 안막으면 autoDown이 실행되버림
+       */
       return
     }
 
+    /**
+     * clearLine을 하던지 블럭을 깜빡이던지 하고 나서 잠깐 텀을 두고
+     * 새로운 블럭을 소환한다
+     */
     setTimeout(() => {
-      // 다음 nextBlock을 이제 currentBlock으로 지정한다.
+      
+      /**
+       * nextBlock을 currentBlock에 넣는다
+       */
       this.nextBlockToCurrentBlock();
 
-      // 그리고 nextBlock에는 새로운 랜덤한 block을 넣는다.
+      /**
+       * 그리고 nextBlock에는 새로운 랜덤한 block을 넣는다.
+       */
       this.updateNextBlock(getRandomNextBlock());
 
-      // 새로 업데이트된 currentBlock을 화면에 그려준다
+      /**
+       * 새로 업데이트된 currentBlock을 화면에 그려준다
+       */
       $matrix.moveBlock(states.matrix, states.currentBlock);
 
+      /**
+       * startDelay를 따로 지정해 주지 않고, 그냥 게임 speed에 맞게 블럭이 내려온다
+       * 어쨋든 currentBlock을 화면에 그리고 나서 약간의 시간이 지나고 block이 내려온다는게 중요하다.
+       */
       $matrix.autoDown();
 
-      // lock을 풀어주고, 이벤트를 받을 수 있게 한다.
+      /**
+       * lock을 풀어주고, 이벤트를 받을 수 있게 한다.
+       */
       this.unlock();
     }, 120);
   }

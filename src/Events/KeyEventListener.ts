@@ -18,11 +18,7 @@ class KeyEventListener {
   p: P;
   r: R;
   buttonContainers: NodeListOf<HTMLDivElement>;
-  static instance: KeyEventListener;
   constructor() {
-    if (KeyEventListener.instance != null) {
-      return KeyEventListener.instance;
-    }
     this.arrowUp = new ArrowUp();
     this.arrowRight = new ArrowRight();
     this.arrowDown = new ArrowDown();
@@ -31,7 +27,6 @@ class KeyEventListener {
     this.p = new P();
     this.r = new R();
     this.buttonContainers = document.querySelectorAll('.button-container');
-    KeyEventListener.instance = this;
   }
   listen = () => {
     // keyboard event listener
