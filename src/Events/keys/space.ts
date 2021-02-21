@@ -3,10 +3,11 @@ import { isInGame } from '../../utils';
 import { blockControl, gameControl } from '../KeyEventCallbacks';
 import Key from './key';
 
-export default class Space extends Key implements Tetris.KeyControl {
+export default class Space implements Tetris.IKeyControl {
   type: Tetris.KeyType = 'space';
-  constructor() {
-    super('drop');
+  connectedBtn: HTMLDivElement;
+  constructor(btnClassName: string) {
+    this.connectedBtn = document.querySelector(`.button-container.feature-${btnClassName}`);
   }
   keyDown = () => {
     const {keyEventProcessor} = window.tetris;

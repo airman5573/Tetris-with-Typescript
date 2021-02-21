@@ -3,11 +3,11 @@ import { isInGame } from '../../utils';
 import { blockControl, startLineControl } from '../KeyEventCallbacks';
 import Key from './key';
 
-export default class ArrowRight extends Key implements Tetris.KeyControl {
+export default class ArrowRight implements Tetris.KeyControl {
   type: Tetris.KeyType = 'arrowRight';
-  btnNode: HTMLDivElement;
-  constructor() {
-    super('right');
+  connectedBtn: HTMLDivElement;
+  constructor(btnClassName: string) {
+    this.connectedBtn = document.querySelector(`.button-container.feature-${btnClassName}`);
   }
   keyDown = () => {
     const {states, keyEventProcessor} = window.tetris;

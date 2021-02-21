@@ -3,10 +3,11 @@ import { isInGame } from '../../utils';
 import { gameControl } from '../KeyEventCallbacks';
 import Key from './key';
 
-export default class P extends Key implements Tetris.KeyControl {
+export default class P implements Tetris.IKeyControl {
   type: Tetris.KeyType = 'p';
-  constructor() {
-    super('pause');
+  connectedBtn: HTMLDivElement;
+  constructor(btnClassName: string) {
+    this.connectedBtn = document.querySelector(`.button-container.feature-${btnClassName}`);
   }
   keyDown = () => {
     const {states: {pause}, keyEventProcessor} = window.tetris;

@@ -12,6 +12,7 @@ export namespace Tetris {
   export type BLACK = 1;
   export type RED = 2;
   export type BlockColor = GRAY | BLACK | RED;
+  export type KeyType = 'arrowUp' | 'arrowRight' | 'arrowDown' | 'arrowLeft' | 'space' | 'p' | 'r';
 
   export interface IBlockOption {
     type: BlockType;
@@ -113,28 +114,33 @@ export namespace Tetris {
     down(): void
     reset(): void
   }
+
+  /**
+   * https://www.typescriptlang.org/docs/handbook/interfaces.html
+   * 위 사이트를 참고해서 만들었다
+   */
+  export interface KeyControlConstructor {
+    new (btnClassName: string): IKeyControl
+  }
+
   export interface IKeyControl {
     type: KeyType
-    btnNode: HTMLDivElement
+    connectedBtn: HTMLDivElement
     keyDown(): void
     keyUp(): void
   }
-  export interface IArrowUp {}
-  export interface IArrowRight {}
-  export interface IArrowDown {}
-  export interface IArrowLeft {}
-  export interface ISpace {}
-  export interface IP {}
-  export interface IR {}
 
   export interface IKeyEventListener {
-    arrowUp: ArrowUp
-    arrowRight: ArrowRight
-    arrowDown: ArrowDown
-    arrowLeft: ArrowLeft
-    space: Space
-    p: P
-    r: R
+    arrowUp: IKeyControl
+    arrowRight: IKeyControl
+    arrowDown: IKeyControl
+    arrowLeft: IKeyControl
+    space: IKeyControl
+    p: IKeyControl
+    r: IKeyControl
     buttonContainers: NodeListOf<HTMLDivElement>
+    listen(): void
+    keyDown(e:KeyboardEvent): void
+    keyUp(e: KeyboardEvent): void
   }
 }

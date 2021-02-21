@@ -3,10 +3,11 @@ import { isInGame } from '../../utils';
 import { blockControl, speedControl } from '../KeyEventCallbacks';
 import Key from './key';
 
-export default class ArrowDown extends Key implements Tetris.KeyControl {
+export default class ArrowDown implements Tetris.IKeyControl {
   type: Tetris.KeyType = 'arrowDown';
-  constructor() {
-    super('down');
+  connectedBtn: HTMLDivElement;
+  constructor(btnClassName: string) {
+    this.connectedBtn = document.querySelector(`.button-container.feature-${btnClassName}`);
   }
   keyDown = () => {
     const {states, keyEventProcessor} = window.tetris;

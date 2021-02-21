@@ -239,7 +239,23 @@ const isLock = (e?:KeyboardEvent) => {
   // 나머지의 경우에서는 이전에 입력한 lock을 return한다. 
   return states.lock;
 }
+/**
+ * IKeyControl Interface에 constructor 함수의 모양을 강제할 수 없어서
+ * 이런식으로 해결했다.
+ * https://www.typescriptlang.org/docs/handbook/interfaces.html 여기를 참고해서 작성했다.
+ * 
+ * @param ctor
+ * 여기에 KeyControlConstructor안에 정의된 new 에 맞는 constructor함수를 가진 class가 들어간다
+ *  
+ * @param btnClassName 
+ */
+function createKeyControl(
+  ctor: Tetris.KeyControlConstructor,
+  btnClassName: string
+): Tetris.IKeyControl {
+  return new ctor(btnClassName);
+}
 
 export {getStartMatrix, getClearLines, isOver,
         deepcopy, getRandomNextBlock, tryMove, resize, getDecoBlocks, shake,
-        getOverlappedMatrixWithCurrentBlock, mergeBlock, isInGame, isLock}
+        getOverlappedMatrixWithCurrentBlock, mergeBlock, isInGame, isLock, createKeyControl}
