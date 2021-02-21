@@ -1,6 +1,6 @@
-import Block from './block';
+import { Tetris } from '../types'
 
-class Next {
+class Next implements Tetris.INext {
   blocks: Array<NodeListOf<Element>>
   constructor() {
     this.blocks = [
@@ -8,7 +8,7 @@ class Next {
       document.querySelectorAll(".sidebar .next-block p:nth-child(2) b"),
     ];
   }
-  render = (nextBlock: Block = window.tetris.states.nextBlock) => {
+  render = (nextBlock: Tetris.IBlock = window.tetris.states.nextBlock) => {
     this.reset();
     if (nextBlock === null) return;
     nextBlock.shape.forEach((line: number[], i) => {

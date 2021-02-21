@@ -1,4 +1,6 @@
-class Pause {
+import { Tetris } from '../types';
+
+class Pause implements Tetris.IPause {
   node: HTMLDivElement;
   timer: NodeJS.Timeout;
   constructor() {

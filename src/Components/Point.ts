@@ -1,7 +1,8 @@
 import { LAST_ROUND } from '../const';
-import Numbers from './numbers';
+import { Tetris } from '../types';
+import Numbers from './Numbers';
 
-class Point extends Numbers {
+class Point extends Numbers implements Tetris.IPoint {
   title: string;
   titleEl: HTMLDivElement;
   constructor() {
@@ -9,18 +10,18 @@ class Point extends Numbers {
     this.title = LAST_ROUND;
     this.titleEl = document.querySelector(".game-screen > .sidebar .point > label");
   }
-  changeTitle = (_title: string) => {
-    this.title = _title;
+  changeTitle = (title: string) => {
+    this.title = title;
     this.titleEl.innerText = this.title;
   }
-  updatePoint = (_point: number) => {
+  updatePoint = (point: number) => {
     const states = window.tetris.states;
-    states.point += _point;
+    states.point += point;
     this.render(states.point);
   }
-  setPoint = (_point: number) => {
+  setPoint = (point: number) => {
     const states = window.tetris.states;
-    states.point = _point;
+    states.point = point;
     this.render(states.point);
   }
   reset = (title: string) => {

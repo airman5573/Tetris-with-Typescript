@@ -1,6 +1,7 @@
+import { Tetris } from '../types';
 import Numbers from './numbers';
 
-class StartLines extends Numbers {
+class StartLines extends Numbers implements Tetris.IStartLines {
   title: string;
   titleEl: HTMLDivElement;
   constructor() {

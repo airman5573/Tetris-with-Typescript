@@ -1,21 +1,20 @@
 import { blockColors, yxRotateOrigin } from '../const';
-import { Shape } from '../types';
-import Matrix from './Matrix';
+import { Tetris } from '../types';
 
-class Block implements Tetris.BlockOption {
+class Block implements Tetris.IBlock {
   type: Tetris.BlockType;
   shape: Tetris.Shape;
   rotateIndex: number;
   timestamp: number;
   yx: Tetris.YX;
-  constructor(options: Tetris.BlockOption) {
+  constructor(options: Tetris.IBlockOption) {
     this.type = options.type;
     this.shape = options.shape;
     this.rotateIndex = options.rotateIndex;
     this.timestamp = options.timestamp;
     this.yx = options.yx;
   }
-  updateColor = (matrix: Tetris.MatrixState, $matrix: Matrix, color: number) => {
+  updateColor = (matrix: Tetris.MatrixState, $matrix: Tetris.IMatrix, color: number) => {
     const [y, x] = this.yx; // sY = startY, sX = startX
     this.shape.forEach((line, i) => {
       line.forEach((blockState, j) => {
@@ -52,14 +51,14 @@ class Block implements Tetris.BlockOption {
       timestamp: this.timestamp
     });
   }
-  fall = (n = 1): Block => {
+  fall = (n = 1): Tetris.IBlock => {
     return new Block({
       type: this.type,
       shape: this.shape,
       yx: [this.yx[0] + n, this.yx[1]],
       rotateIndex: this.rotateIndex,
       timestamp: Date.now() // 떨어지는거는 정말 새로운 블럭이다.
-    });
+    } as Tetris.IBlockOption);
   }
   right = () => {
     return new Block({

@@ -3,11 +3,11 @@ import { blockColors, speeds } from '../const';
 import { Tetris } from '../types';
 import { deepcopy, tryMove, mergeBlock } from '../utils';
 
-class Matrix {
+class Matrix implements Tetris.IMatrix {
   matrixNode: HTMLDivElement;
   timer: NodeJS.Timeout;
   width = 10;
-  animateColor = 1;
+  animateColor: Tetris.BlockColor = 1;
   constructor() {
     this.matrixNode = document.querySelector(".game-screen > .matrix");
     /**

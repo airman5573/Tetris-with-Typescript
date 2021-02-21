@@ -1,7 +1,8 @@
+import { Tetris } from '../types';
 import Numbers from './numbers';
-import {speeds} from '../const';
+import { speeds } from '../const';
 
-class Speed extends Numbers {
+class Speed extends Numbers implements Tetris.ISpeed {
   title: string;
   titleEl: HTMLDivElement;
   constructor() {

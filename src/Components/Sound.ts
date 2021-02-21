@@ -1,4 +1,6 @@
-class Sound {
+import { Tetris } from '../types';
+
+class Sound implements Tetris.ISound {
   node: HTMLDivElement;
   constructor() {
     this.node = document.querySelector(`.game-screen > .sidebar .sound`);

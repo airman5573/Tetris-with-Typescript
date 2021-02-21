@@ -1,4 +1,6 @@
-class Logo {
+import { Tetris } from '../types';
+
+class Logo implements Tetris.ILogo {
   logo: HTMLDivElement;
   dragon: HTMLDivElement;
   timer: NodeJS.Timeout;

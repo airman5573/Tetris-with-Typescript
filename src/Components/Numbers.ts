@@ -1,4 +1,6 @@
-class Numbers {
+import { Tetris } from '../types';
+
+class Numbers implements Tetris.INumbers {
   node: HTMLDivElement;
   constructor(className: string) {
     this.node = document.querySelector(`.game-screen > .sidebar .${className} > .led-numbers`);

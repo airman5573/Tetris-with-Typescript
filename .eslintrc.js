@@ -21,5 +21,15 @@ module.exports = {
         json: 'never',
       },
     ],
+    'max-len': [ { 'error': 120, } ]
   },
+  overrides: [
+    {
+      files: ['src/types.ts'],
+      rules: {
+        'no-use-before-define': ['off'],
+        'no-unused-vars': ['off'],
+      },
+    },
+  ],
 };

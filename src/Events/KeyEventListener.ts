@@ -1,3 +1,4 @@
+
 import {keyCodeWithType, keyCodes} from '../const';
 import ArrowUp from './keys/arrowUp';
 import ArrowRight from './keys/arrowRight';
@@ -10,13 +11,13 @@ import { Tetris } from '../types';
 import { isLock } from '../utils';
 
 class KeyEventListener {
-  arrowUp: ArrowUp;
-  arrowRight: ArrowRight;
-  arrowDown: ArrowDown;
-  arrowLeft: ArrowLeft;
-  space: Space;
-  p: P;
-  r: R;
+  arrowUp: Tetris.IKeyControl;
+  arrowRight: Tetris.IKeyControl;
+  arrowDown: Tetris.IKeyControl;
+  arrowLeft: Tetris.IKeyControl;
+  space: Tetris.IKeyControl;
+  p: Tetris.IKeyControl;
+  r: Tetris.IKeyControl;
   buttonContainers: NodeListOf<HTMLDivElement>;
   constructor() {
     this.arrowUp = new ArrowUp();

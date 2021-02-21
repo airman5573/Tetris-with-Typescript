@@ -3,7 +3,7 @@ import { isInGame } from '../../utils';
 import { blockControl, speedControl } from '../KeyEventCallbacks';
 import Key from './key';
 
-export default class ArrowUp extends Key implements Tetris.KeyControl {
+export default class ArrowUp extends Key implements Tetris.IKeyControl {
   type: Tetris.KeyType = 'arrowUp';
   btnNode: HTMLDivElement;
   constructor() {

@@ -1,4 +1,6 @@
-class Clock {
+import { Tetris } from '../types';
+
+class Clock implements Tetris.IClock {
   node: HTMLDivElement;
   ledNumbers: NodeListOf<HTMLSpanElement>;
   clockTimer: NodeJS.Timeout;
