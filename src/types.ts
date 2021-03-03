@@ -13,7 +13,7 @@ export namespace Tetris {
   export type RED = 2;
   export type BlockColor = GRAY | BLACK | RED;
   export type KeyType = 'arrowUp' | 'arrowRight' | 'arrowDown' | 'arrowLeft' | 'space' | 'p' | 'r';
-
+  export type KeyTimer = { [key: 'arrowDown'|'arrowLeft'|'arrowRight'|'arrowUp'|'p'|'s'|'space']: NodeJS.Timeout }
   export interface IBlockOption {
     type: BlockType;
     shape: Shape,
@@ -142,5 +142,58 @@ export namespace Tetris {
     listen(): void
     keyDown(e:KeyboardEvent): void
     keyUp(e: KeyboardEvent): void
+  }
+
+  export interface IKeyEventProcessor {
+    events: Tetr
+  }
+
+  export interface IStateManager {
+    init(callback?: () => void): void,
+    run(): void,
+    end(callback?: () => void): void,
+    pause(): void,
+    unpause(): void,
+    reset(): void,
+    lock(): void,
+    unlock(): void,
+    nextAround(stopDownTrigger?: () => void): void,
+    updateCurrentBlock(block: IBlock, timestamp?: number): void,
+    updateNextBlock(block: IBlock): void,
+    nextBlockToCurrentBlock(): void
+  }
+}
+
+type Tetris = {
+  states: {
+    currentBlock: Tetris.IBlock | null
+    nextBlock: Tetris.IBlock | null,
+    matrix: Tetris.MatrixState,
+    blockStack: Array<Tetris.BlockType>,
+    speedStep: number,
+    lock: boolean,
+    pause: boolean,
+    reset: boolean,
+    startLines: number,
+    point: number
+  },
+  components: {
+    $matrix: Tetris.IMatrix,
+    $logo: Tetris.ILogo,
+    $point: Tetris.IPoint,
+    $next: Tetris.INext,
+    $startLines: Tetris.IStartLines,
+    $speed: Tetris.ISpeed,
+    $sound: Tetris.ISound,
+    $pause: Tetris.IPause,
+    $clock: Tetris.IClock
+  },
+  stateManager: Tetris.IStateManager,
+  keyEventProcessor: Tetris.Key()
+}
+
+declare global {
+  interface Window {
+    tetris: Tetris;
   }
 }
