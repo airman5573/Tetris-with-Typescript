@@ -7,7 +7,7 @@ class Logo implements Tetris.ILogo {
 
   timer: NodeJS.Timeout;
 
-  basicClassName = "dragon bg";
+  basicClassName = 'dragon bg';
 
   constructor() {
     this.logo = document.querySelector('.game-screen > .logo');
@@ -23,38 +23,36 @@ class Logo implements Tetris.ILogo {
     clearTimeout(this.timer);
   }
 
-  eye = (timeout: number) => new Promise<void>(async (resolve) => {
+  eye = (timeout: number) => new Promise<void>((resolve) => {
     const direction = 'r';
-    const results = [];
+    const todos = [];
     for (let i = 0; i < 2; i += 1) {
-      results.push(this.dragonBGmove(`${direction + 2}`, timeout));
-      results.push(this.dragonBGmove(`${direction + 1}`, timeout));
+      todos.push(this.dragonBGmove.bind(direction + 2, timeout));
+      todos.push(this.dragonBGmove.bind(direction + 1, timeout));
     }
-    await Promise.all(results);
+    Promise.all(todos).then(() => {
+      resolve();
+    });
+  });
+
+  run = (timeout: number) => new Promise<void>((resolve) => {
+    let direction = 'r';
+    const todos = [];
+    for (let i = 0; i < 15; i += 1) {
+      if (i === 6) direction = 'l';
+      if (i === 10) direction = 'r';
+      todos.push(this.dragonBGmove.bind(this, direction + 4, timeout));
+      todos.push(this.dragonBGmove.bind(this, direction + 3, timeout));
+    }
     resolve();
   });
 
-  run = (timeout: number) => {
-    return new Promise<void>(async (resolve, reject) => {
-      let direction = 'r';
-      for(let i = 0; i < 15; i++) {
-        if (i == 6) { direction = 'l'; }
-        if (i == 10) { direction = 'r'; }
-        await this.dragonBGmove(`${direction+4}`, timeout);
-        await this.dragonBGmove(`${direction+3}`, timeout);
-      }
+  dragonBGmove = (className: string, timeout: number) => new Promise<void>((resolve) => {
+    this.timer = setTimeout(() => {
+      this.dragon.className = `${this.basicClassName} ${className}`;
       resolve();
-    });
-  }
-
-  dragonBGmove = (className: string, timeout: number) => {
-    return new Promise<void>((resolve, reject) => {
-      this.timer = setTimeout(() => {
-        this.dragon.className = `${this.basicClassName} ${className}`;
-        resolve();
-      }, timeout);
-    });
-  }
+    }, timeout);
+  });
 
   animate = () => {
     this.dragon.className = `${this.basicClassName} r1`;

@@ -4,12 +4,15 @@ import { blockControl, speedControl } from '../KeyEventCallbacks';
 
 export default class ArrowDown implements Tetris.IKeyControl {
   type: Tetris.KeyType = 'arrowDown';
+
   connectedBtn: HTMLDivElement;
+
   constructor(btnClassName: string) {
     this.connectedBtn = document.querySelector(`.button-container.feature-${btnClassName}`);
   }
+
   keyDown = () => {
-    const {states, keyEventProcessor} = window.tetris;
+    const { keyEventProcessor } = window.tetris;
     keyEventProcessor.down({
       begin: 60,
       interval: 80,
@@ -20,21 +23,21 @@ export default class ArrowDown implements Tetris.IKeyControl {
           // 여기로 넘어간 stopDownTrigger는 down에서 호출되는게 아니라
           // down에서 currentBlock이 더이상 내려갈 곳이 없을때 nextRound에서 호출되는겨
           blockControl.down(stopDownTrigger);
-        } 
-        // block이 없으면 (게임시작전에) speed를 컨트롤 하는거지
-        else {
+        } else {
+          // block이 없으면 (게임시작전에) speed를 컨트롤 하는거지
           speedControl.down();
         }
       },
-      once: (isInGame()) ? false : true,
+      once: !isInGame(),
     });
   }
+
   keyUp = () => {
-    const {states, keyEventProcessor} = window.tetris;
-    if (states.lock === true) {return}
+    const { states, keyEventProcessor } = window.tetris;
+    if (states.lock === true) return;
     keyEventProcessor.up({
       keyType: this.type,
-      callback: null
+      callback: null,
     });
   }
 }

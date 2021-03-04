@@ -22,10 +22,13 @@ module.exports = {
       },
     ],
     'max-len': ['error', 120, 2],
+    'no-param-reassign': 0,
+    'no-console': 0,
+    'no-bitwise': 0,
   },
   overrides: [
     {
-      files: ['src/types.ts'],
+      files: ['src/types.ts', 'src/utils.ts'],
       rules: {
         'no-use-before-define': ['off'],
         'no-unused-vars': ['off'],

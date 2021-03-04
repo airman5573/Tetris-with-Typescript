@@ -1,4 +1,4 @@
-import { Tetris } from "./types";
+import { Tetris } from './types';
 
 const width: number = 640;
 const height: number = 960;
@@ -80,8 +80,11 @@ const clearPoints: number[] = [100, 300, 700, 1500];
 const LocalStorageKey: string = 'TETRIS_WITH_TYPESCRIPT';
 const maxPoint: number = 999999;
 const eachLines: number = 20;
-const keyCodeWithType: {[key: number]: Tetris.KeyType;} = { 37: 'arrowLeft', 38: 'arrowUp', 39: 'arrowRight', 40: 'arrowDown', 32: 'space', 80: 'p', 82: 'r' };
-const keyCodes = Object.keys(keyCodeWithType).map(e => parseInt(e, 10));
+const keyCodeWithType: {
+  [key: number]: Tetris.KeyType;} = {
+    37: 'arrowLeft', 38: 'arrowUp', 39: 'arrowRight', 40: 'arrowDown', 32: 'space', 80: 'p', 82: 'r',
+  };
+const keyCodes = Object.keys(keyCodeWithType).map((e) => parseInt(e, 10));
 const LAST_ROUND = 'Last Round';
 const POINT = 'Point';
 const blockColors: {[k: string]: Tetris.BlockColor} = { GRAY: 0, BLACK: 1, RED: 2 };

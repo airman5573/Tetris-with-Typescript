@@ -44,7 +44,7 @@ export namespace Tetris {
     init(): void
     autoDown(startDelay?: number): void
     moveBlock(matrix: MatrixState, block: IBlock): void
-    clearLines(matrix: MatrixState, lines: number[]): MatrixState
+    clearLines(matrix: MatrixState, lines: number[]): Promise<MatrixState>
     animateLines(matrix: MatrixState, lines: number[]): Promise<void>
     changeLineColor(matrix: MatrixState, lines: number[], color: BlockColor, sec: number): Promise<void>
     setLine(matrix: MatrixState, lines: number[], color: BlockColor): MatrixState

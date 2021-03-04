@@ -29,7 +29,7 @@ const blockControl = {
   },
   right: () => {
     const { states: { currentBlock, matrix, speedStep }, components: { $matrix } } = window.tetris;
-    if (currentBlock === null) {return}
+    if (currentBlock === null) return;
     const nextBlock = currentBlock.right();
     // 갈수있으면 가고, 못가면 어쩔 수 없고
     const delay = delays[speedStep - 1];
@@ -112,6 +112,8 @@ const gameControl = {
   pause: () => { window.tetris.stateManager.pause(); },
   unpause: () => { window.tetris.stateManager.unpause(); },
   reset: () => { window.tetris.stateManager.reset(); },
-},
+};
 
-export {blockControl, speedControl, startLineControl, gameControl}
+export {
+  blockControl, speedControl, startLineControl, gameControl,
+};

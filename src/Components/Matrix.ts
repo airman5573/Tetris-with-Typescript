@@ -5,18 +5,22 @@ import { deepcopy, tryMove, mergeBlock } from '../utils';
 
 class Matrix implements Tetris.IMatrix {
   matrixNode: HTMLDivElement;
+
   timer: NodeJS.Timeout;
+
   width = 10;
+
   animateColor: Tetris.BlockColor = 1;
+
   constructor() {
-    this.matrixNode = document.querySelector(".game-screen > .matrix");
+    this.matrixNode = document.querySelector('.game-screen > .matrix');
     /**
      * HTML로 다 쓰기가 귀찮아서 element를 만들어서 붙임
      */
-    for (let i = 0; i < 20; i++) {
-      const $p = document.createElement("p");
-      for (let j = 0; j < 10; j++) {
-        $p.appendChild(document.createElement("b"));
+    for (let i = 0; i < 20; i += 1) {
+      const $p = document.createElement('p');
+      for (let j = 0; j < 10; j += 1) {
+        $p.appendChild(document.createElement('b'));
       }
       this.matrixNode.appendChild($p);
     }
@@ -33,16 +37,15 @@ class Matrix implements Tetris.IMatrix {
 
   /**
    * timer를 돌려서 speed초마다 currentBlock을 한칸씩 내린다
-   * 
    * @param startDelay
    * 맨 처음에 블럭을 내리는데 딜레이를 주고싶을때 사용한다
    */
   autoDown = (startDelay?: number) => {
     if (startDelay !== undefined && startDelay < 0) startDelay = 0;
-    const speed = speeds[window.tetris.states.speedStep-1];
+    const speed = speeds[window.tetris.states.speedStep - 1];
     const fall = () => {
-      const {states: {lock, currentBlock, matrix}, stateManager} = window.tetris;
-      if (lock == true) { return }
+      const { states: { lock, currentBlock, matrix }, stateManager } = window.tetris;
+      if (lock === true) { return }
       if (currentBlock === null) { return }
       const nextBlock = currentBlock.fall();
       /**
@@ -56,7 +59,7 @@ class Matrix implements Tetris.IMatrix {
       } else {
         stateManager.nextAround();
       }
-    }
+    };
     /**
      * 어떤 특정 조건이 발생해서 this.timer를 제거하는게 아니라 그냥 autoDown이 호출될 때마다
      * 계속 timer를 제거하고 또 timer를 새로 만드는 이유는
@@ -78,17 +81,15 @@ class Matrix implements Tetris.IMatrix {
   /**
    * 꽉찬 라인을 지운다
    * async await문법을 사용하는게 더 읽기 좋은 코드가 되기때문에 Promise를 return했다
-   * 
    * @param matrix
    * 꽉찬 라인이 반영되어 있는 matrix
-   *  
    * @param lines
    * 몇번째 라인을 지워야 하는지 담겨있다
    */
   clearLines = async (matrix: Tetris.MatrixState, lines: number[]) => {
     const newMatrix = deepcopy(matrix);
     await this.animateLines(newMatrix, lines);
-    lines.forEach(n => {
+    lines.forEach((n) => {
       newMatrix.splice(n, 1);
       newMatrix.unshift(Array(10).fill(blockColors.GRAY));
     });
@@ -103,43 +104,49 @@ class Matrix implements Tetris.IMatrix {
    * 꽉찬 라인이 있는 matrix
    * 
    * @param lines
-   * 지울 lines이 담겨있다 
+   * 지울 lines이 담겨있다.
    */
-  animateLines = (matrix: Tetris.MatrixState, lines: number[]) => {
-    return new Promise<void>(async (resolve) => {
-      await this.changeLineColor(matrix, lines, blockColors.RED, 0);
-      await this.changeLineColor(matrix, lines, blockColors.GRAY, 200);
-      await this.changeLineColor(matrix, lines, blockColors.RED, 200);
-      await this.changeLineColor(matrix, lines, blockColors.GRAY, 200);
+  animateLines = (matrix: Tetris.MatrixState, lines: number[]) => new Promise<void>((resolve) => {
+    const todos = [
+      this.changeLineColor.bind(this, matrix, lines, blockColors.RED, 0),
+      this.changeLineColor.bind(this, matrix, lines, blockColors.GRAY, 200),
+      this.changeLineColor.bind(this, matrix, lines, blockColors.RED, 200),
+      this.changeLineColor.bind(this, matrix, lines, blockColors.GRAY, 200),
+    ];
+    Promise.all(todos).then(() => { resolve(); });
+  });
+
+  changeLineColor = (
+    matrix: Tetris.MatrixState,
+    lines: number[],
+    color: Tetris.BlockColor,
+    sec: number,
+  ) => new Promise<void>((resolve) => {
+    setTimeout(() => {
+      this.render(this.setLine(matrix, lines, color));
       resolve();
-    });
-  }
-  changeLineColor = (matrix: Tetris.MatrixState, lines: number[], color: Tetris.BlockColor, sec: number) => {
-    return new Promise<void>((resolve) => {
-      setTimeout(() => {
-        this.render(this.setLine(matrix, lines, color));
-        resolve();
-      }, sec);
-    });
-  }
+    }, sec);
+  });
+
   setLine = (matrix: Tetris.MatrixState, lines: number[], color: Tetris.BlockColor) => {
     matrix = deepcopy(matrix);
-    lines.forEach(i => {
+    lines.forEach((i) => {
       matrix[i] = Array(this.width).fill(color);
     });
     return matrix;
   }
+
   /**
    * isOver에 걸리거나, reset을 누를때 matrix는 reset된다
    * 좌라라락 라인이 올라갔다가 좌라라락 내려오는 애니메이션을 수행한다
    * @param callback
    */
   reset = (callback?: () => void) => {
-    const tetris = window.tetris;
-    const states = tetris.states;
+    const { tetris } = window;
+    const { states } = tetris;
     const animateLine = (index: number) => {
       if (index < 20) {
-        const i = 20 - (index + 1)
+        const i = 20 - (index + 1);
         states.matrix[i] = Array(this.width).fill(1);
         this.render();
       } else if (index < 40) {
@@ -148,20 +155,21 @@ class Matrix implements Tetris.IMatrix {
         this.render();
       }
       // 마지막에 index가 40이라면, 즉 다 끝났다면!
-      else {
-        if (callback) { callback(); }
-      }
-    }
-    for (let i = 0; i <= 40; i++) {
-      setTimeout(animateLine.bind(null, i), 40 * (i+1));
+      else if (callback) callback();
+    };
+    for (let i = 0; i <= 40; i += 1) {
+      setTimeout(animateLine.bind(null, i), 40 * (i + 1));
     }
   }
+
   render = (matrix = window.tetris.states.matrix) => {
-    for(let i = 0; i < matrix.length; i++) {
+    for (let i = 0; i < matrix.length; i += 1) {
       const line = this.matrixNode.childNodes[i];
-      for(let j = 0; j < matrix[i].length; j++) {
+      for (let j = 0; j < matrix[i].length; j += 1) {
         const block = line.childNodes[j] as HTMLElement;
-        block.className = matrix[i][j] == 1 ? 'b black' : (matrix[i][j] == 2 ? 'b red' : '');
+        block.className = '';
+        if (matrix[i][j] === 1) block.className = 'b black';
+        else if (matrix[i][j] === 2) block.className = 'b red';
       }
     }
   }

@@ -1,17 +1,20 @@
-import { Tetris } from "../types";
+import { Tetris } from '../types';
 
 class KeyEventProcessor implements Tetris.IKeyEventProcessor {
   events: Tetris.KeyTimer = {}
-  activeKey: Tetris.KeyType|null
+
+  activeKey: Tetris.KeyType | null
+
   clearEvent = (keyType: Tetris.KeyType) => {
     const keys = Object.keys(this.events);
     keys.forEach((k: Tetris.KeyType) => {
-      if (k == keyType && this.events[k]) {
+      if (k === keyType && this.events[k]) {
         clearTimeout(this.events[k]);
         this.events[k] = null;
       }
     });
   }
+
   clearEventAll = () => {
     const keys = Object.keys(this.events);
     keys.forEach((k: Tetris.KeyType) => {
@@ -19,26 +22,27 @@ class KeyEventProcessor implements Tetris.IKeyEventProcessor {
       this.events[k] = null;
     });
   }
+
   down = (e: Tetris.KeyCallback) => {
-    if (this.activeKey === e.keyType) { return }
-    else { this.activeKey = e.keyType; }
+    if (this.activeKey === e.keyType) return;
+    this.activeKey = e.keyType;
 
     // 다른 타이머들은 삭제해준다. 왜냐하면, 두 키를 동시에 누르는걸 허용하지 않기 때문이다. 동시에 누를 필요가 없다.
     this.clearEventAll();
 
     // 할일이 없는데 더 진행할 필요가 없지
-    if (e.callback === undefined) { return }
+    if (e.callback === undefined) return;
 
     // 이 clear가 왜 필요하냐면
     // 누른다 -> down이 실행되고 -> autoDown을 돌린다 -> 한칸 내려가는게 끝나면 -> autoDown멈추지마
     const clear = () => {
       this.clearEvent(e.keyType);
-    }
+    };
 
     // 한번 실행한다
     e.callback(clear);
     // 한번만 실행하는거라면 루프 돌리지 말자
-    if (e.once && e.once === true) { return }
+    if (e.once && e.once === true) return;
 
     // 계속 실행한다
     let begin = e.begin || 100;
@@ -54,12 +58,13 @@ class KeyEventProcessor implements Tetris.IKeyEventProcessor {
         // 그래서 loop() -> e.callback(clear)가 되야한다.
         loop();
         e.callback(clear);
-      }, begin|interval);
-    }
+      }, begin | interval);
+    };
     loop();
   }
+
   up = (e: Tetris.KeyCallback) => {
-    if (this.activeKey == e.keyType) { this.activeKey = null; }
+    if (this.activeKey === e.keyType) { this.activeKey = null; }
     this.clearEvent(e.keyType);
     this.events[e.keyType] = null;
   }

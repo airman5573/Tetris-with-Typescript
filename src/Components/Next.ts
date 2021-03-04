@@ -1,13 +1,15 @@
-import { Tetris } from '../types'
+import { Tetris } from '../types';
 
 class Next implements Tetris.INext {
   blocks: Array<NodeListOf<Element>>
+
   constructor() {
     this.blocks = [
-      document.querySelectorAll(".sidebar .next-block p:nth-child(1) b"),
-      document.querySelectorAll(".sidebar .next-block p:nth-child(2) b"),
+      document.querySelectorAll('.sidebar .next-block p:nth-child(1) b'),
+      document.querySelectorAll('.sidebar .next-block p:nth-child(2) b'),
     ];
   }
+
   render = (nextBlock: Tetris.IBlock = window.tetris.states.nextBlock) => {
     this.reset();
     if (nextBlock === null) return;
@@ -18,13 +20,14 @@ class Next implements Tetris.INext {
       });
     });
   }
+
   reset = () => {
-    this.blocks.forEach((line: NodeListOf<Element>, i) => {
-      line.forEach((el:Element, j) => {
+    this.blocks.forEach((line: NodeListOf<Element>) => {
+      line.forEach((el:Element) => {
         el.className = '';
       });
     });
   }
 }
 
-export default Next
+export default Next;
