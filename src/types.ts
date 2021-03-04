@@ -13,7 +13,14 @@ export namespace Tetris {
   export type RED = 2;
   export type BlockColor = GRAY | BLACK | RED;
   export type KeyType = 'arrowUp' | 'arrowRight' | 'arrowDown' | 'arrowLeft' | 'space' | 'p' | 'r';
-  export type KeyTimer = { [key: 'arrowDown'|'arrowLeft'|'arrowRight'|'arrowUp'|'p'|'s'|'space']: NodeJS.Timeout }
+  export type KeyTimer = { [key in KeyType]?: NodeJS.Timeout }
+  export type KeyCallback = {
+    begin: number,
+    interval: number,
+    keyType: KeyType,
+    once: boolean,
+    callback(stopDownTrigger?: () => void): void
+  }
   export interface IBlockOption {
     type: BlockType;
     shape: Shape,
@@ -145,7 +152,12 @@ export namespace Tetris {
   }
 
   export interface IKeyEventProcessor {
-    events: Tetr
+    events: KeyTimer,
+    activeKey: KeyType | null,
+    clearEvent(keyType: KeyType): void,
+    clearEventAll(): void,
+    down(e: KeyCallback): void,
+    up(e: KeyCallback): void
   }
 
   export interface IStateManager {

@@ -1,20 +1,20 @@
 import { Tetris } from "../types";
 
-class KeyEventProcessor {
+class KeyEventProcessor implements Tetris.IKeyEventProcessor {
   events: Tetris.KeyTimer = {}
   activeKey: Tetris.KeyType|null
   clearEvent = (keyType: Tetris.KeyType) => {
     const keys = Object.keys(this.events);
-    keys.forEach((k) => {
-      if (k == keyType && this.events[keyType]) {
-        clearTimeout(this.events[keyType]);
-        this.events[keyType] = null;
+    keys.forEach((k: Tetris.KeyType) => {
+      if (k == keyType && this.events[k]) {
+        clearTimeout(this.events[k]);
+        this.events[k] = null;
       }
     });
   }
   clearEventAll = () => {
     const keys = Object.keys(this.events);
-    keys.forEach((k) => {
+    keys.forEach((k: Tetris.KeyType) => {
       clearTimeout(this.events[k]);
       this.events[k] = null;
     });
