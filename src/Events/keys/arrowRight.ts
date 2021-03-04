@@ -1,9 +1,8 @@
 import { Tetris } from '../../types';
 import { isInGame } from '../../utils';
 import { blockControl, startLineControl } from '../KeyEventCallbacks';
-import Key from './key';
 
-export default class ArrowRight implements Tetris.KeyControl {
+export default class ArrowRight implements Tetris.IKeyControl {
   type: Tetris.KeyType = 'arrowRight';
   connectedBtn: HTMLDivElement;
   constructor(btnClassName: string) {

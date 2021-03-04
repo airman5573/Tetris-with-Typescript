@@ -1,7 +1,6 @@
 import { Tetris } from '../../types';
 import { isInGame } from '../../utils';
 import { gameControl } from '../KeyEventCallbacks';
-import Key from './key';
 
 export default class P implements Tetris.IKeyControl {
   type: Tetris.KeyType = 'p';

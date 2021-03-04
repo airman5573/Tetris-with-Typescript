@@ -1,7 +1,6 @@
 import { Tetris } from '../../types';
 import { isInGame } from '../../utils';
 import { blockControl, speedControl } from '../KeyEventCallbacks';
-import Key from './key';
 
 export default class ArrowUp implements Tetris.IKeyControl {
   type: Tetris.KeyType = 'arrowUp';

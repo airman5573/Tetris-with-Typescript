@@ -1,12 +1,12 @@
 export namespace Tetris {
+  export type BlockType = 'I' | 'L' | 'J' | 'Z' | 'S' | 'O' | 'T'
   export type Shape = Array<Array<number>>
   export type Dyx = Array<Array<number>>
-  export type BlockShapes = { I: Shape, L: Shape, J: Shape, Z: Shape, S: Shape, O: Shape, T: Shape }
-  export type YXRotateOrigin = { I: Dyx, L: Dyx, J: Dyx, Z: Dyx, S: Dyx, O: Dyx, T: Dyx }
+  export type BlockShapes = { [key in BlockType]: Shape }
+  export type YXRotateOrigin = { [key in BlockType]: Dyx }
   export type FillLine = number[]
   export type Line = number[]
   export type MatrixState = Line[]
-  export type BlockType = 'I' | 'L' | 'J' | 'Z' | 'S' | 'O' | 'T'
   export type YX = [number, number]
   export type GRAY = 0;
   export type BLACK = 1;
@@ -15,10 +15,10 @@ export namespace Tetris {
   export type KeyType = 'arrowUp' | 'arrowRight' | 'arrowDown' | 'arrowLeft' | 'space' | 'p' | 'r';
   export type KeyTimer = { [key in KeyType]?: NodeJS.Timeout }
   export type KeyCallback = {
-    begin: number,
-    interval: number,
+    begin?: number,
+    interval?: number,
     keyType: KeyType,
-    once: boolean,
+    once?: boolean,
     callback(stopDownTrigger?: () => void): void
   }
   export interface IBlockOption {
@@ -30,10 +30,10 @@ export namespace Tetris {
   }
   export interface IBlock extends IBlockOption {
     updateColor(matrix: MatrixState, $matrix: IMatrix, color: number): void
-    rotate(): void
-    fall(n: number): IBlock
-    right(): void
-    left(): void
+    rotate(): IBlock
+    fall(n?: number): IBlock
+    right(): IBlock
+    left(): IBlock
   }
 
   export interface IMatrix {
@@ -201,7 +201,7 @@ type Tetris = {
     $clock: Tetris.IClock
   },
   stateManager: Tetris.IStateManager,
-  keyEventProcessor: Tetris.Key()
+  keyEventProcessor: Tetris.IKeyEventProcessor
 }
 
 declare global {

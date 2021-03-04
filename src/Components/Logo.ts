@@ -2,30 +2,38 @@ import { Tetris } from '../types';
 
 class Logo implements Tetris.ILogo {
   logo: HTMLDivElement;
+
   dragon: HTMLDivElement;
+
   timer: NodeJS.Timeout;
+
   basicClassName = "dragon bg";
+
   constructor() {
-    this.logo = document.querySelector(".game-screen > .logo");
+    this.logo = document.querySelector('.game-screen > .logo');
     this.dragon = this.logo.children[0] as HTMLDivElement;
   }
+
   show = () => {
     this.logo.className = 'logo active';
   }
+
   hide = () => {
     this.logo.className = 'logo';
     clearTimeout(this.timer);
   }
-  eye = (timeout: number) => {
-    return new Promise<void>(async (resolve, reject) => {
-      let direction = 'r';
-      for(let i = 0; i < 2; i++) {
-        await this.dragonBGmove(`${direction+2}`, timeout);
-        await this.dragonBGmove(`${direction+1}`, timeout);
-      }
-      resolve();
-    });
-  }
+
+  eye = (timeout: number) => new Promise<void>(async (resolve) => {
+    const direction = 'r';
+    const results = [];
+    for (let i = 0; i < 2; i += 1) {
+      results.push(this.dragonBGmove(`${direction + 2}`, timeout));
+      results.push(this.dragonBGmove(`${direction + 1}`, timeout));
+    }
+    await Promise.all(results);
+    resolve();
+  });
+
   run = (timeout: number) => {
     return new Promise<void>(async (resolve, reject) => {
       let direction = 'r';
@@ -38,6 +46,7 @@ class Logo implements Tetris.ILogo {
       resolve();
     });
   }
+
   dragonBGmove = (className: string, timeout: number) => {
     return new Promise<void>((resolve, reject) => {
       this.timer = setTimeout(() => {
@@ -46,6 +55,7 @@ class Logo implements Tetris.ILogo {
       }, timeout);
     });
   }
+
   animate = () => {
     this.dragon.className = `${this.basicClassName} r1`;
     this.timer = setTimeout(async () => {

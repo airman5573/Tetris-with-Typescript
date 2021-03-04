@@ -21,7 +21,7 @@ module.exports = {
         json: 'never',
       },
     ],
-    'max-len': [ { 'error': 120, } ]
+    'max-len': ['error', 120, 2],
   },
   overrides: [
     {

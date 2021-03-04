@@ -1,5 +1,5 @@
 import Block from './Components/block';
-import { blockTypes, yxStartPosition, blockShapes, width, height, blankLine } from './const';
+import { yxStartPosition, blockShapes, width, height, blankLine } from './const';
 import { Tetris } from './types';
 
 /* 화면 크기가 바뀔때마다 게임판의 크기도 조정한다 */
@@ -132,10 +132,10 @@ const getRandomNextBlock = (): Block => {
 const getBlockStack = ():Array<Tetris.BlockType> => {
   const states = window.tetris.states;
   if (states.blockStack.length > 0) return states.blockStack;
-  states.blockStack = Object.keys(blockTypes)  as Array<Tetris.BlockType>;
+  states.blockStack = Object.keys(blockShapes)  as Array<Tetris.BlockType>;
   return states.blockStack;
 }
-const tryMove = (matrix: Tetris.MatrixState, nextBlock: Block): boolean => {
+const tryMove = (matrix: Tetris.MatrixState, nextBlock: Tetris.IBlock): boolean => {
   const yx = nextBlock.yx;
   const shape = nextBlock.shape;
   const width = shape[0].length;

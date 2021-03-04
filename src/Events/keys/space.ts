@@ -1,7 +1,6 @@
 import { Tetris } from '../../types';
 import { isInGame } from '../../utils';
 import { blockControl, gameControl } from '../KeyEventCallbacks';
-import Key from './key';
 
 export default class Space implements Tetris.IKeyControl {
   type: Tetris.KeyType = 'space';

@@ -1,7 +1,6 @@
 import { Tetris } from '../../types';
 import { isInGame } from '../../utils';
 import { blockControl, startLineControl } from '../KeyEventCallbacks';
-import Key from './key';
 
 export default class ArrowLeft implements Tetris.IKeyControl {
   type: Tetris.KeyType = 'arrowLeft';
