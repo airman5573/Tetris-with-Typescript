@@ -1,14 +1,16 @@
-import {getRandomNextBlock, deepcopy, getClearLines, isOver, getStartMatrix, getOverlappedMatrixWithCurrentBlock, mergeBlock, isInGame} from './utils';
-import {blankMatrix, blockColors, LAST_ROUND, POINT, speeds} from './const';
-import KeyEventListener from './Events/KeyEventListener';
-import { Tetris } from './types';
+import {
+  getRandomNextBlock, deepcopy, getClearLines,
+  isOver, getStartMatrix, getOverlappedMatrixWithCurrentBlock, mergeBlock,
+} from './utils';
+import {
+  blankMatrix, LAST_ROUND, POINT, speeds,
+} from './const';
 import Block from './Components/Block';
 
 class StateManager {
-
   /**
    * 게임을 시작할때 호출한다
-   * 
+   *
    * callback함수를 인자값으로 받는 이유는 reset을 잘 처리하기 위해서이다.
    * reset하는 과정속에 init이 있는데, 어쨋든 init은 reset의 한 과정일 뿐이니까 init에 callback을 넣어서
    * reset을 마무리 해야한다. 그렇지 않으면 init하는 도중에 (플레이어가 의도적으로) reset을 할수 있게된다.
@@ -19,8 +21,12 @@ class StateManager {
      */
     this.lock();
 
-    const {states, components: {$matrix, $next, $point, $logo, $startLines, $speed, $clock}} = window.tetris;
-    
+    const {
+      states, components: {
+        $matrix, $point, $logo, $startLines, $speed, $clock,
+      },
+    } = window.tetris;
+
     $matrix.render(deepcopy(blankMatrix));
 
     this.updateNextBlock(getRandomNextBlock());
@@ -36,26 +42,25 @@ class StateManager {
 
     $startLines.render(states.startLines);
 
-    $speed.render(speeds[states.speedStep-1]);
+    $speed.render(speeds[states.speedStep - 1]);
 
     $clock.work(1);
 
     this.unlock();
 
-    if (callback) {callback()}
+    if (callback) { callback(); }
   }
 
   /**
    * space를 누르면 게임을 시작한다(run호출)
    */
   run = () => {
-    
     /**
      * 바로 게임을 시작하지 않고 600ms(300+300)후에 autoDown을 호출하면서 시작할것이기 때문에
      * 준비가 되기 전까지 lock을 걸어놓자
      */
     this.lock();
-    const {states, components: {$matrix, $next, $point, $logo}} = window.tetris;
+    const { components: { $matrix, $point, $logo } } = window.tetris;
 
     /**
      * 로고를 이제 안보이게 해야지
@@ -72,21 +77,19 @@ class StateManager {
      * 다음 진도로 넘어갈때마다 약간씩 뚝뚝 끊기는 맛이 좋다
      */
     setTimeout(() => {
-
-      /** 
+      /**
        * 게임 시작전에 입력받은 startLines를 먼저 그려주는데
        * 단순히 그리는게 아니라, tetris.states.matrix에 넣어준다
-       * fixed된 block들이니까 states에 넣어주는게 맞다 
+       * fixed된 block들이니까 states에 넣어주는게 맞다
        */
-      const states = window.tetris.states;
+      const { states } = window.tetris;
       states.matrix = getStartMatrix(states.startLines);
-      $matrix.render();
- 
+      $matrix.render(states.matrix);
+
       /**
        * matrix를 그리고 나서 바로 툭하고 블럭이 내려오면 좀 급한느낌이 들기때문에 텀을둔다.
        */
       setTimeout(() => {
-
         /**
          * init에서 설정해놨던 nextBlock을 currentBlock으로 옮긴다
          */
@@ -114,17 +117,17 @@ class StateManager {
          */
         $matrix.autoDown(300);
 
-        /** 
+        /**
          * 지금부터는 key event를 받아야 하니까 lock을 풀어준다
          */
         this.unlock();
       }, 300);
     }, 300);
   }
-  
+
   /**
    * 블럭이 화면 위쪽으로 벗어나서 게임이 끝나야 할때 호출된다
-   * 
+   *
    * @param callback
    * end이후에 init으로 다시 게임을 준비해야할 필요가 있기때문에 callback을 넣어준다
    */
@@ -133,8 +136,8 @@ class StateManager {
      * 여기도 간섭이 발생하면 안되니까 lock을 걸어놓는다
      */
     this.lock();
-    const {states: {point}, keyEventProcessor, components: {$matrix}} = window.tetris;
-    
+    const { states: { point }, keyEventProcessor, components: { $matrix } } = window.tetris;
+
     /**
      * 이전에 키를 막 눌러놓은게 있을 수 있으니까 모든 loop를 제거해준다
      */
@@ -149,34 +152,40 @@ class StateManager {
       callback();
     });
   }
+
   pause = () => {
     this.lock();
-    const {states, components: {$matrix, $pause}} = window.tetris;
+    const { states, components: { $matrix, $pause } } = window.tetris;
     states.pause = true;
     clearTimeout($matrix.timer);
     $pause.blink(1);
   }
+
   unpause = () => {
     this.unlock();
-    const {states, components: {$matrix, $pause}} = window.tetris;
+    const { states, components: { $matrix, $pause } } = window.tetris;
     states.pause = false;
     $matrix.autoDown();
     $pause.off();
   }
-  
+
   /**
    * 모든 설정을 reset하는거야
    */
   reset = () => {
-    const {states, components: {$matrix, $pause, $logo, $point, $clock, $startLines, $next}} = window.tetris;
-    
+    const {
+      states, components: {
+        $matrix, $pause, $logo, $point, $clock, $startLines, $next,
+      },
+    } = window.tetris;
+
     /**
      * reset을 여러번 연속으로 빠르게 누를 수 있잖아(이러면 에러남)
      * 그래서 reset을 하고 있는 중인지 검사하는거야
      */
     if (states.reset === true) return;
     states.reset = true;
-    
+
     /**
      * reset하는동안 암것도 못하게 잠궈놓자
      */
@@ -226,14 +235,16 @@ class StateManager {
       }, 300);
     });
   }
+
   lock = () => { window.tetris.states.lock = true; }
+
   unlock = () => { window.tetris.states.lock = false; }
 
   /**
    * 블럭이 땅에 닿았을때 하늘에서 새로운 블럭이 내려오도록 하는 역할을한다
    * (1)audoDown으로 내려오다가 닿거나, (2)키보드를 아래로 내려서 닿거나, (3)space를 눌러서 drop시켜가지고
    * 블럭이 땅에 닿는다. 이 3가지 경우에 nextAround가 호출된다
-   *  
+   *
    * @param stopDownTrigger
    * 아래키를 누르면 loop가 하나 돈다. 땅에 닿았을때는 이 loop을 제거해 줘야
    * 다음 위에서 내려오는 block에 영향을 주지 않는다
@@ -242,7 +253,7 @@ class StateManager {
    */
   nextAround = async (stopDownTrigger?: () => void) => {
     this.lock();
-    const {states, components: {$matrix, $next, $point, $logo}, keyEventProcessor} = window.tetris;
+    const { states, components: { $matrix, $point } } = window.tetris;
 
     /**
      * 깔끔하게 새출발한다는 느낌으로, 이전의 timer는 전부 삭제해준다
@@ -263,11 +274,10 @@ class StateManager {
      */
     const clearLines = getClearLines(matrix);
     if (clearLines.length > 0) {
-
       /**
        * 꽉 채운 줄수만큼 포인트를 지급한다
        */
-      $point.updatePoint(clearLines.length*50);
+      $point.updatePoint(clearLines.length * 50);
 
       /**
        * line을 지운 matrix를 만든다
@@ -292,7 +302,7 @@ class StateManager {
        */
       $matrix.render(getOverlappedMatrixWithCurrentBlock(matrix));
     }
-    
+
     /**
      * 이제 matrix를 업데이트하는데
      * 1. clearLine이 있다면 라인을 지운 matrix가 될것이고
@@ -311,11 +321,11 @@ class StateManager {
        */
       this.end(this.init);
 
-      /** 
+      /**
        * 게임이 끝났으니까 return시켜서 nextAround 코드 진행을 막는다
        * 여기서 안막으면 autoDown이 실행되버림
        */
-      return
+      return;
     }
 
     /**
@@ -323,7 +333,6 @@ class StateManager {
      * 새로운 블럭을 소환한다
      */
     setTimeout(() => {
-      
       /**
        * nextBlock을 currentBlock에 넣는다
        */
@@ -351,11 +360,12 @@ class StateManager {
       this.unlock();
     }, 120);
   }
+
   /**
    * currentBlock을 입력받은 block으로 지정한다
-   * 
+   *
    * @param block
-   *  
+   *
    * @param timestamp
    * 좌우로 블럭을 이동할때 살짝 delay를 준다. 그러니까 아래로 가만히 내려갈때는 매 speed초마다 뚝뚝 내려가는데
    * 좌우로 움직일때는 그 블럭의 생성 시점을 바탕으로 약간의 딜레이를 준다. 이때 그 블럭의 생성시점을 기록해놔야 하기 때문에
@@ -365,7 +375,7 @@ class StateManager {
    * 봐야 이해가 가는 부분이니, 그 부분을 살펴보도록 한다
    */
   updateCurrentBlock = (block: Block, timestamp?: number) => {
-    if (timestamp !== undefined) { block.timestamp = timestamp }
+    if (timestamp !== undefined) { block.timestamp = timestamp; }
     window.tetris.states.currentBlock = block;
   }
 
@@ -374,7 +384,7 @@ class StateManager {
    * @param block
    */
   updateNextBlock = (block: Block) => {
-    const {$next} = window.tetris.components;
+    const { $next } = window.tetris.components;
     window.tetris.states.nextBlock = block;
     $next.render(block);
   }
@@ -386,8 +396,8 @@ class StateManager {
    * delay를 주는 로직에 의해서 키보드를 좌우로 움직였을때 nextBlock이 안떨어지는 문제가 발생활수도있다
    */
   nextBlockToCurrentBlock = () => {
-    const states = window.tetris.states;
-    const nextBlock = states.nextBlock;
+    const { states } = window.tetris;
+    const { nextBlock } = states;
     nextBlock.timestamp = Date.now();
     states.currentBlock = nextBlock;
   }

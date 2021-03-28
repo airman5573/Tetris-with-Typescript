@@ -31,6 +31,7 @@ const blockShapes: Tetris.BlockShapes = {
     [1, 1, 1],
   ],
 };
+const blockTypes = Object.keys(blockShapes) as Array<Tetris.BlockType>;
 const yxRotateOrigin: Tetris.YXRotateOrigin = {
   I: [
     [-1, 1],
@@ -91,7 +92,7 @@ const blockColors: {[k: string]: Tetris.BlockColor} = { GRAY: 0, BLACK: 1, RED: 
 
 export {
   width, height, LAST_ROUND, POINT,
-  blockShapes, yxRotateOrigin, speeds, yxStartPosition,
+  blockShapes, blockTypes, yxRotateOrigin, speeds, yxStartPosition,
   delays, fullLine, blankLine, blankMatrix, clearPoints,
   LocalStorageKey, maxPoint, eachLines, keyCodeWithType, keyCodes,
   blockColors,

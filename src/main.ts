@@ -1,13 +1,13 @@
 import './style/main.scss';
-import { blankMatrix, blockTypes, speeds } from './const';
-import Matrix from './Components/matrix';
-import { getRandomNextBlock, resize, getDecoBlocks } from './utils';
+import { blockTypes, blankMatrix, speeds } from './const';
+import Matrix from './Components/Matrix';
+import { resize, getDecoBlocks } from './utils';
 import StateManager from './stateManager';
-import Logo from './Components/logo'; 
-import Point from './Components/point';
-import Next from './Components/next';
-import StartLines from './Components/startLines';
-import Speed from './Components/speed';
+import Logo from './Components/Logo';
+import Point from './Components/Point';
+import Next from './Components/Next';
+import StartLines from './Components/StartLines';
+import Speed from './Components/Speed';
 import KeyEventProcessor from './Events/KeyEventProcessor';
 import KeyEventListener from './Events/KeyEventListener';
 import { Tetris } from './types';
@@ -20,10 +20,10 @@ resize();
 window.addEventListener('resize', resize);
 
 // decorations
-const $decoration = document.querySelector(".decoration");
+const $decoration = document.querySelector('.decoration');
 const $decoBlocks = getDecoBlocks();
-const $decoLeft = document.createElement("div");
-$decoLeft.classList.add("left");
+const $decoLeft = document.createElement('div');
+$decoLeft.classList.add('left');
 $decoBlocks.forEach(($block: Node[]) => {
   $block.forEach((el) => {
     // $decoLeft.appendChild(el);
@@ -31,12 +31,11 @@ $decoBlocks.forEach(($block: Node[]) => {
   });
 });
 const $decoRight = $decoLeft.cloneNode(true) as HTMLElement;
-$decoRight.classList.remove("left");
-$decoRight.classList.add("right");
-$decoRight.style.setProperty("transform", "rotateY(180deg)");
+$decoRight.classList.remove('left');
+$decoRight.classList.add('right');
+$decoRight.style.setProperty('transform', 'rotateY(180deg)');
 $decoration.appendChild($decoLeft);
 $decoration.appendChild($decoRight);
-
 
 // tetris initialization
 window.tetris = {
@@ -45,12 +44,12 @@ window.tetris = {
     nextBlock: null,
     matrix: blankMatrix,
     blockStack: Object.keys(blockTypes) as Array<Tetris.BlockType>,
-    speedStep: Math.floor(speeds.length/2)-1,
+    speedStep: Math.floor(speeds.length / 2) - 1,
     lock: false,
     pause: false,
     reset: false,
     startLines: 0,
-    point: 0
+    point: 0,
   },
   components: {
     $matrix: new Matrix(),
@@ -61,10 +60,10 @@ window.tetris = {
     $speed: new Speed(),
     $sound: new Sound(),
     $pause: new Pause(),
-    $clock: new Clock()
+    $clock: new Clock(),
   },
   stateManager: new StateManager(),
-  keyEventProcessor: new KeyEventProcessor()
+  keyEventProcessor: new KeyEventProcessor(),
 };
 
 (new KeyEventListener()).listen(); // 이제 spacebar를 누르면 게임이 시작된다.

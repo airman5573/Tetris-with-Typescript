@@ -67,7 +67,6 @@ class KeyEventListener implements Tetris.IKeyEventListener {
   keyUp = (e: KeyboardEvent) => {
     const type: Tetris.KeyType = keyCodeWithType[e.keyCode];
     this.inactiveButton(this[type].connectedBtn);
-    if (isLock(e)) return;
     if (e.metaKey === true || keyCodes.indexOf(e.keyCode) === -1) { return; }
     this[type].keyUp();
   }

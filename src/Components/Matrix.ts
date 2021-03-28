@@ -1,4 +1,4 @@
-import Block from './block';
+import Block from './Block';
 import { blockColors, speeds } from '../const';
 import { Tetris } from '../types';
 import { deepcopy, tryMove, mergeBlock } from '../utils';
@@ -45,8 +45,8 @@ class Matrix implements Tetris.IMatrix {
     const speed = speeds[window.tetris.states.speedStep - 1];
     const fall = () => {
       const { states: { lock, currentBlock, matrix }, stateManager } = window.tetris;
-      if (lock === true) { return }
-      if (currentBlock === null) { return }
+      if (lock === true) { return; }
+      if (currentBlock === null) { return; }
       const nextBlock = currentBlock.fall();
       /**
        * 내려 갈수 있으면 한칸 내려가고(global matrix인 states.matrix에 이 내려간 currentBlock이 반영되는건 아니다)
@@ -99,10 +99,9 @@ class Matrix implements Tetris.IMatrix {
   /**
    * 라인에 반짝반짝 애니메이션을 넣어주는 역할을한다
    * 이것도 callback hall에 빠지는게 싫어서 async await문법을 위해 Promise를 return했다
-   * 
-   * @param matrix 
+   * @param matrix
    * 꽉찬 라인이 있는 matrix
-   * 
+   *
    * @param lines
    * 지울 lines이 담겨있다.
    */
@@ -153,9 +152,10 @@ class Matrix implements Tetris.IMatrix {
         const i = index - 20;
         states.matrix[i] = Array(this.width).fill(0);
         this.render();
+      } else if (callback) {
+        // 마지막에 index가 40이라면, 즉 다 끝났다면!
+        callback();
       }
-      // 마지막에 index가 40이라면, 즉 다 끝났다면!
-      else if (callback) callback();
     };
     for (let i = 0; i <= 40; i += 1) {
       setTimeout(animateLine.bind(null, i), 40 * (i + 1));
