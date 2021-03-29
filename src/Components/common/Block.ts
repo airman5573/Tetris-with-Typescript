@@ -1,5 +1,5 @@
-import { blockColors, yxRotateOrigin } from '../const';
-import { Tetris } from '../types';
+import { blockColors, yxRotateOrigin } from '../../const';
+import { Tetris } from '../../types';
 
 class Block implements Tetris.IBlock {
   type: Tetris.BlockType;

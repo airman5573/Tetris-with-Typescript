@@ -12,14 +12,14 @@ export namespace Tetris {
   export type BLACK = 1;
   export type RED = 2;
   export type BlockColor = GRAY | BLACK | RED;
-  export type KeyType = 'arrowUp' | 'arrowRight' | 'arrowDown' | 'arrowLeft' | 'space' | 'p' | 'r';
-  export type KeyTimer = { [key in KeyType]?: NodeJS.Timeout }
-  export type KeyCallback = {
+  export type KeyType = 'arrowUp' | 'arrowRight' | 'arrowDown' | 'arrowLeft' | 'space' | 'p' | 'r' | 's';
+  export type KeyEventTimer = { [kt in KeyType]?: NodeJS.Timeout }
+  export type KeyEventCallback = {
     begin?: number,
     interval?: number,
     keyType: KeyType,
     once?: boolean,
-    callback(stopDownTrigger?: () => void): void
+    callback?(stopDownTrigger?: () => void): void
   }
   export interface IBlockOption {
     type: BlockType;
@@ -122,48 +122,31 @@ export namespace Tetris {
     reset(): void
   }
 
-  /**
-   * https://www.typescriptlang.org/docs/handbook/interfaces.html
-   * 위 사이트를 참고해서 만들었다
-   */
-  export interface KeyControlConstructor {
-    new (btnClassName: string): IKeyControl
-  }
-
   export interface IKeyControl {
-    type: KeyType
-    connectedBtn: HTMLDivElement
-    keyDown(): void
-    keyUp(): void
+    keyType: KeyType
+    down(): void
+    up(): void
   }
 
   export interface IKeyEventListener {
-    arrowUp: IKeyControl
-    arrowRight: IKeyControl
-    arrowDown: IKeyControl
-    arrowLeft: IKeyControl
-    space: IKeyControl
-    p: IKeyControl
-    r: IKeyControl
     buttonContainers: NodeListOf<HTMLDivElement>
     listen(): void
-    keyDown(e:KeyboardEvent): void
+    keyDown(e: KeyboardEvent): void
     keyUp(e: KeyboardEvent): void
   }
 
   export interface IKeyEventProcessor {
-    events: KeyTimer,
+    timers: KeyEventTimer,
     activeKey: KeyType | null,
     clearEvent(keyType: KeyType): void,
     clearEventAll(): void,
-    down(e: KeyCallback): void,
-    up(e: KeyCallback): void
+    down(e: KeyEventCallback): void,
+    up(e: KeyEventCallback): void
   }
 
   export interface IStateManager {
-    init(callback?: () => void): void,
-    run(): void,
-    end(callback?: () => void): void,
+    ready(callback?: () => void): void,
+    start(): void,
     pause(): void,
     unpause(): void,
     reset(): void,
@@ -198,7 +181,8 @@ type Tetris = {
     $speed: Tetris.ISpeed,
     $sound: Tetris.ISound,
     $pause: Tetris.IPause,
-    $clock: Tetris.IClock
+    $clock: Tetris.IClock,
+    $buttons: {[k in Tetris.KeyType]: HTMLDivElement}
   },
   stateManager: Tetris.IStateManager,
   keyEventProcessor: Tetris.IKeyEventProcessor

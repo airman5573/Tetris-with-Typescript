@@ -1,4 +1,4 @@
-import Block from './Block';
+import Block from './common/Block';
 import { blockColors, speeds } from '../const';
 import { Tetris } from '../types';
 import { deepcopy, tryMove, mergeBlock } from '../utils';

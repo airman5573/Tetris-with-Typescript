@@ -1,4 +1,4 @@
-import { Tetris } from '../types';
+import { Tetris } from '../../types';
 import Numbers from './Numbers';
 
 class StartLines extends Numbers implements Tetris.IStartLines {

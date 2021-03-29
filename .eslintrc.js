@@ -9,6 +9,8 @@ module.exports = {
     'plugin:import/typescript',
   ],
   rules: {
+    'no-unused-vars': 'off',
+    '@typescript-eslint/no-unused-vars': 'error',
     'linebreak-style': 0,
     'import/extensions': [
       'error',

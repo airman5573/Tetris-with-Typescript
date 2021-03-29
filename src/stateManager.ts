@@ -5,17 +5,17 @@ import {
 import {
   blankMatrix, LAST_ROUND, POINT, speeds,
 } from './const';
-import Block from './Components/Block';
+import Block from './components/common/Block';
+import { Tetris } from './types';
 
-class StateManager {
+class StateManager implements Tetris.IStateManager {
   /**
-   * 게임을 시작할때 호출한다
+   * 게임을 준비할때 호출된다
    *
    * callback함수를 인자값으로 받는 이유는 reset을 잘 처리하기 위해서이다.
-   * reset하는 과정속에 init이 있는데, 어쨋든 init은 reset의 한 과정일 뿐이니까 init에 callback을 넣어서
-   * reset을 마무리 해야한다. 그렇지 않으면 init하는 도중에 (플레이어가 의도적으로) reset을 할수 있게된다.
+   * reset하는 도중에 ready를 호출한다. reset하는 과정중에 ready를 호출한다. ready의 callback으로 reset의 마무리 작업을 넣어준다.
    */
-  init = (callback?: () => void) => {
+  ready = (callback?: () => void) => {
     /**
      * 작업 시작하기 전에 화면을 잠궈준다
      */
@@ -52,9 +52,9 @@ class StateManager {
   }
 
   /**
-   * space를 누르면 게임을 시작한다(run호출)
+   * space를 누르면 게임을 시작한다
    */
-  run = () => {
+  start = () => {
     /**
      * 바로 게임을 시작하지 않고 600ms(300+300)후에 autoDown을 호출하면서 시작할것이기 때문에
      * 준비가 되기 전까지 lock을 걸어놓자
@@ -228,7 +228,7 @@ class StateManager {
        * reset animation하고 나서 잠깐 텀을 두고 다시 시작한다
        */
       setTimeout(() => {
-        this.init(() => {
+        this.ready(() => {
           states.reset = false;
           this.unlock();
         });
@@ -319,7 +319,7 @@ class StateManager {
        * 만약에 게임이 끝났다면, end를 통해 matrix를 촤라락 촤라락 애니메이션 주고
        * 그 작업이 끝나면 init으로 새로 게임을 시작해준다
        */
-      this.end(this.init);
+      this.end(this.ready);
 
       /**
        * 게임이 끝났으니까 return시켜서 nextAround 코드 진행을 막는다

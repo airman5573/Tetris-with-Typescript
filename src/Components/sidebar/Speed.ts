@@ -1,6 +1,6 @@
-import { Tetris } from '../types';
+import { Tetris } from '../../types';
 import Numbers from './Numbers';
-import { speeds } from '../const';
+import { speeds } from '../../const';
 
 class Speed extends Numbers implements Tetris.ISpeed {
   title: string;

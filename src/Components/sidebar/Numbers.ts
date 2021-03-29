@@ -1,4 +1,4 @@
-import { Tetris } from '../types';
+import { Tetris } from '../../types';
 
 class Numbers implements Tetris.INumbers {
   node: HTMLDivElement;

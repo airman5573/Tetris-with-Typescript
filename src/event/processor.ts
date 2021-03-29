@@ -1,29 +1,30 @@
 import { Tetris } from '../types';
+import { activeButton, inactiveButton } from '../utils';
 
 class KeyEventProcessor implements Tetris.IKeyEventProcessor {
-  events: Tetris.KeyTimer = {}
+  timers: Tetris.KeyEventTimer = {}
 
   activeKey: Tetris.KeyType | null
 
   clearEvent = (keyType: Tetris.KeyType) => {
-    const keys = Object.keys(this.events);
+    const keys = Object.keys(this.timers);
     keys.forEach((k: Tetris.KeyType) => {
-      if (k === keyType && this.events[k]) {
-        clearTimeout(this.events[k]);
-        this.events[k] = null;
+      if (k === keyType && this.timers[k]) {
+        clearTimeout(this.timers[k]);
+        this.timers[k] = null;
       }
     });
   }
 
   clearEventAll = () => {
-    const keys = Object.keys(this.events);
+    const keys = Object.keys(this.timers);
     keys.forEach((k: Tetris.KeyType) => {
-      clearTimeout(this.events[k]);
-      this.events[k] = null;
+      clearTimeout(this.timers[k]);
+      this.timers[k] = null;
     });
   }
 
-  down = (e: Tetris.KeyCallback) => {
+  down = (e: Tetris.KeyEventCallback) => {
     if (this.activeKey === e.keyType) return;
     this.activeKey = e.keyType;
 
@@ -32,6 +33,10 @@ class KeyEventProcessor implements Tetris.IKeyEventProcessor {
 
     // 할일이 없는데 더 진행할 필요가 없지
     if (e.callback === undefined) return;
+
+    // key를 누르던, 버튼을 누르던 어쨋든 버튼에 영향을 준다
+    const { $buttons } = window.tetris.components;
+    activeButton($buttons[e.keyType]);
 
     // 이 clear가 왜 필요하냐면
     // 누른다 -> down이 실행되고 -> autoDown을 돌린다 -> 한칸 내려가는게 끝나면 -> autoDown멈추지마
@@ -48,7 +53,7 @@ class KeyEventProcessor implements Tetris.IKeyEventProcessor {
     let begin = e.begin || 100;
     const interval = e.interval || 100;
     const loop = () => {
-      this.events[e.keyType] = setTimeout(() => {
+      this.timers[e.keyType] = setTimeout(() => {
         begin = null;
         // 이 순서가 정말 중요하다.
         // loop를 한다음에 e.callback을 해줘야한다.
@@ -63,10 +68,12 @@ class KeyEventProcessor implements Tetris.IKeyEventProcessor {
     loop();
   }
 
-  up = (e: Tetris.KeyCallback) => {
+  up = (e: Tetris.KeyEventCallback) => {
     if (this.activeKey === e.keyType) { this.activeKey = null; }
+    const { $buttons } = window.tetris.components;
+    inactiveButton($buttons[e.keyType]);
     this.clearEvent(e.keyType);
-    this.events[e.keyType] = null;
+    this.timers[e.keyType] = null;
   }
 }
 

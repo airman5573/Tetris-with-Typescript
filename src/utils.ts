@@ -1,4 +1,4 @@
-import Block from './Components/Block';
+import Block from './components/common/Block';
 import {
   yxStartPosition, blockShapes, width, height, blankLine,
 } from './const';
@@ -126,6 +126,7 @@ const getRandomNextBlock = (): Block => {
   const blockStack = getBlockStack();
   const randomIndex = Math.floor(Math.random() * blockStack.length);
   const randomType = blockStack[randomIndex];
+  console.log('randomType', randomType);
   blockStack.splice(randomIndex, 1); // 제거해준다
   return new Block({
     type: randomType,
@@ -173,7 +174,7 @@ const getDecoBlocks = () => {
   $gap.classList.add('gap');
   const rotate = (shape: Array<number[]>) => {
     const verticalRotatedShape: Array<number[]> = [];
-    shape.forEach((line, row) => {
+    shape.forEach((line) => {
       line.forEach((blockState, col) => {
         const rowIndex = line.length - col - 1;
         if (verticalRotatedShape[rowIndex] === undefined) {
@@ -252,23 +253,17 @@ const isLock = (e?:KeyboardEvent) => {
   return states.lock;
 };
 
-/**
- * IKeyControl Interface에 constructor 함수의 모양을 강제할 수 없어서
- * 이런식으로 해결했다.
- * https://www.typescriptlang.org/docs/handbook/interfaces.html 여기를 참고해서 작성했다.
- * @param ctor
- * 여기에 KeyControlConstructor안에 정의된 new 에 맞는 constructor함수를 가진 class가 들어간다
- * @param btnClassName
- */
-function createKeyControl(
-  Ctor: Tetris.KeyControlConstructor,
-  btnClassName: string,
-): Tetris.IKeyControl {
-  return new Ctor(btnClassName);
-}
+const activeButton = (btn: HTMLDivElement) => {
+  if (!btn.classList.contains('active')) btn.classList.add('active');
+};
+
+const inactiveButton = (btn: HTMLDivElement) => {
+  if (btn.classList.contains('active')) btn.classList.remove('active');
+};
 
 export {
   getStartMatrix, getClearLines, isOver,
   deepcopy, getRandomNextBlock, tryMove, resize, getDecoBlocks, shake,
-  getOverlappedMatrixWithCurrentBlock, mergeBlock, isInGame, isLock, createKeyControl,
+  getOverlappedMatrixWithCurrentBlock, mergeBlock, isInGame, isLock,
+  activeButton, inactiveButton,
 };

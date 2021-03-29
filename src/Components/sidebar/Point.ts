@@ -1,5 +1,5 @@
-import { LAST_ROUND } from '../const';
-import { Tetris } from '../types';
+import { LAST_ROUND } from '../../const';
+import { Tetris } from '../../types';
 import Numbers from './Numbers';
 
 class Point extends Numbers implements Tetris.IPoint {
