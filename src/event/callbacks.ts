@@ -20,7 +20,6 @@ const blockControl = {
     const {
       states: { currentBlock, matrix }, stateManager, components: { $matrix }, music,
     } = tetris;
-    console.log(music);
     if (currentBlock === null) return;
     const nextBlock = currentBlock.fall();
     // 갈수있으면 가고,

@@ -79,6 +79,17 @@ window.tetris = {
   keyEventProcessor: new KeyEventProcessor(),
 };
 
-(new KeyEventListener()).listen(); // 이제 spacebar를 누르면 게임이 시작된다.
+window.tetris.stateManager.ready().then(() => {
+  // key event listen
+  (new KeyEventListener()).listen(); // 이제 spacebar를 누르면 게임이 시작된다.
 
-window.tetris.stateManager.ready();
+  /**
+   * visibility change listen
+   * 다른 탭을 누르면 게임이 멈추도록, 사용자가 현재 게임이 돌아가는 탭을 보고있는지 체크한다.
+   */
+  document.addEventListener('visibilitychange', () => {
+    const { stateManager } = window.tetris;
+    if (document.hidden) stateManager.pause();
+    else stateManager.unpause();
+  });
+});

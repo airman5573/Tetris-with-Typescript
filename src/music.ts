@@ -57,7 +57,6 @@ class Music implements Tetris.IMusic {
   }
 
   move = () => {
-    console.log('move!');
     if (this.source === undefined || !this.isOn) return;
     this.source.start(...this.soundRanges.move);
   }

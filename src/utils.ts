@@ -260,9 +260,11 @@ const inactiveButton = (btn: HTMLDivElement) => {
   if (btn.classList.contains('active')) btn.classList.remove('active');
 };
 
+const isFocus = () => !document.hidden;
+
 export {
   getStartMatrix, getClearLines, isOver,
   deepcopy, getRandomNextBlock, tryMove, resize, getDecoBlocks, shake,
   getOverlappedMatrixWithCurrentBlock, mergeBlock, isInGame, isLock,
-  activeButton, inactiveButton,
+  activeButton, inactiveButton, isFocus,
 };

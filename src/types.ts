@@ -153,9 +153,9 @@ export namespace Tetris {
   }
 
   export interface IStateManager {
-    ready(callback?: () => void): void,
+    ready(): Promise<void>,
     start(): void,
-    end(callback?: () => void): void,
+    end(): Promise<void>,
     pause(): void,
     unpause(): void,
     reset(): void,

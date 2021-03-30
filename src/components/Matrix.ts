@@ -92,9 +92,7 @@ class Matrix implements Tetris.IMatrix {
    */
   clearLines = async (matrix: Tetris.MatrixState, lines: number[]) => {
     const newMatrix = deepcopy(matrix);
-    console.log('before animate lines');
     await this.blinkLines(newMatrix, lines);
-    console.log('after animate lines');
     lines.forEach((n) => {
       newMatrix.splice(n, 1);
       newMatrix.unshift(Array(10).fill(blockColors.GRAY));
@@ -118,7 +116,6 @@ class Matrix implements Tetris.IMatrix {
     this.queue.add(this.changeLineColor.bind(this, matrix, lines, blockColors.GRAY, 200));
     this.queue.start();
     this.queue.on('idle', () => {
-      console.log('animation end');
       resolve();
     });
   });
