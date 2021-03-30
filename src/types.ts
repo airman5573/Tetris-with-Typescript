@@ -1,3 +1,5 @@
+import PQueue from 'p-queue';
+
 export namespace Tetris {
   export type BlockType = 'I' | 'L' | 'J' | 'Z' | 'S' | 'O' | 'T'
   export type Shape = Array<Array<number>>
@@ -39,16 +41,17 @@ export namespace Tetris {
   export interface IMatrix {
     matrixNode: HTMLDivElement
     timer: NodeJS.Timeout
+    queue: PQueue
     width: number
     animateColor: BlockColor
     init(): void
     autoDown(startDelay?: number): void
     moveBlock(matrix: MatrixState, block: IBlock): void
     clearLines(matrix: MatrixState, lines: number[]): Promise<MatrixState>
-    animateLines(matrix: MatrixState, lines: number[]): Promise<void>
+    blinkLines(matrix: MatrixState, lines: number[]): Promise<void>
     changeLineColor(matrix: MatrixState, lines: number[], color: BlockColor, sec: number): Promise<void>
     setLine(matrix: MatrixState, lines: number[], color: BlockColor): MatrixState
-    reset(callback?: () => void): void
+    reset(): Promise<void>
     render(matrix: MatrixState): void
   }
 
@@ -65,6 +68,7 @@ export namespace Tetris {
   export interface ILogo {
     logo: HTMLDivElement
     dragon: HTMLDivElement
+    queue: PQueue
     timer: NodeJS.Timeout
     basicClassName: string
     show(): void
@@ -147,6 +151,7 @@ export namespace Tetris {
   export interface IStateManager {
     ready(callback?: () => void): void,
     start(): void,
+    end(callback?: () => void): void,
     pause(): void,
     unpause(): void,
     reset(): void,

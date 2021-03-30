@@ -126,7 +126,6 @@ const getRandomNextBlock = (): Block => {
   const blockStack = getBlockStack();
   const randomIndex = Math.floor(Math.random() * blockStack.length);
   const randomType = blockStack[randomIndex];
-  console.log('randomType', randomType);
   blockStack.splice(randomIndex, 1); // 제거해준다
   return new Block({
     type: randomType,
@@ -137,7 +136,7 @@ const getRandomNextBlock = (): Block => {
   });
 };
 
-const getBlockStack = ():Array<Tetris.BlockType> => {
+const getBlockStack = (): Array<Tetris.BlockType> => {
   const { states } = window.tetris;
   if (states.blockStack.length > 0) return states.blockStack;
   states.blockStack = Object.keys(blockShapes) as Array<Tetris.BlockType>;

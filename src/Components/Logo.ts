@@ -1,3 +1,4 @@
+import PQueue from 'p-queue';
 import { Tetris } from '../types';
 
 class Logo implements Tetris.ILogo {
@@ -7,11 +8,14 @@ class Logo implements Tetris.ILogo {
 
   timer: NodeJS.Timeout;
 
+  queue: PQueue;
+
   basicClassName = 'dragon bg';
 
   constructor() {
     this.logo = document.querySelector('.game-screen > .logo');
     this.dragon = this.logo.children[0] as HTMLDivElement;
+    this.queue = new PQueue({ concurrency: 1 });
   }
 
   show = () => {
@@ -19,49 +23,47 @@ class Logo implements Tetris.ILogo {
   }
 
   hide = () => {
+    this.queue.clear();
     this.logo.className = 'logo';
     clearTimeout(this.timer);
   }
 
-  eye = (timeout: number) => new Promise<void>((resolve) => {
+  eye = (timeout: number) => new Promise<void>(() => {
     const direction = 'r';
-    const todos = [];
     for (let i = 0; i < 2; i += 1) {
-      todos.push(this.dragonBGmove.bind(direction + 2, timeout));
-      todos.push(this.dragonBGmove.bind(direction + 1, timeout));
+      this.queue.add(this.dragonBGmove.bind(this, direction + 2, timeout));
+      this.queue.add(this.dragonBGmove.bind(this, direction + 1, timeout));
     }
-    Promise.all(todos).then(() => {
-      resolve();
-    });
   });
 
-  run = (timeout: number) => new Promise<void>((resolve) => {
+  run = (timeout: number) => new Promise<void>(() => {
     let direction = 'r';
-    const todos = [];
     for (let i = 0; i < 15; i += 1) {
       if (i === 6) direction = 'l';
       if (i === 10) direction = 'r';
-      todos.push(this.dragonBGmove.bind(this, direction + 4, timeout));
-      todos.push(this.dragonBGmove.bind(this, direction + 3, timeout));
+      this.queue.add(this.dragonBGmove.bind(this, direction + 4, timeout));
+      this.queue.add(this.dragonBGmove.bind(this, direction + 3, timeout));
     }
-    resolve();
   });
 
   dragonBGmove = (className: string, timeout: number) => new Promise<void>((resolve) => {
-    this.timer = setTimeout(() => {
+    setTimeout(() => {
       this.dragon.className = `${this.basicClassName} ${className}`;
       resolve();
     }, timeout);
   });
 
-  animate = () => {
+  animate = () => new Promise<void>((resolve) => {
+    this.queue.clear();
     this.dragon.className = `${this.basicClassName} r1`;
     this.timer = setTimeout(async () => {
-      await this.run(100);
-      await this.eye(600);
-      this.animate();
-    }, 500);
-  }
+      this.run(100);
+      this.eye(600);
+      this.queue.add(this.animate);
+      this.queue.start();
+      resolve();
+    }, 2000);
+  });
 }
 
 export default Logo;

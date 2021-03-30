@@ -15,10 +15,10 @@ class StateManager implements Tetris.IStateManager {
    * callback함수를 인자값으로 받는 이유는 reset을 잘 처리하기 위해서이다.
    * reset하는 도중에 ready를 호출한다. reset하는 과정중에 ready를 호출한다. ready의 callback으로 reset의 마무리 작업을 넣어준다.
    */
-  ready = (callback?: () => void) => {
+  ready = () => new Promise<void>((resolve) => {
     /**
-     * 작업 시작하기 전에 화면을 잠궈준다
-     */
+    * 작업 시작하기 전에 화면을 잠궈준다
+    */
     this.lock();
 
     const {
@@ -48,8 +48,8 @@ class StateManager implements Tetris.IStateManager {
 
     this.unlock();
 
-    if (callback) { callback(); }
-  }
+    resolve();
+  });
 
   /**
    * space를 누르면 게임을 시작한다
@@ -131,27 +131,22 @@ class StateManager implements Tetris.IStateManager {
    * @param callback
    * end이후에 init으로 다시 게임을 준비해야할 필요가 있기때문에 callback을 넣어준다
    */
-  end = (callback?: () => void) => {
+  end = () => new Promise<void>((resolve) => {
     /**
      * 여기도 간섭이 발생하면 안되니까 lock을 걸어놓는다
      */
     this.lock();
     const { states: { point }, keyEventProcessor, components: { $matrix } } = window.tetris;
-
     /**
-     * 이전에 키를 막 눌러놓은게 있을 수 있으니까 모든 loop를 제거해준다
-     */
+    * 이전에 키를 막 눌러놓은게 있을 수 있으니까 모든 loop를 제거해준다
+    */
     keyEventProcessor.clearEventAll();
 
     localStorage.setItem('last-point', `${point}`);
-    $matrix.reset(() => {
-      /**
-       * reset animation까지 끝났으니까 lock을 풀어준다
-       */
-      this.unlock();
-      callback();
+    $matrix.reset().then(() => {
+      resolve();
     });
-  }
+  });
 
   pause = () => {
     this.lock();
@@ -172,7 +167,7 @@ class StateManager implements Tetris.IStateManager {
   /**
    * 모든 설정을 reset하는거야
    */
-  reset = () => {
+  reset = async () => {
     const {
       states, components: {
         $matrix, $pause, $logo, $point, $clock, $startLines, $next,
@@ -223,17 +218,16 @@ class StateManager implements Tetris.IStateManager {
 
     $next.reset();
 
-    $matrix.reset(() => {
-      /**
-       * reset animation하고 나서 잠깐 텀을 두고 다시 시작한다
-       */
-      setTimeout(() => {
-        this.ready(() => {
-          states.reset = false;
-          this.unlock();
-        });
-      }, 300);
-    });
+    await $matrix.reset();
+    /**
+    * reset animation하고 나서 잠깐 텀을 두고 다시 시작한다
+    */
+    setTimeout(() => {
+      this.ready().then(() => {
+        states.reset = false;
+        this.unlock();
+      });
+    }, 300);
   }
 
   lock = () => { window.tetris.states.lock = true; }
@@ -315,11 +309,15 @@ class StateManager implements Tetris.IStateManager {
      * 딱 게임이 끝나는줄 알았지만! 딱 블럭이 딱 맞아가지고 딱 라인이 지워지면서 화면 위로 안높아질 수 있기 때문이다.
      */
     if (isOver()) {
+      // currentBlock을 먼저 비운다
+      states.currentBlock = null;
+
       /**
        * 만약에 게임이 끝났다면, end를 통해 matrix를 촤라락 촤라락 애니메이션 주고
-       * 그 작업이 끝나면 init으로 새로 게임을 시작해준다
-       */
-      this.end(this.ready);
+       * 그 작업이 끝나면 ready으로 새로 게임을 준비한다.
+      */
+      await this.end();
+      await this.ready();
 
       /**
        * 게임이 끝났으니까 return시켜서 nextAround 코드 진행을 막는다

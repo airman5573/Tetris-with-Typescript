@@ -1,3 +1,4 @@
+import PQueue from 'p-queue';
 import Block from './common/Block';
 import { blockColors, speeds } from '../const';
 import { Tetris } from '../types';
@@ -8,12 +9,15 @@ class Matrix implements Tetris.IMatrix {
 
   timer: NodeJS.Timeout;
 
+  queue: PQueue;
+
   width = 10;
 
   animateColor: Tetris.BlockColor = 1;
 
   constructor() {
     this.matrixNode = document.querySelector('.game-screen > .matrix');
+    this.queue = new PQueue({ concurrency: 1 });
     /**
      * HTML로 다 쓰기가 귀찮아서 element를 만들어서 붙임
      */
@@ -88,7 +92,9 @@ class Matrix implements Tetris.IMatrix {
    */
   clearLines = async (matrix: Tetris.MatrixState, lines: number[]) => {
     const newMatrix = deepcopy(matrix);
-    await this.animateLines(newMatrix, lines);
+    console.log('before animate lines');
+    await this.blinkLines(newMatrix, lines);
+    console.log('after animate lines');
     lines.forEach((n) => {
       newMatrix.splice(n, 1);
       newMatrix.unshift(Array(10).fill(blockColors.GRAY));
@@ -105,14 +111,16 @@ class Matrix implements Tetris.IMatrix {
    * @param lines
    * 지울 lines이 담겨있다.
    */
-  animateLines = (matrix: Tetris.MatrixState, lines: number[]) => new Promise<void>((resolve) => {
-    const todos = [
-      this.changeLineColor.bind(this, matrix, lines, blockColors.RED, 0),
-      this.changeLineColor.bind(this, matrix, lines, blockColors.GRAY, 200),
-      this.changeLineColor.bind(this, matrix, lines, blockColors.RED, 200),
-      this.changeLineColor.bind(this, matrix, lines, blockColors.GRAY, 200),
-    ];
-    Promise.all(todos).then(() => { resolve(); });
+  blinkLines = (matrix: Tetris.MatrixState, lines: number[]) => new Promise<void>((resolve) => {
+    this.queue.add(this.changeLineColor.bind(this, matrix, lines, blockColors.RED, 0));
+    this.queue.add(this.changeLineColor.bind(this, matrix, lines, blockColors.GRAY, 200));
+    this.queue.add(this.changeLineColor.bind(this, matrix, lines, blockColors.RED, 200));
+    this.queue.add(this.changeLineColor.bind(this, matrix, lines, blockColors.GRAY, 200));
+    this.queue.start();
+    this.queue.on('idle', () => {
+      console.log('animation end');
+      resolve();
+    });
   });
 
   changeLineColor = (
@@ -140,7 +148,7 @@ class Matrix implements Tetris.IMatrix {
    * 좌라라락 라인이 올라갔다가 좌라라락 내려오는 애니메이션을 수행한다
    * @param callback
    */
-  reset = (callback?: () => void) => {
+  reset = () => new Promise<void>((resolve1) => {
     const { tetris } = window;
     const { states } = tetris;
     const animateLine = (index: number) => {
@@ -152,15 +160,22 @@ class Matrix implements Tetris.IMatrix {
         const i = index - 20;
         states.matrix[i] = Array(this.width).fill(0);
         this.render();
-      } else if (callback) {
-        // 마지막에 index가 40이라면, 즉 다 끝났다면!
-        callback();
       }
     };
-    for (let i = 0; i <= 40; i += 1) {
-      setTimeout(animateLine.bind(null, i), 40 * (i + 1));
+    const queue = new PQueue({ concurrency: 1 });
+    for (let i = 0; i < 40; i += 1) {
+      queue.add(() => new Promise<void>((resolve2) => {
+        setTimeout(() => {
+          animateLine(i);
+          resolve2();
+        }, 50);
+      }));
     }
-  }
+    queue.start();
+    queue.on('idle', () => {
+      resolve1();
+    });
+  });
 
   render = (matrix = window.tetris.states.matrix) => {
     for (let i = 0; i < matrix.length; i += 1) {

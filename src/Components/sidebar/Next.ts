@@ -12,7 +12,6 @@ class Next implements Tetris.INext {
 
   render = (nextBlock: Tetris.IBlock = window.tetris.states.nextBlock) => {
     this.reset();
-    console.log(nextBlock);
     if (nextBlock === null) return;
     nextBlock.shape.forEach((line: number[], i) => {
       line.forEach((blockState:number, j) => {
