@@ -367,6 +367,7 @@ b {
               width: 25px;
               height: 21px;
               background-position: -175px -75px;
+              &.on { background-position: -150px -75px; }
             }
             .pause {
               width: 20px;

@@ -2,6 +2,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const path = require('path');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const { join } = path;
 
@@ -41,6 +42,12 @@ module.exports = {
     ],
   },
   plugins: [
+    new CopyWebpackPlugin({
+      patterns: [
+        { from: './src/assets/music.mp3', to: 'assets' },
+        { from: './src/assets/music.wav', to: 'assets' },
+      ],
+    }),
     new MiniCssExtractPlugin({
       filename: 'style.css',
     }),

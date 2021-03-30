@@ -17,7 +17,10 @@ const blockControl = {
   },
   down: (stopDownTrigger: () => void) => {
     const { tetris } = window;
-    const { states: { currentBlock, matrix }, stateManager, components: { $matrix } } = tetris;
+    const {
+      states: { currentBlock, matrix }, stateManager, components: { $matrix }, music,
+    } = tetris;
+    console.log(music);
     if (currentBlock === null) return;
     const nextBlock = currentBlock.fall();
     // 갈수있으면 가고,
@@ -107,6 +110,17 @@ const startLineControl = {
   down: () => {
     const { components: { $startLines } } = window.tetris;
     $startLines.down();
+  },
+};
+
+const soundControl = {
+  on: () => {
+    const { $sound } = window.tetris.components;
+    $sound.on();
+  },
+  off: () => {
+    const { $sound } = window.tetris.components;
+    $sound.off();
   },
 };
 
@@ -259,10 +273,10 @@ const callbacks: {[k in Tetris.KeyType] : Tetris.IKeyControl} = {
   s: {
     keyType: 's',
     down() {
-      const { keyEventProcessor } = window.tetris;
+      const { keyEventProcessor, states } = window.tetris;
       keyEventProcessor.down({
         keyType: this.keyType,
-        callback: (isInGame()) ? blockControl.drop : gameControl.start,
+        callback: states.sound === false ? soundControl.on : soundControl.off,
         once: true,
       });
     },

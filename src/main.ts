@@ -14,6 +14,7 @@ import { Tetris } from './types';
 import Sound from './components/sidebar/Sound';
 import Pause from './components/sidebar/Pause';
 import Clock from './components/sidebar/Clock';
+import Music from './music';
 
 // resize
 resize();
@@ -47,6 +48,7 @@ window.tetris = {
     speedStep: Math.floor(speeds.length / 2) - 1,
     lock: false,
     pause: false,
+    sound: false,
     reset: false,
     startLines: 0,
     point: 0,
@@ -72,6 +74,7 @@ window.tetris = {
       s: document.querySelector('div.button-container[data-keytype="s"]'),
     },
   },
+  music: new Music(),
   stateManager: new StateManager(),
   keyEventProcessor: new KeyEventProcessor(),
 };

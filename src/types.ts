@@ -23,6 +23,8 @@ export namespace Tetris {
     once?: boolean,
     callback?(stopDownTrigger?: () => void): void
   }
+  export type MusicControl = 'start' | 'killStart' | 'clear' | 'fall' | 'gameover' | 'rotate' | 'move';
+  export type Sounds = 'start' | 'clear' | 'fall' | 'gameover' | 'rotate' | 'move';
   export interface IBlockOption {
     type: BlockType;
     shape: Shape,
@@ -109,6 +111,8 @@ export namespace Tetris {
 
   export interface ISound {
     node: HTMLDivElement
+    on(): void
+    off(): void
     render(num: number): void
   }
 
@@ -162,6 +166,19 @@ export namespace Tetris {
     updateNextBlock(block: IBlock): void,
     nextBlockToCurrentBlock(): void
   }
+
+  export interface IMusic {
+    url: string
+    source: AudioBufferSourceNode | undefined
+    soundRanges: { [key in Sounds]: Array<number> }
+    isOn(): boolean
+    start(): void
+    clear(): void
+    fall(): void
+    gameover(): void
+    rotate(): void
+    move(): void
+  }
 }
 
 type Tetris = {
@@ -173,6 +190,7 @@ type Tetris = {
     speedStep: number,
     lock: boolean,
     pause: boolean,
+    sound: boolean,
     reset: boolean,
     startLines: number,
     point: number
@@ -189,6 +207,7 @@ type Tetris = {
     $clock: Tetris.IClock,
     $buttons: {[k in Tetris.KeyType]: HTMLDivElement}
   },
+  music: Tetris.IMusic,
   stateManager: Tetris.IStateManager,
   keyEventProcessor: Tetris.IKeyEventProcessor
 }
