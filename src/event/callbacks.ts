@@ -21,6 +21,7 @@ const blockControl = {
       states: { currentBlock, matrix }, stateManager, components: { $matrix }, music,
     } = tetris;
     if (currentBlock === null) return;
+    music.fall();
     const nextBlock = currentBlock.fall();
     // 갈수있으면 가고,
     if (tryMove(matrix, nextBlock)) {
