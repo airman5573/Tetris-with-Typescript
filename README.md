@@ -18,7 +18,8 @@ npm install
 
 ## 실행
 ```
-npm run start
+npm run start-window
+npm run start-mac
 ```
 
 ## Build
