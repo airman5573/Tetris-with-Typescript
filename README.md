@@ -15,14 +15,12 @@
 ```
 npm install
 ```
-
-## 실행
-```
-npm run start-window
-npm run start-mac
-```
-
 ## Build
 ```
 npm run build
+```
+
+## 실행
+```
+npm run start
 ```
