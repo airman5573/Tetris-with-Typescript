@@ -18,10 +18,9 @@ const blockControl = {
   down: (stopDownTrigger: () => void) => {
     const { tetris } = window;
     const {
-      states: { currentBlock, matrix }, stateManager, components: { $matrix }, music,
+      states: { currentBlock, matrix }, stateManager, components: { $matrix },
     } = tetris;
     if (currentBlock === null) return;
-    music.fall();
     const nextBlock = currentBlock.fall();
     // 갈수있으면 가고,
     if (tryMove(matrix, nextBlock)) {
