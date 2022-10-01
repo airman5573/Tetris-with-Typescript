@@ -5,6 +5,8 @@
 
 [react-tetris-link]: https://github.com/chvin/react-tetris
 
+![tetris_demo](https://user-images.githubusercontent.com/68623798/193399529-ee5f3653-50bf-4da0-8545-6f09b6dcbbee.gif)
+
 # 실행방법
 
 ## 요구사항
